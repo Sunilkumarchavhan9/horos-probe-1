@@ -1,0 +1,201 @@
+\section{Technical Method}
+\label{sec:technical_method}
+
+\begin{figure*}[t]
+    \centering
+    \includegraphics[width=\textwidth]{figures/safety_filter_diagram.pdf}
+    \caption{\textbf{Predictive Safety Filter and Real-Time Decision Gate (Figure 2).} Detail of the OSQP optimization structure, integrating the 8-sided polyhedral anti-slip barrier, anti-crush force ceiling, grasp wrench equilibrium, four-state supervisor, and passive damping fallback.}
+    \label{fig:safety_filter_detail}
+\end{figure*}
+
+\subsection{Multi-Contact State and Load Invariant Estimation}
+At each control step $k$, optical tactile deformation is decoupled into normal pressure distribution and tangential shear traction fields across the sensor array. The normal contact force $f_{N, i}$ is obtained by integrating the normal stress profile, while tangential shear force $\mathbf{f}_{T, i} \in \mathbb{R}^2$ is computed from surface marker displacements.
+
+Under general accelerating object conditions, dynamic force and angular momentum balance follow the Newton-Euler equations:
+\begin{align}
+    m_o (\mathbf{a}_{\text{obj}} - \mathbf{g}) &= \sum_{i=1}^M \mathbf{f}_{c, i} \label{eq:newton_euler_trans} \\
+    \mathbf{I}_o \boldsymbol{\alpha}_{\text{obj}} + \boldsymbol{\omega}_{\text{obj}} \times (\mathbf{I}_o \boldsymbol{\omega}_{\text{obj}}) &= \sum_{i=1}^M (\mathbf{p}_{c, i} - \mathbf{c}_o) \times \mathbf{f}_{c, i} \label{eq:newton_euler_rot}
+\end{align}
+where $\mathbf{a}_{\text{obj}}$ and $\boldsymbol{\alpha}_{\text{obj}}$ denote the linear and angular accelerations of the object, and $\mathbf{g}$ is the gravitational vector. Projected along the net apparent acceleration vector $\mathbf{a}_{\text{obj}} - \mathbf{g}$, the instantaneous object mass is:
+\begin{equation}
+    \hat{m}_o = \frac{\left( \sum_{i=1}^M \mathbf{f}_{c, i} \right)^T (\mathbf{a}_{\text{obj}} - \mathbf{g})}{\|\mathbf{a}_{\text{obj}} - \mathbf{g}\|_2^2}
+\end{equation}
+Under the quasi-static manipulation regime characteristic of stable dexterous carrying, linear accelerations are small relative to gravity ($\|\mathbf{a}_{\text{obj}}\|_2 \ll \|\mathbf{g}\|_2 \approx 9.81\text{ m/s}^2$) and angular velocities are modest ($\|\boldsymbol{\omega}_{\text{obj}}\|_2 \approx 0$). In this regime, dynamic inertial forces represent negligible perturbations, allowing the gravitational load and the contact normal force centroid to be tracked via recursive least-squares (RLS) with exponential forgetting factor $\lambda_{\text{rls}} = 0.98$:
+\begin{align}
+    \hat{m}_o(k) &= \frac{1}{g} \left\| \sum_{i=1}^M \mathbf{f}_{c, i}(k) \right\|_2 \\
+    \hat{\mathbf{p}}_{\text{cop}}(k) &= \left( \sum_{i=1}^M f_{N, i}(k) \mathbf{p}_{c, i} \right) \Bigg/ \left( \sum_{i=1}^M f_{N, i}(k) \right)
+\end{align}
+Here $\hat{\mathbf{p}}_{\text{cop}}(k)$ denotes the instantaneous Center of Pressure (CoP) along the grasp contact manifold. For planar and symmetric antipodal grasping of objects with approximately uniform transverse density, the horizontal and vertical projection of the 3D Center of Mass $\mathbf{c}_o$ coincides with $\hat{\mathbf{p}}_{\text{cop}}$, providing an apparent contact centroid that tracks lateral payload shifts (such as sloshing liquids) without requiring unconstrained 3D vision. In general asymmetric 3D configurations, full spatial CoM identification requires solving the rotational moment balance \eqref{eq:newton_euler_rot} across multiple orientations.
+
+The instantaneous tangential-to-normal contact force ratio represents the measured \emph{friction utilization}:
+\begin{equation}
+    \psi_i(k) = \frac{\|\mathbf{f}_{T, i}(k)\|_2}{f_{N, i}(k) + \epsilon}
+    \label{eq:friction_utilization}
+\end{equation}
+By Coulomb's friction law $\|\mathbf{f}_{T, i}\| \le \mu_i f_{N, i}$, the utilization ratio is bounded by the true physical friction coefficient: $\psi_i(k) \le \mu_i$. In stable, non-slipping regimes, $\psi_i(k)$ reflects external load requirements rather than the ultimate traction limit of the surface.
+
+\subsection{Adaptive Conformal Inference (ACI) Module}
+Standard friction estimators output point estimates $\hat{\mu}_i(k)$ that lag behind physical reality during sudden nonstationary drops (e.g., fluid spills or dynamic lubrication transitions). Rather than asserting heuristic safety factors, we deploy Adaptive Conformal Inference (ACI) \cite{gibbs2021adaptive}. To maintain rigorous physical validity, the framework explicitly distinguishes three distinct quantities:
+\begin{enumerate}
+    \item \textbf{Friction Utilization Ratio $\psi_i(k)$:} The instantaneous ratio \eqref{eq:friction_utilization} directly computed from fingertip normal and shear force measurements at $100\text{ Hz}$.
+    \item \textbf{Deployable Incipient-Slip Tactile Observation $\mu_{\text{obs}, i}(k)$:} In physical deployment, the true surface friction coefficient $\mu_i$ cannot be directly sensed during sticking contact. However, optical tactile sensors (GelSlim / DIGIT) track elastomeric surface marker flow. Impending gross slip is preceded by partial slip along the peripheral contact perimeter, characterized by spatial divergence and curl in the marker displacement field \cite{pandas2024incipient,yuan2017gelsight}. When peripheral marker flow divergence exceeds the incipient-slip threshold ($\mathcal{E}_{\text{slip}, i}(k) = 1$), the contact operates at the Coulomb cone boundary ($\|\mathbf{f}_{T, i}\| \approx \mu_i f_{N, i}$). The observed friction coefficient is then registered directly from the critical utilization ratio at slip onset:
+    \begin{equation}
+        \mu_{\text{obs}, i}(k) = \psi_i(k) \quad \text{when } \mathcal{E}_{\text{slip}, i}(k) = 1
+    \end{equation}
+    When no incipient slip occurs ($\mathcal{E}_{\text{slip}, i}(k) = 0$), the condition $\psi_i(k) \le \mu_{\text{cal}, i}(k)$ confirms that the contact resides strictly within the safe cone, and no non-conformity update is required.
+    \item \textbf{Offline Ground-Truth Reference $\mu_{\text{true}}$:} Simulator ground truth is recorded solely as an offline oracle benchmark (EXP-002) to evaluate whether the theoretical $1 - \alpha = 95\%$ marginal coverage property holds under controlled non-exchangeable distribution shifts. The online safety filter and ACI calibration module operate purely on deployable sensory observations ($\psi_i$ and tactile marker divergence $\mathcal{E}_{\text{slip}, i}$) with zero access to simulator state.
+\end{enumerate}
+
+Let $\alpha \in (0, 1)$ denote the target miscoverage rate (set to $\alpha = 0.05$ for an asymptotic $95\%$ marginal coverage target). Upon registering an incipient slip event at calibration index $t$:
+\begin{enumerate}
+    \item \textbf{Calibration Residual Scoring:} We compute the non-conformity residual against the recursive point estimator:
+    \begin{equation}
+        E_t = |\mu_{\text{obs}, i}(t) - \hat{\mu}_i(t)|
+    \end{equation}
+    \item \textbf{Online Quantile Tracking:} The adaptive parameter $\alpha_t$ updates via Robbins-Monro stochastic approximation:
+    \begin{equation}
+        \alpha_{t+1} = \alpha_t + \beta \left( \alpha - \mathbb{I}\{E_t > Q_t\} \right)
+        \label{eq:aci_update_rule}
+    \end{equation}
+    where $\beta = 0.05$ is the adaptation step size, $\mathbb{I}\{\cdot\}$ denotes empirical miscoverage, and $Q_t = \text{Quantile}_{1 - \alpha_t}(E_{1:t-1})$. By construction, ACI guarantees long-run asymptotic marginal coverage:
+    \begin{equation}
+        \lim_{T \to \infty} \frac{1}{T} \sum_{t=1}^T \mathbb{I}\left\{\mu_{\text{obs}, i}(t) \ge \mu_{\text{cal}, i}(t)\right\} = 1 - \alpha
+    \end{equation}
+    even under arbitrary, non-exchangeable distribution shifts \cite{gibbs2021adaptive}. We emphasize that this provides an asymptotic statistical coverage guarantee, rather than an instantaneous deterministic certificate at every millisecond.
+    \item \textbf{Calibrated Lower Bound:} The friction coefficient passed to the cone constraints is:
+    \begin{equation}
+        \mu_{\text{cal}, i}(k) = \max\left( \mu_{\text{floor}}, \hat{\mu}_i(k) - Q_{1 - \alpha_{t+1}}(E_{1:t}) \right)
+        \label{eq:mu_cal_bound}
+    \end{equation}
+    where $\mu_{\text{floor}} = 0.05$ corresponds to the physical hydrodynamic boundary lubrication limit of wet elastomer-on-polymer surfaces, preventing the polyhedral cone from degenerating to an empty set or causing numerical singularity ($f_N \to \infty$).
+\end{enumerate}
+
+\begin{remark}[Decoupling Offline All-Timestep Coverage from Online Event-Triggered Adaptation]
+We explicitly decouple the offline synthetic coverage benchmark (EXP-002) from the online physical controller's event-triggered operating mode:
+\begin{enumerate}
+    \item \textbf{Offline All-Timestep Coverage Benchmark (EXP-002):} In this synthetic tracking benchmark, the simulator supplies true surface friction $\mu_{\text{true}}(t)$ at every discrete control cycle ($t = 1, \dots, 50$). This evaluates whether Gibbs \& Candès's ACI martingale convergence theorem holds over non-exchangeable distribution shifts across the full temporal population of $5,000$ points per regime ($100\text{ episodes} \times 50\text{ steps}$).
+    \item \textbf{Online Event-Triggered Physical Adaptation (EXP-003--006):} In physical execution, true friction cannot be measured at sticking equilibrium without provoking slip. Instead, calibration updates occur conditionally along the event sequence where incipient micro-slip is detected ($\mathcal{E}_{\text{slip}, i}(k) = 1$). During non-slip sticking cycles ($\mathcal{E}_{\text{slip}, i}(k) = 0$), the controller retains the most recently calibrated quantile $\mu_{\text{cal}, i}(k) = \mu_{\text{cal}, i}(k-1)$ without generating artificial residuals or updating the ACI state. Consequently, while the offline synthetic benchmark (EXP-002) rigorously validates theoretical coverage over the full temporal sequence, the online event-triggered controller operates as a practical adaptive safeguard without asserting an unconditioned martingale coverage guarantee across intervening sticking intervals.
+\end{enumerate}
+\end{remark}
+
+\subsection{Convex Quadratic Programming Formulation}
+The safe joint acceleration command $\mathbf{u}^* \in \mathbb{R}^{n_q}$ is resolved at each $100\text{ Hz}$ control cycle via the following convex QP:
+\begin{equation}
+    \min_{\mathbf{u}, \boldsymbol{\delta}_s, \boldsymbol{\delta}_w} \frac{1}{2} \|\mathbf{u} - \mathbf{u}_{\text{nom}}\|_{\mathbf{W}}^2 + \frac{1}{2} \rho_s \|\boldsymbol{\delta}_s\|_2^2 + \frac{1}{2} \rho_w \|\boldsymbol{\delta}_w\|_2^2
+    \label{eq:full_qp_filter}
+\end{equation}
+\textbf{Subject to:}
+\begin{align}
+    \mathbf{A}_{\text{ineq}} \mathbf{u} - \boldsymbol{\delta}_s &\le \mathbf{b}_{\text{ineq}} \label{eq:qp_ineq_sys} \\
+    \mathbf{A}_{\text{eq}} \mathbf{u} - \boldsymbol{\delta}_w &= \mathbf{b}_{\text{eq}} \label{eq:qp_eq_sys} \\
+    \boldsymbol{\delta}_s \ge \mathbf{0}, \quad \mathbf{u}_{\min} &\le \mathbf{u} \le \mathbf{u}_{\max} \label{eq:qp_bounds_sys}
+\end{align}
+
+Here, $\mathbf{W} = \mathbf{I}_{n_q}$. Soft slack variables $\boldsymbol{\delta}_s \in \mathbb{R}^{8M + 2M + 2n_q}$ and $\boldsymbol{\delta}_w \in \mathbb{R}^6$ ensure continuous recursive feasibility. Penalties are set to $\rho_s = 10^5$ and $\rho_w = 10.0$, strictly penalizing barrier violations while permitting compliant adjustment in net wrench balance.
+
+The constraint matrices aggregate the multi-contact dynamics:
+\begin{equation}
+    \mathbf{A}_{\text{ineq}} = \begin{bmatrix}
+        \mathbf{A}_{\text{cone}, 1} \mathbf{\Lambda}_1 \\
+        \vdots \\
+        \mathbf{A}_{\text{cone}, M} \mathbf{\Lambda}_M \\
+        \hat{\mathbf{n}}_1^T \mathbf{\Lambda}_1 \\
+        \vdots \\
+        -\hat{\mathbf{n}}_M^T \mathbf{\Lambda}_M \\
+        \mathbf{I}_{n_q} \\
+        -\mathbf{I}_{n_q}
+    \end{bmatrix}, \quad
+    \mathbf{b}_{\text{ineq}} = \begin{bmatrix}
+        (1 - \gamma_{\text{slip}}) \mathbf{p}_{\text{curr}, 1} - \mathbf{A}_{\text{cone}, 1} \mathbf{f}_{c, 1}^{\text{bias}} \\
+        \vdots \\
+        (1 - \gamma_{\text{slip}}) \mathbf{p}_{\text{curr}, M} - \mathbf{A}_{\text{cone}, M} \mathbf{f}_{c, M}^{\text{bias}} \\
+        F_{\max} - \hat{\mathbf{n}}_1^T \mathbf{f}_{c, 1}^{\text{bias}} \\
+        \vdots \\
+        -F_{\min} + \hat{\mathbf{n}}_M^T \mathbf{f}_{c, M}^{\text{bias}} \\
+        \mathbf{u}_{\max} \\
+        -\mathbf{u}_{\min}
+    \end{bmatrix}
+\end{equation}
+and $\mathbf{A}_{\text{eq}} = \mathbf{G} \mathbf{\Lambda}_{\text{stack}}$, $\mathbf{b}_{\text{eq}} = \mathbf{w}_{\text{req}} - \mathbf{G} \mathbf{f}_{\text{bias, stack}}$.
+
+\begin{algorithm}[t]
+\caption{Predictive Safety Filter Execution Loop ($100\text{ Hz}$)}
+\label{alg:safety_filter}
+\begin{algorithmic}[1]
+\REQUIRE Nominal action $\mathbf{u}_{\text{nom}}$, joint state $(\mathbf{q}_k, \dot{\mathbf{q}}_k)$, tactile afferents $\mathbf{f}_{c, i}(k)$, target miscoverage $\alpha = 0.05$.
+\ENSURE Safe joint acceleration command $\mathbf{u}_k^*$.
+\STATE Ingest tactile shear and normal forces; evaluate incipient slip marker divergence $\mathcal{E}_{\text{slip}, i}(k) \in \{0, 1\}$.
+\STATE Update load invariants $(\hat{m}_o, \hat{\mathbf{c}}_o)$ and apparent friction point estimates $\hat{\mu}_i(k)$.
+\IF{$\mathcal{E}_{\text{slip}, i}(k) == 1$}
+    \STATE Measure critical utilization $\psi_i(k) \leftarrow \|\mathbf{f}_{T, i}(k)\|_2 / (f_{N, i}(k) + \epsilon)$ and set $\mu_{\text{obs}, i}(k) \leftarrow \psi_i(k)$.
+    \STATE Compute non-conformity residual $E_t \leftarrow |\mu_{\text{obs}, i}(k) - \hat{\mu}_i(k)|$.
+    \STATE Update ACI quantile tracking: $\alpha_{t+1} \leftarrow \alpha_t + \beta (\alpha - \mathbb{I}\{E_t > Q_t\})$.
+    \STATE Update calibrated lower bound: $\mu_{\text{cal}, i}(k) \leftarrow \max(\mu_{\text{floor}}, \hat{\mu}_i(k) - Q_{1 - \alpha_{t+1}})$.
+\ELSE
+    \STATE Retain latest calibrated lower bound: $\mu_{\text{cal}, i}(k) \leftarrow \mu_{\text{cal}, i}(k-1)$.
+\ENDIF
+\STATE Evaluate linearized contact sensitivity $\mathbf{\Lambda}_i(\mathbf{q}_k)$ via \eqref{eq:lambda_def} and bias $\mathbf{f}_{c, i}^{\text{bias}}$ via \eqref{eq:bias_def}.
+\STATE Construct grasp matrix $\mathbf{G} \in \mathbb{R}^{6 \times 3M}$ and required spatial wrench $\mathbf{w}_{\text{req}}$.
+\STATE Assemble QP matrices $(\mathbf{P}, \mathbf{q}_{\text{obj}}, \mathbf{A}, \mathbf{l}, \mathbf{u})$ for OSQP.
+\STATE Solve QP \eqref{eq:full_qp_filter}; record execution time $t_{\text{solve}}$ and max slack $s^* = \|\boldsymbol{\delta}_s^*\|_\infty$.
+\IF{$t_{\text{solve}} \le 10.0\text{ ms}$ \AND $s^* \le 10^{-2}\text{ N}$}
+    \STATE Dispatch $\mathbf{u}_k^* \leftarrow \mathbf{u}^*$ (\texttt{NOMINAL\_SAFE}); reset relaxation counter.
+\ELSIF{$t_{\text{solve}} \le 10.0\text{ ms}$ \AND $s^* > 10^{-2}\text{ N}$}
+    \STATE Increment relaxation counter: $c_{\text{relax}} \leftarrow c_{\text{relax}} + 1$.
+    \IF{$c_{\text{relax}} \le 5$}
+        \STATE Dispatch $\mathbf{u}_k^* \leftarrow \mathbf{u}^*$ (\texttt{EMERGENCY\_RELAXED}).
+    \ELSE
+        \STATE Dispatch $\mathbf{u}_k^* \leftarrow -K_d \dot{\mathbf{q}}_k$ (\texttt{CRITICAL\_FAIL}).
+    \ENDIF
+\ELSE
+    \STATE Dispatch $\mathbf{u}_k^* \leftarrow -K_d \dot{\mathbf{q}}_k$ (\texttt{TIMEOUT} Fallback).
+\ENDIF
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Four-State Decision Gate and Passive Fallback}
+As illustrated in \Cref{fig:safety_filter_detail} and \Cref{alg:safety_filter}, execution safety is governed by a deterministic four-state supervisor:
+\begin{enumerate}
+    \item \textbf{\texttt{NOMINAL\_SAFE}:} The QP converges within the $10.0\text{ ms}$ cycle deadline with negligible slack ($\|\boldsymbol{\delta}_s^*\|_\infty \le 10^{-2}\text{ N}$). All discrete-time barrier constraints are strictly satisfied, guaranteeing forward invariance of the safe set $\mathcal{S}$. Command $\mathbf{u}^*$ is dispatched directly to actuator drivers.
+    \item \textbf{\texttt{EMERGENCY\_RELAXED}:} When severe external disturbances render hard constraints momentarily infeasible, the QP activates soft slack variables ($\|\boldsymbol{\delta}_s^*\|_\infty > 10^{-2}\text{ N}$) heavily penalized by $\rho_s = 10^5$. This yields a minimum-violation compromise action that softens constraint boundaries to prevent solver stall. \emph{We stress that \texttt{EMERGENCY\_RELAXED} does not constitute a certified safety guarantee}; it is an un-certified emergency survival state permitted for at most $c_{\text{relax}} \le 5$ consecutive cycles ($50\text{ ms}$), logged as an active fault.
+    \item \textbf{\texttt{TIMEOUT}:} If the solver runtime exceeds the $10.0\text{ ms}$ watchdog deadline, execution immediately aborts to \texttt{CRITICAL\_FAIL}.
+    \item \textbf{\texttt{CRITICAL\_FAIL}:} If the emergency relaxation persists beyond $5$ cycles, or upon solver numerical failure, the system dispatches passive velocity damping:
+    \begin{equation}
+        \mathbf{u}_{\text{safe}} = -K_d \dot{\mathbf{q}}_k
+        \label{eq:passive_damping}
+    \end{equation}
+    where $K_d = 5.0\text{ s}^{-1}$ is the joint velocity damping gain. For commanded joint accelerations $\mathbf{u} = \ddot{\mathbf{q}} \in \mathbb{R}^{n_q}$, the gain has dimensional units of inverse seconds: $(\text{rad/s}^2) / (\text{rad/s}) = \text{s}^{-1}$. 
+\end{enumerate}
+
+\begin{proposition}[Kinetic Energy Dissipation Under Velocity Damping Fallback]
+Let the multi-fingered hand satisfy the rigid-body equations of motion:
+\begin{equation}
+    \mathbf{M}(\mathbf{q}) \ddot{\mathbf{q}} + \mathbf{C}(\mathbf{q}, \dot{\mathbf{q}}) \dot{\mathbf{q}} + \mathbf{g}(\mathbf{q}) = \boldsymbol{\tau} + \mathbf{J}_c^T \mathbf{f}_c
+    \label{eq:manipulator_eom}
+\end{equation}
+where $\mathbf{M}(\mathbf{q}) = \mathbf{M}^T(\mathbf{q}) \succ 0$ is the joint-space inertia matrix, $\mathbf{C}(\mathbf{q}, \dot{\mathbf{q}})$ is formulated via Christoffel symbols such that $\dot{\mathbf{M}} - 2\mathbf{C}$ is skew-symmetric, $\mathbf{g}(\mathbf{q})$ is gravity, and $\mathbf{J}_c^T \mathbf{f}_c = \sum_{i=1}^M \mathbf{J}_i^T \mathbf{f}_{c, i}$ is the transmitted contact wrench. Under the fallback control torque $\boldsymbol{\tau} = \mathbf{g}(\mathbf{q}) - \mathbf{D} \dot{\mathbf{q}}$ with positive-definite damping $\mathbf{D} = K_d \mathbf{M}(\mathbf{q}) \succ 0$ ($K_d = 5.0\text{ s}^{-1}$), and assuming dissipative or sticking contact mechanics ($\sum_{i=1}^M \mathbf{v}_{c, i}^T \mathbf{f}_{c, i} \le 0$), the manipulator kinetic energy $E_{\text{kin}} = \frac{1}{2} \dot{\mathbf{q}}^T \mathbf{M}(\mathbf{q}) \dot{\mathbf{q}}$ strictly dissipates at rate:
+\begin{equation}
+    \dot{E}_{\text{kin}} \le -\dot{\mathbf{q}}^T \mathbf{D} \dot{\mathbf{q}} \le -K_d \lambda_{\min}(\mathbf{M}) \|\dot{\mathbf{q}}\|_2^2 \le 0
+\end{equation}
+\end{proposition}
+\begin{proof}
+The total time derivative of manipulator kinetic energy along system trajectories is:
+\begin{equation}
+    \dot{E}_{\text{kin}} = \dot{\mathbf{q}}^T \mathbf{M}(\mathbf{q}) \ddot{\mathbf{q}} + \frac{1}{2} \dot{\mathbf{q}}^T \dot{\mathbf{M}}(\mathbf{q}) \dot{\mathbf{q}}
+\end{equation}
+Solving \eqref{eq:manipulator_eom} for $\mathbf{M}(\mathbf{q}) \ddot{\mathbf{q}} = \boldsymbol{\tau} - \mathbf{C}(\mathbf{q}, \dot{\mathbf{q}}) \dot{\mathbf{q}} - \mathbf{g}(\mathbf{q}) + \mathbf{J}_c^T \mathbf{f}_c$ and substituting yields:
+\begin{align}
+    \dot{E}_{\text{kin}} &= \dot{\mathbf{q}}^T \left( \boldsymbol{\tau} - \mathbf{C}\dot{\mathbf{q}} - \mathbf{g} + \mathbf{J}_c^T \mathbf{f}_c \right) + \frac{1}{2} \dot{\mathbf{q}}^T \dot{\mathbf{M}} \dot{\mathbf{q}} \nonumber \\
+    &= \dot{\mathbf{q}}^T (\boldsymbol{\tau} - \mathbf{g}) + \dot{\mathbf{q}}^T \mathbf{J}_c^T \mathbf{f}_c + \frac{1}{2} \dot{\mathbf{q}}^T (\dot{\mathbf{M}} - 2\mathbf{C}) \dot{\mathbf{q}}
+\end{align}
+By the standard skew-symmetry property of robotic manipulators, $\dot{\mathbf{q}}^T (\dot{\mathbf{M}} - 2\mathbf{C}) \dot{\mathbf{q}} \equiv 0$ identically for all $\mathbf{q}, \dot{\mathbf{q}}$. Substituting the fallback actuator law $\boldsymbol{\tau} = \mathbf{g}(\mathbf{q}) - \mathbf{D}\dot{\mathbf{q}}$ and applying kinematic contact mapping $\dot{\mathbf{q}}^T \mathbf{J}_c^T \mathbf{f}_c = \sum_{i=1}^M \mathbf{v}_{c, i}^T \mathbf{f}_{c, i}$:
+\begin{equation}
+    \dot{E}_{\text{kin}} = -\dot{\mathbf{q}}^T \mathbf{D} \dot{\mathbf{q}} + \sum_{i=1}^M \mathbf{v}_{c, i}^T \mathbf{f}_{c, i}
+\end{equation}
+Under sticking contact ($\mathbf{v}_{c, i} = \mathbf{0}$) or dissipative contact compliance ($\sum \mathbf{v}_{c, i}^T \mathbf{f}_{c, i} \le 0$ as established by the Hunt-Crossley damping model), the second term is non-positive. Consequently:
+\begin{equation}
+    \dot{E}_{\text{kin}} \le -\dot{\mathbf{q}}^T \mathbf{D} \dot{\mathbf{q}} \le -K_d \lambda_{\min}(\mathbf{M}) \|\dot{\mathbf{q}}\|_2^2 \le -2 K_d E_{\text{kin}} \le 0
+\end{equation}
+Kinetic energy decays exponentially to zero with mechanical velocity time constant $\tau = K_d^{-1} = 0.20\text{ s}$ ($200\text{ ms}$). Meanwhile, the computational dispatch latency to engage this fallback damping law requires $< 50\ \mu\text{s}$ of branching logic without online numerical optimization.
+\end{proof}
+

@@ -14,7 +14,7 @@
 [![License](https://img.shields.io/badge/License-Apache_2.0-green.svg)](LICENSE)
 [![LaTeX Integrity](https://img.shields.io/badge/LaTeX-100%25%20Verified-brightgreen.svg)](arxiv_submission/check_latex.py)
 
-[**[Paper PDF (arXiv)]**](arxiv_submission/probe1_arxiv_source.zip) • [**[Reproducibility Bundle]**](arxiv_submission/probe1_arxiv_submission.zip) • [**[Research Dossier (00-20)]**](00-research-objective.md) • [**[Simulation Benchmark]**](experiments/run_full_evaluations.py)
+[**[Download 26-Page Paper (PDF)]**](HOROS_PROBE-1_Research_Paper.pdf) • [**[arXiv Source Bundle]**](arxiv_submission/probe1_arxiv_source.zip) • [**[Reproducibility Package]**](arxiv_submission/probe1_arxiv_submission.zip) • [**[Research Dossier (00–20)]**](00-research-objective.md)
 
 </div>
 

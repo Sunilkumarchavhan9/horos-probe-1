@@ -1,9 +1,8 @@
 <div align="center">
 
-<p align="center">
-  <img src="assets/horos_logo_badge.png" width="85" style="vertical-align: middle; margin-right: 12px; border-radius: 16px;" alt="HOROS Logo" />
-  <span style="font-size: 2.3em; font-weight: 800; vertical-align: middle;">HOROS PROBE-1</span>
-</p>
+<img src="assets/horos_logo.png" width="90" height="90" alt="HOROS Logo" />
+
+# HOROS PROBE-1
 
 ### Uncertainty-Aware Safe Adaptation for Multifingered Grasping Under Jointly Changing Contact Conditions
 
@@ -98,7 +97,7 @@ Evaluated across **6,200 simulated manipulation episodes** in Isaac Lab with Phy
 horos-probe-1/
 ├── README.md                           # Main documentation & visual asset showcase
 ├── assets/                             # Visual research assets, diagrams, and logos
-│   ├── horos_logo_badge.png            # Official HOROS research logo badge
+│   ├── horos_logo.png                  # Official square HOROS research brand logo
 │   ├── architecture.png                # System architecture diagram
 │   ├── safety_filter_diagram.png       # Predictive safety filter QP flowchart
 │   ├── controller_comparison.png       # Baseline benchmark comparison plots

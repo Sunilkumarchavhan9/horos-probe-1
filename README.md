@@ -1,7 +1,7 @@
 <div align="center">
 
 <p align="center">
-  <img src="assets/horos-probe1-paper-card.jpg" width="100%" alt="HOROS PROBE-1 Research Banner" />
+  <img src="assets/horos-probe1-arxiv-card.jpg" width="100%" alt="HOROS PROBE-1 Research Banner" />
 </p>
 
 <img src="assets/horos_logo.png" width="90" height="90" alt="HOROS Logo" />

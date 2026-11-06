@@ -1,7 +1,7 @@
 <div align="center">
 
 <p align="center">
-  <img src="assets/horos-research-probe1.jpg" width="100%" alt="HOROS PROBE-1 Research Banner" />
+  <img src="assets/horos-probe1-paper-card.jpg" width="100%" alt="HOROS PROBE-1 Research Banner" />
 </p>
 
 <img src="assets/horos_logo.png" width="90" height="90" alt="HOROS Logo" />
@@ -201,3 +201,4 @@ Full documentation (Docs 00–38), mathematical specifications, benchmarks, and 
 - **Organization:** HOROS Physical Intelligence Research Group (H.R.)
 - **Email:** `contact@horoslab.org`
 - **GitHub:** [https://github.com/Sunilkumarchavhan9/horos-probe-1](https://github.com/Sunilkumarchavhan9/horos-probe-1)
+

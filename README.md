@@ -1,12 +1,16 @@
 <div align="center">
 
+<p align="center">
+  <img src="assets/probe-1-og.png" width="100%" alt="HOROS PROBE-1 Research Banner" />
+</p>
+
 <img src="assets/horos_logo.png" width="90" height="90" alt="HOROS Logo" />
 
 # HOROS PROBE-1
 
 ### Uncertainty-Aware Safe Adaptation for Multifingered Grasping Under Jointly Changing Contact Conditions
 
-**HOROS Physical Intelligence Research Group (H.R.)** • **Sunil Kumar Chavhan** (`sunil@horoslab.io`)
+**HOROS Physical Intelligence Research Group (H.R.)** • **Sunil Kumar Chavhan** (`contact@horoslab.org`)
 
 [![arXiv](https://img.shields.io/badge/arXiv-cs.RO%20%7C%20eess.SY-B31B1B.svg)](https://arxiv.org/abs/XXXX.XXXXX)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
@@ -14,7 +18,7 @@
 [![License](https://img.shields.io/badge/License-Apache_2.0-green.svg)](LICENSE)
 [![LaTeX Integrity](https://img.shields.io/badge/LaTeX-100%25%20Verified-brightgreen.svg)](arxiv_submission/check_latex.py)
 
-[**[Download 26-Page Paper (PDF)]**](HOROS_PROBE-1_Research_Paper.pdf) • [**[arXiv Source Bundle]**](arxiv_submission/probe1_arxiv_source.zip) • [**[Reproducibility Package]**](arxiv_submission/probe1_arxiv_submission.zip) • [**[Research Dossier (00–20)]**](00-research-objective.md)
+[**[Paper PDF (arXiv)]**](arxiv_submission/probe1_arxiv_source.zip) • [**[Reproducibility Bundle]**](arxiv_submission/probe1_arxiv_submission.zip) • [**[Research Dossier (00-20)]**](00-research-objective.md) • [**[Simulation Benchmark]**](experiments/run_full_evaluations.py)
 
 </div>
 
@@ -179,8 +183,21 @@ The complete paper source is located in `arxiv_submission/`:
 
 ---
 
+##
+---
+
+## 🔬 Research-002: Trustworthy Action-Conditioned Contact World Models (Phase 2)
+
+Extending PROBE-1 from reactive tactile adaptation to **action-conditioned predictive dynamics** and contact world models:
+- **Phase P2.1 & P2.2 (Hybrid Dynamics & Multi-Horizon Calibration):** Mode-stratified conformal calibration (CMS-PSACD) providing simultaneous joint prediction intervals across multi-step contact trajectories.
+- **Phase P2.3 & P2.4 (Active Contact-Mode Mining - ACMM):** Targeted acquisition of contact transitions and boundary-focused sampling, improving contact-mode macro-F1 and multi-step force prediction.
+- **Phase P2.5 & P2.6 (Contact-Aware Safety Coordination):** Resolves decoupled safety conservatism and limit-cycle stalls through analytic action substitution (normal force preload boost $\Delta F_n$ + shear velocity scaling) and preload-prioritized CEM/MPC planning.
+
+Full documentation (Docs 00–38), mathematical specifications, benchmarks, and reproducibility logs are preserved in [`Research-002/`](Research-002/00-research-charter.md).
+
+
 ## 📬 Contact & Correspondence
 - **Lead Author:** Sunil Kumar Chavhan
 - **Organization:** HOROS Physical Intelligence Research Group (H.R.)
-- **Email:** `sunil@horoslab.io`
+- **Email:** `contact@horoslab.org`
 - **GitHub:** [https://github.com/Sunilkumarchavhan9/horos-probe-1](https://github.com/Sunilkumarchavhan9/horos-probe-1)

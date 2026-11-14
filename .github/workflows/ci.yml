@@ -20,7 +20,7 @@ jobs:
           import os
           for root, _, files in os.walk('Research-002'):
               for f in files:
-                  if f.endswith(('.json', '.csv')):
+                  if f.endswith(('.json', '.csv', '.md')):
                       p = os.path.join(root, f)
                       with open(p, 'rb') as fp:
                           data = fp.read()
@@ -29,6 +29,7 @@ jobs:
                           with open(p, 'wb') as fp:
                               fp.write(crlf)
           "
+
 
       - name: Set up Python 3.12
         uses: actions/setup-python@v5

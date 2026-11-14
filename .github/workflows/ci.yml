@@ -20,7 +20,7 @@ jobs:
           import os
           for root, _, files in os.walk('Research-002'):
               for f in files:
-                  if f.endswith(('.json', '.csv', '.md')):
+                  if f.endswith(('.json', '.csv')) or f == 'phase37_1_epistemic_ood_diagnostic_report.md':
                       p = os.path.join(root, f)
                       with open(p, 'rb') as fp:
                           data = fp.read()
@@ -29,6 +29,7 @@ jobs:
                           with open(p, 'wb') as fp:
                               fp.write(crlf)
           "
+
 
 
       - name: Set up Python 3.12

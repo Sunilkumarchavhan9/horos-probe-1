@@ -14,6 +14,22 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Normalize line endings for frozen artifact hashes
+        run: |
+          python -c "
+          import os
+          for root, _, files in os.walk('Research-002'):
+              for f in files:
+                  if f.endswith(('.json', '.csv')):
+                      p = os.path.join(root, f)
+                      with open(p, 'rb') as fp:
+                          data = fp.read()
+                      crlf = data.replace(b'\r\n', b'\n').replace(b'\n', b'\r\n')
+                      if crlf != data:
+                          with open(p, 'wb') as fp:
+                              fp.write(crlf)
+          "
+
       - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:

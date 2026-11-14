@@ -1,0 +1,3 @@
+# Ensure deterministic raw-byte SHA-256 hashes across Linux and Windows
+*.json text eol=crlf
+*.csv text eol=crlf

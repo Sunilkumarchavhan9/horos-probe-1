@@ -157,7 +157,14 @@ class ContactBoundarySampler:
             - 'friction_boundary': Oscillates shear force across ||Ft|| = mu * Fn.
             - 'random': Uncorrelated uniform random actions in [-1, 1].
         """
-        task_label = "compliant_prelift" if isinstance(env, CompliantPreLiftContactEnv) else self.task
+        task_label = (
+            "compliant_prelift"
+            if isinstance(env, CompliantPreLiftContactEnv)
+            else "multifinger_lift"
+            if isinstance(env, MultifingerLiftEnv)
+            else self.task
+        )
+        legacy_state_contract = isinstance(env, MultifingerLiftEnv)
         env_dt = get_env_dt(env, task_label)
         obs = env.reset()
         prev_obs = obs
@@ -172,9 +179,7 @@ class ContactBoundarySampler:
         termination_reason = "horizon_reached"
 
         for t in range(horizon):
-            s_vec, wrench = extract_env_state_and_wrench(
-                obs, task_label, legacy_compatibility_mode=isinstance(env, MultifingerLiftEnv)
-            )
+            s_vec, wrench = extract_env_state_and_wrench(obs, task_label)
             fn_arr = np.asarray(obs.get("finger_fn", np.zeros(4)), dtype=float)
             fn_total = float(np.sum(fn_arr))
 
@@ -216,9 +221,7 @@ class ContactBoundarySampler:
 
             act = np.clip(act, [-2.0, -2.0, -2.0, -2.0, -2.0], [2.0, 2.0, 2.0, 2.0, 5.0])
             next_obs, r, done, info = step_env_compatible(env, act, task=task_label, require_reward=True)
-            next_s_vec, next_wrench = extract_env_state_and_wrench(
-                next_obs, task_label, legacy_compatibility_mode=isinstance(env, MultifingerLiftEnv)
-            )
+            next_s_vec, next_wrench = extract_env_state_and_wrench(next_obs, task_label)
             mode = classify_contact_mode(next_obs, prev_state=prev_obs, dt=env_dt, task=task_label)
 
             actions.append(act)
@@ -246,6 +249,12 @@ class ContactBoundarySampler:
         max_fn_obs = float(np.max(obs.get("finger_fn", np.zeros(4))))
         return {
             "task": task_label,
+            "wrench_contract": "task2_cartesian_resultant_wrench_v1",
+            "state_contract": (
+                "task2_slip_ratio_state_v0"
+                if legacy_state_contract
+                else "task2_slip_velocity_state_v1"
+            ),
             "dt_s": env_dt,
             "episode_length": len(actions),
             "termination_reason": termination_reason,

@@ -104,11 +104,21 @@ class LuGreModel:
         and energy dissipation.
         """
         if not state.in_contact or state.normal_force <= 0.0:
+            # Physical lift-off policy:
+            # Any remaining stored elastic energy dissipates to heat upon separation
+            if state.stored_elastic_energy > 0.0:
+                state.cumulative_dissipated_energy += state.stored_elastic_energy
+                state.signed_step_dissipation = state.stored_elastic_energy
+            else:
+                state.signed_step_dissipation = 0.0
+
+            state.stored_elastic_energy = 0.0
             state.bristle_deflection = 0.0
             state.bristle_velocity = 0.0
             state.tangential_force = 0.0
             state.slip_velocity = 0.0
             state.is_gross_slipping = False
+            state.independent_step_dissipation = 0.0
             return
 
         Fn = state.normal_force
@@ -151,10 +161,23 @@ class LuGreModel:
         state.cumulative_dissipated_energy += d_diss
         state.instantaneous_dissipation_rate = d_diss / dt
 
+        # Independent constitutive dissipation rate (raw signed, unmasked):
+        gv = self.compute_stribeck(v_cmd, Fn)
+        v_cmd_abs = abs(v_cmd)
+        if gv > 0.0 and v_cmd_abs > 1e-12:
+            P_diss_indep = (
+                ((self.params.sigma_0**2 * v_cmd_abs / gv) * (z_next**2)) +
+                (self.params.sigma_1 * dz_dt * v_cmd) +
+                (self.params.sigma_2 * (v_cmd**2))
+            )
+            state.independent_step_dissipation = P_diss_indep * dt
+        else:
+            state.independent_step_dissipation = 0.0
+
     def step_composed_hybrid(self, state: ContactState, Ft_cm_elastic: float, v_cmd: float,
                             stick_ratio: float, dt: float, geometry: Optional[Any] = None) -> float:
         """
-        Continuum Traction Composition Strategy for Contact Physics v2.1.3.1 (CP2-01 / CP2-03 Remediated):
+        Continuum Traction Composition Strategy for Contact Physics v2.1.3.2 (CP2-01 / CP2-03 Remediated):
         Combines Cattaneo-Mindlin continuum partial-slip elasticity with LuGre dynamic dissipation
         WITHOUT DOUBLE-COUNTING STIFFNESS, WITH ZERO FORCE JUMP, AND WITH EXACT CONTINUUM TRACTION PARTITION:
 
@@ -176,13 +199,26 @@ class LuGreModel:
              v_eff = v_cmd * (1 - c/a), unifying state dynamics, micro-viscous force, and dissipation.
            - Exact First-Law energy conservation: d_diss = dW - d_elastic without double-counting.
            - State tracking: Updates state.stick_ratio and state.stick_radius at every step.
+           - Independent constitutive dissipation tracking and thermodynamic lift-off dissipation.
         """
         Fn = state.normal_force
         if Fn <= 0.0 or not state.in_contact:
+            # Physical lift-off policy:
+            # Any remaining stored elastic energy dissipates to heat upon separation
+            if state.stored_elastic_energy > 0.0:
+                state.cumulative_dissipated_energy += state.stored_elastic_energy
+                state.signed_step_dissipation = state.stored_elastic_energy
+            else:
+                state.signed_step_dissipation = 0.0
+
             state.stored_elastic_energy = 0.0
+            state.bristle_deflection = 0.0
+            state.bristle_velocity = 0.0
             state.tangential_force = 0.0
             state.stick_ratio = 1.0
             state.stick_radius = 0.0
+            state.is_gross_slipping = False
+            state.independent_step_dissipation = 0.0
             return 0.0
 
         c_over_a = max(0.0, min(1.0, stick_ratio))
@@ -236,12 +272,18 @@ class LuGreModel:
         # Work and energy dissipation: Trapezoidal work integration
         dW = 0.5 * (prev_Ft + total_Ft) * (v_cmd * dt)
 
-        # Composite stored elastic energy (Sticking core compliance + Annular asperity bristles)
+        # Composite stored elastic energy (Exact Clapeyron Sticking Core + Annular Asperity Bristles)
+        # Sticking core carries net force Ft_core under uniform core displacement delta_t
         a = state.contact_radius
         kt_0 = 8.0 * self.pair.equivalent_shear_modulus * a if a > 0.0 else 1.0
-        E_core = 0.5 * (Ft_cm_elastic ** 2) / kt_0 if kt_0 > 0.0 else 0.0
+        Ft_core = Ft_cm_elastic - coulomb_limit * phi_slip
+        if geometry is not None and hasattr(geometry, 'has_annular_partial_slip') and not geometry.has_annular_partial_slip():
+            delta_t_mag = abs(Ft_cm_elastic) / kt_0 if kt_0 > 0.0 else 0.0
+        else:
+            delta_t_mag = (1.5 * abs(coulomb_limit) / kt_0) * max(0.0, 1.0 - c_over_a**2) if kt_0 > 0.0 else 0.0
+        E_core = 0.5 * abs(Ft_core) * delta_t_mag
         E_ann = 0.5 * self.params.sigma_0 * (z_next ** 2)
-        new_elastic = (1.0 - phi_slip) * E_core + phi_slip * E_ann
+        new_elastic = E_core + phi_slip * E_ann
 
         # Exact First-Law Energy Dissipation (eliminates double-counting):
         # d_diss = dW - d_elastic
@@ -254,6 +296,20 @@ class LuGreModel:
         state.signed_step_dissipation = d_diss
         state.cumulative_dissipated_energy += d_diss
         state.instantaneous_dissipation_rate = d_diss / dt
+
+        # Independent constitutive dissipation rate (raw signed, unmasked):
+        # Direct evaluation of LuGre dissipation function on the slipping annulus
+        gv = self.compute_stribeck(v_eff, Fn)
+        v_eff_abs = abs(v_eff)
+        if gv > 0.0 and v_eff_abs > 1e-12:
+            P_ann_indep = (
+                ((self.params.sigma_0**2 * v_eff_abs / gv) * (z_next**2)) +
+                (self.params.sigma_1 * dz_dt * v_eff) +
+                (self.params.sigma_2 * (v_eff**2))
+            )
+            state.independent_step_dissipation = phi_slip * P_ann_indep * dt
+        else:
+            state.independent_step_dissipation = 0.0
 
         # Update stick-zone state tracking so previous boundary states are NEVER stale
         state.stick_ratio = c_over_a

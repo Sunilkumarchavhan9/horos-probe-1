@@ -199,6 +199,6 @@ Full documentation (Docs 00–38), mathematical specifications, benchmarks, and 
 ## 📬 Contact & Correspondence
 - **Lead Author:** Sunil Kumar Chavhan
 - **Organization:** HOROS Physical Intelligence Research Group (H.R.)
-- **Email:** `contact@horoslab.org`
+- **Email:** `sunil@horoslab.org`
 - **GitHub:** [https://github.com/Sunilkumarchavhan9/horos-probe-1](https://github.com/Sunilkumarchavhan9/horos-probe-1)
 

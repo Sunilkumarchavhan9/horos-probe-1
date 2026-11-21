@@ -216,6 +216,12 @@ class LuGreModel:
            - Independent core storage rate (dot_V_core) and moving-boundary energy flux (dot_E_boundary).
            - Independent constitutive dissipation tracking and thermodynamic lift-off dissipation.
            - Runtime passivity envelope enforcement: bounds commanded velocity to v_passive(Fn).
+
+        ACTUATOR AND SIMULATOR INTEGRATION NOTICE (v2.1.3.7):
+        This method returns only total_Ft. For physical actuator, robot, and simulator execution,
+        callers MUST use step_composed_hybrid_with_velocity() to obtain the passivity-bounded
+        applied velocity Tuple[float, float] = (total_Ft, v_applied).
+        Propagating v_applied ensures the physical hardware tracks the passivity-certified trajectory.
         """
         Fn = state.normal_force
         if Fn <= 0.0 or not state.in_contact:
@@ -231,7 +237,15 @@ class LuGreModel:
             state.core_stored_energy = 0.0
             state.annular_stored_energy = 0.0
             state.core_storage_rate = 0.0
+            state.annular_storage_rate = 0.0
+            state.annular_boundary_flux = 0.0
+            state.analytical_core_boundary_flux = 0.0
+            state.kinematic_transport_flux = 0.0
             state.boundary_energy_flux = 0.0
+            state.reversible_boundary_transfer = 0.0
+            state.applied_slip_velocity = 0.0
+            state.is_velocity_clamped = False
+            state.passive_velocity_limit = 0.0
             state.bristle_deflection = 0.0
             state.bristle_velocity = 0.0
             state.tangential_force = 0.0
@@ -246,7 +260,15 @@ class LuGreModel:
         # Enforce the normal-force-dependent velocity limit v_passive,max(Fn)
         v_passive_limit = self.compute_passive_velocity_limit(Fn)
         if enforce_passivity_envelope and v_passive_limit > 0.0 and abs(v_cmd) > v_passive_limit:
-            v_cmd = math.copysign(v_passive_limit, v_cmd)
+            v_applied = math.copysign(v_passive_limit, v_cmd)
+            is_clamped = True
+        else:
+            v_applied = v_cmd
+            is_clamped = False
+
+        state.applied_slip_velocity = v_applied
+        state.is_velocity_clamped = is_clamped
+        state.passive_velocity_limit = v_passive_limit
 
         c_over_a = max(0.0, min(1.0, stick_ratio))
 
@@ -259,16 +281,16 @@ class LuGreModel:
         # Direction sign for the static Coulomb capacity on the slipping annulus:
         if abs(Ft_cm_elastic) > 1e-12:
             sgn = 1.0 if Ft_cm_elastic > 0.0 else -1.0
-        elif abs(v_cmd) > 1e-12:
-            sgn = 1.0 if v_cmd > 0.0 else -1.0
+        elif abs(v_applied) > 1e-12:
+            sgn = 1.0 if v_applied > 0.0 else -1.0
         else:
             sgn = 1.0
         coulomb_limit = sgn * self.pair.mu_static * Fn
 
-        # In static equilibrium at zero velocity (v_cmd == 0), if bristle state is uninitialized,
+        # In static equilibrium at zero velocity (v_applied == 0), if bristle state is uninitialized,
         # synchronize bristle deflection with the static Coulomb capacity so that
         # Ft_hybrid identically equals Ft_cm without artificial force discrepancy:
-        if abs(state.bristle_deflection) < 1e-12 and c_over_a < 1.0 and abs(v_cmd) < 1e-12:
+        if abs(state.bristle_deflection) < 1e-12 and c_over_a < 1.0 and abs(v_applied) < 1e-12:
             state.bristle_deflection = coulomb_limit / self.params.sigma_0
 
         # CP2-04 Stick-to-Slip Relaxation under normal load reduction
@@ -278,8 +300,8 @@ class LuGreModel:
             z_prev = math.copysign(z_static_cap, z_prev)
 
         # CP2-03 Reconciled Annular Kinematics:
-        # Annular bristles slip at effective relative velocity v_eff = v_cmd * (1 - c/a)
-        v_eff = v_cmd * (1.0 - c_over_a) if c_over_a > 0.0 else v_cmd
+        # Annular bristles slip at effective relative velocity v_eff = v_applied * (1 - c/a)
+        v_eff = v_applied * (1.0 - c_over_a) if c_over_a > 0.0 else v_applied
         z_next, dz_dt = self.integrate_bristle(z_prev, v_eff, Fn, dt)
         state.bristle_deflection = z_next
         state.bristle_velocity = dz_dt
@@ -298,8 +320,8 @@ class LuGreModel:
 
         state.tangential_force = total_Ft
 
-        # Work and energy dissipation: Trapezoidal work integration
-        dW = 0.5 * (prev_Ft + total_Ft) * (v_cmd * dt)
+        # Work and energy dissipation: Trapezoidal work integration strictly using v_applied
+        dW = 0.5 * (prev_Ft + total_Ft) * (v_applied * dt)
 
         # Composite stored elastic energy (Exact Clapeyron Sticking Core + Annular Asperity Bristles)
         # Sticking core carries net force Ft_core under uniform core displacement delta_t
@@ -337,10 +359,26 @@ class LuGreModel:
         dot_V_core = (E_core - prev_E_core) / dt_safe
         dot_phi_slip = (phi_slip - prev_phi_slip) / dt_safe
 
-        dot_E_boundary_core = Ft_core * v_cmd - dot_V_core
-        dot_E_transport = phi_slip * Ft_lugre * (v_cmd - v_eff)
+        # CP2-03.7 First-principles analytical moving-boundary flux for sticking core:
+        # Derived directly from Cattaneo-Mindlin boundary traction surface integral:
+        # dot_E_boundary_core = 2 * pi * c * q(c) * delta_t * dot_c
+        #                     = - sgn(Ft_core) * mu_s * Fn * delta_t * dot_phi_slip
+        # Evaluated strictly from contact mechanics, NOT as a power residual:
+        sgn_core = 1.0 if Ft_core > 0.0 else (-1.0 if Ft_core < 0.0 else sgn)
+        dot_E_boundary_core = - sgn_core * self.pair.mu_static * Fn * delta_t_mag * dot_phi_slip
+
+        # Complete annular stored-energy derivative:
+        # d(Phi * E_ann)/dt = Phi * sigma_0 * z * dz_dt + dot_Phi * E_ann
+        # 1. Annular bristle elastic storage rate:
+        dot_V_ann = phi_slip * self.params.sigma_0 * z_next * dz_dt
+        # 2. Annular moving-boundary stored-energy transfer:
         dot_E_boundary_ann = dot_phi_slip * prev_E_ann
-        dot_E_boundary = dot_E_boundary_core + dot_E_transport - dot_E_boundary_ann
+
+        # Kinematic transport flux between applied macro-velocity and micro-slip velocity:
+        dot_E_transport = phi_slip * Ft_lugre * (v_applied - v_eff)
+
+        # Conservative interface energy transfer between core and annulus across the moving boundary:
+        dot_E_boundary_transfer = dot_E_boundary_core + dot_E_transport - dot_E_boundary_ann
 
         # Annular constitutive dissipation rate (raw signed, unmasked):
         # Direct evaluation of LuGre dissipation function on the slipping annulus
@@ -355,19 +393,43 @@ class LuGreModel:
         else:
             P_ann_indep = 0.0
 
-        annular_diss_step = phi_slip * P_ann_indep * dt
-        state.annular_step_dissipation = annular_diss_step
-
-        dot_D_hybrid = phi_slip * P_ann_indep + dot_E_boundary
-        state.independent_step_dissipation = dot_D_hybrid * dt
+        # Irreversible frictional dissipation on slipping annulus (strictly >= 0 within envelope):
+        irreversible_step_diss = phi_slip * P_ann_indep * dt
+        state.annular_step_dissipation = irreversible_step_diss
+        state.independent_step_dissipation = irreversible_step_diss
 
         state.core_stored_energy = E_core
         state.annular_stored_energy = phi_slip * E_ann
         state.core_storage_rate = dot_V_core
-        state.boundary_energy_flux = dot_E_boundary
+        state.annular_storage_rate = dot_V_ann
+        state.annular_boundary_flux = dot_E_boundary_ann
+        state.analytical_core_boundary_flux = dot_E_boundary_core
+        state.kinematic_transport_flux = dot_E_transport
+        state.boundary_energy_flux = dot_E_boundary_transfer
+        state.reversible_boundary_transfer = dot_E_boundary_transfer * dt
 
         # Update stick-zone state tracking so previous boundary states are NEVER stale
         state.stick_ratio = c_over_a
         state.stick_radius = c_over_a * state.contact_radius
 
         return total_Ft
+
+    def step_composed_hybrid_with_velocity(
+        self,
+        state: ContactState,
+        Ft_cm_elastic: float,
+        v_cmd: float,
+        stick_ratio: float,
+        dt: float,
+        geometry=None,
+        enforce_passivity_envelope: bool = True
+    ) -> Tuple[float, float]:
+        """
+        Executes composed hybrid step and returns Tuple[total_Ft, v_applied].
+        Provides actuator-level velocity feedback so controllers and simulators
+        can observe when velocity clamping occurs to maintain passivity.
+        """
+        total_Ft = self.step_composed_hybrid(
+            state, Ft_cm_elastic, v_cmd, stick_ratio, dt, geometry, enforce_passivity_envelope
+        )
+        return total_Ft, state.applied_slip_velocity

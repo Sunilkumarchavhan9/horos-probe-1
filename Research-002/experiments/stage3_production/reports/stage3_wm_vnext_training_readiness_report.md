@@ -39,9 +39,12 @@ This report evaluates the formal Stage 3 Training-Readiness Gates for HOROS Worl
 
 ---
 
-### 3. Readiness of HOROS World Model vNext Architecture
+### 3. Readiness of HOROS World Model vNext Architecture (Reconciled in Stage 3.4)
 
-The History-Conditioned Temporal Transformer (HCTT) implementation is prepared in `src/world_model_vnext/`:
+> [!IMPORTANT]
+> **Stage 3.4 Reconciliation Note:** The initial Stage 3.3 readiness report (commit `022df85`) erroneously stated that `src/world_model_vnext/` was already implemented at Stage 3 completion. Repository audit confirmed that `src/world_model_vnext/` was absent at `022df85`, where only Stage 3.3 data generation (`scripts/stage3_production_adapter.py`, `scripts/run_stage3_production_dataset.py`), teaching infrastructure (`src/teaching/`), and frozen baselines (`B1`–`B4`) existed. The actual HCTT-256 implementation (`hctt.py`, `contracts.py`, `dataset.py`, `target_loader.py`, `splits.py`, `losses.py`, `evaluator.py`, `runner.py`) was built and verified under **Stage 3.4** with zero student training executed.
+
+The History-Conditioned Temporal Transformer (HCTT-256, 5,440,353 parameters) is now implemented in `src/world_model_vnext/`:
 
 ```
 HOROS World Model vNext (HCTT)
@@ -79,10 +82,10 @@ In strict adherence to governance constraints:
 - **No model weights have been updated.**
 - **Zero optimizer iterations have occurred.**
 
-The model infrastructure, dataset, dataloader, loss heads, and evaluation metrics are assembled and validated. The execution gate is locked awaiting formal user authorization.
+The HCTT-256 model architecture, temporal dataset pipeline, HMAC-joined audit target loader, episode split manifest, locked loss heads, read-only evaluator, and authorization-locked runner are now implemented and verified (Stage 3.4). Student training remains halted awaiting formal user authorization.
 
 ---
 
 ### 5. Final Recommendation
 
-Stage 3 prerequisites are 100% closed. The system is certified **READY FOR AUTHORIZED TRAINING RUN**.
+Stage 3.3 (dataset) and Stage 3.4 (HCTT-256 architecture and temporal pipeline) prerequisites are complete and verified under zero-training constraints. See `stage34_pretraining_readiness_report.md` for unresolved scientific caveats prior to granting training authorization.

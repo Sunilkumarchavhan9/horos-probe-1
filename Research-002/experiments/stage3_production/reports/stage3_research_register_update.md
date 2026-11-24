@@ -5,10 +5,10 @@
 **Research Program:** PROBE-1 — Autonomous Robotic Manipulation World Model  
 **Stage:** Stage 3 — World Model vNext Dataset Generation, Physics Validation and Training Readiness  
 **Document Identifier:** `HOROS-P1-R002-STAGE3-REP-10-RESEARCH-REGISTER`  
-**Date:** 2026-11-24  
-**Current Milestone:** Stage 3 Complete (Production Dataset Synthesized, Physics Validated, Training Ready)  
-**Next Milestone:** Authorized Student Training Run (HOROS World Model vNext — HCTT-256)  
-**Governance Status:** **TRAINING LOCKED — AWAITING FORMAL USER AUTHORIZATION**
+**Date:** 2026-11-25  
+**Current Milestone:** Stage 3.4 Complete (HCTT-256 & Temporal Pipeline Implemented, Read-Only Verified; Untrained)  
+**Next Milestone:** Authorized Student Training Run (Stage 4 / HOROS World Model vNext — HCTT-256)  
+**Governance Status:** **TRAINING LOCKED (`training_permitted = 0`, `execution_authorized = 0`) — AWAITING FORMAL USER AUTHORIZATION**
 
 ---
 
@@ -20,12 +20,11 @@
 | **Phase 3.5** | **CERTIFIED** | `experiments/phase3_5_evaluation/` | Offline (120 ep) and closed-loop (450 ep) evaluation completed. |
 | **Phase 3.6** | **CERTIFIED** | `experiments/phase3_6_robustness_validation/` | Robustness campaign: 1,215 episodes evaluated across M4_acmm / M0_passive. Zero crush violations. |
 | **Phase 3.7** | **CERTIFIED** | `experiments/phase3_7_uncertainty_intelligence/` | Trust region diagnostics, causal interaction histories, active dwell investigation. |
-| **P5-T4R4** | **CERTIFIED** | `scripts/p5_t4r4_temporal_adapter.py` | Scalar record audit complete; deterministic replay adapter implemented and verified. |
+| **P5-T4R4** | **ISOLATED (ARCHIVED)** | `scripts/p5_t4r4_temporal_adapter.py` | Scalar record audit complete; replay adapter incompatible with HCTT dims and diverged on `seed=4950001` (`grasp_success` False vs True). Kept separate. |
 | **Stage 3.2** | **CERTIFIED** | `experiments/stage3_preflight/pilot/` | 40-episode physical pilot accepted with causal Regime A slip and event-aligned rim impact. |
-| **Stage 3.3 Production Dataset** | **COMPLETED** | `experiments/stage3_production/` | 1,000 / 1,000 scenarios generated and 100% accepted (500 Prelift, 500 Peg-in-Hole). Zero rejections. |
-| **Grounded Firewall** | **ENFORCED** | `experiments/stage3_production/training/` | 1,000 `.npz` archives with opaque HMAC sample IDs. Zero privileged leakage. |
-| **Readiness Gate Evaluation** | **COMPLETED** | `stage3_wm_vnext_training_readiness_report.md` | Gate 1 (Volume) PASS; Gate 2 (Macro-F1) & Gate 3 (Conformal) UNMET by baselines, justifying vNext training. |
-| **Student Model Training** | **LOCKED** | `src/world_model_vnext/` | Code assembled; zero gradient steps executed. Awaiting user authorization. |
+| **Stage 3.3 Production Dataset** | **COMPLETED (`022df85`)** | `experiments/stage3_production/` | 1,000 / 1,000 scenarios generated and 100% accepted (500 Prelift, 500 Peg-in-Hole). Zero rejections; HCTT code not yet present at `022df85`. |
+| **Stage 3.4 HCTT & Pipeline** | **COMPLETED (UNTRAINED)** | `src/world_model_vnext/`, `tests/test_p43_stage34_hctt_pipeline.py` | Implemented HCTT-256 (5,440,353 params, RoPE, causal mask), temporal dataset, `AuditTargetLoader`, 70/10/10/10 split manifest, locked losses, read-only evaluator, and barrier runner. |
+| **Student Model Training** | **LOCKED (`0` STEPS)** | `src/world_model_vnext/runner.py` | `training_permitted = 0`, `execution_authorized = 0`; zero gradient steps executed. Awaiting user authorization. |
 
 ---
 
@@ -45,6 +44,13 @@
 - `scripts/run_stage3_production_dataset.py`: Master generation and validation pipeline.
 - `scripts/p5_t4r4_temporal_adapter.py`: Deterministic replay adapter for P5-T4R4.
 - `reports/`: Complete suite of 10 Stage 3 technical and audit reports.
+
+#### Newly Produced Stage 3.4 Artifacts
+- `src/world_model_vnext/`: Complete HCTT-256 architecture, temporal sliding-window dataset, HMAC-joined `AuditTargetLoader`, split generator, locked multi-objective losses, read-only evaluator, and authorization-locked runner.
+- `tests/test_p43_stage34_hctt_pipeline.py`: Comprehensive Stage 3.4 security, causal masking, split, loss, and barrier test suite.
+- `scripts/run_stage34_pretraining_verification.py`: Pre-training verification and frozen-baseline evaluation runner.
+- `experiments/stage3_production/stage34_episode_split_manifest.json` & `stage34_pretraining_eval_metrics.json`.
+- `experiments/stage3_production/reports/stage34_*.md`: Stage 3.4 gap audit, architecture, dataset contract, target separation, window feasibility, and pre-training readiness reports.
 
 ---
 

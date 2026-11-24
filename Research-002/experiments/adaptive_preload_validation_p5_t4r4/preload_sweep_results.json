@@ -1,0 +1,338 @@
+{
+  "3.0N": {
+    "episodes": 300,
+    "grasp_success_rate": 0.8533333333333334,
+    "success_by_friction": {
+      "0.35": {
+        "success_rate": 0.7547169811320755,
+        "count": 106
+      },
+      "0.55": {
+        "success_rate": 0.8390804597701149,
+        "count": 87
+      },
+      "0.75": {
+        "success_rate": 0.9626168224299065,
+        "count": 107
+      }
+    },
+    "success_by_topology": {
+      "3": {
+        "success_rate": 0.8333333333333334,
+        "count": 108
+      },
+      "4": {
+        "success_rate": 0.9578947368421052,
+        "count": 95
+      },
+      "5": {
+        "success_rate": 0.7731958762886598,
+        "count": 97
+      }
+    },
+    "mean_total_fn": 12.749966964990236,
+    "peak_fn_max": 3.999999995172259,
+    "mean_impulse_Ns": 5.71494866348215,
+    "mean_mech_work_act_J": 0.005877315293948985,
+    "mean_tangential_work_J": 0.005756524514458731,
+    "mean_damage_proxy": 0.0,
+    "slew_violations": 0,
+    "bound_violations": 0,
+    "budget_violations": 0,
+    "max_wrench_residual": 30.45520403145622,
+    "latency_mean_ms": 0.0991649348173939,
+    "latency_p95_ms": 0.16772035130998117,
+    "latency_worst_ms": 19.00930004194379,
+    "under_preloading_rate": 0.02,
+    "over_preloading_rate": 0.0,
+    "mean_preload_error": -0.058682058682058696
+  },
+  "5.0N": {
+    "episodes": 300,
+    "grasp_success_rate": 0.98,
+    "success_by_friction": {
+      "0.35": {
+        "success_rate": 0.9433962264150944,
+        "count": 106
+      },
+      "0.55": {
+        "success_rate": 1.0,
+        "count": 87
+      },
+      "0.75": {
+        "success_rate": 1.0,
+        "count": 107
+      }
+    },
+    "success_by_topology": {
+      "3": {
+        "success_rate": 0.9537037037037037,
+        "count": 108
+      },
+      "4": {
+        "success_rate": 1.0,
+        "count": 95
+      },
+      "5": {
+        "success_rate": 0.9896907216494846,
+        "count": 97
+      }
+    },
+    "mean_total_fn": 19.516508857537495,
+    "peak_fn_max": 6.666540093492426,
+    "mean_impulse_Ns": 9.680978565225939,
+    "mean_mech_work_act_J": 0.017753265354352156,
+    "mean_tangential_work_J": 0.018369646645473095,
+    "mean_damage_proxy": 0.0,
+    "slew_violations": 0,
+    "bound_violations": 0,
+    "budget_violations": 0,
+    "max_wrench_residual": 18.24131451318794,
+    "latency_mean_ms": 0.09783629258433293,
+    "latency_p95_ms": 0.16531008324818686,
+    "latency_worst_ms": 18.494200077839196,
+    "under_preloading_rate": 0.0,
+    "over_preloading_rate": 0.0,
+    "mean_preload_error": 1.9413179413179413
+  },
+  "8.0N": {
+    "episodes": 300,
+    "grasp_success_rate": 1.0,
+    "success_by_friction": {
+      "0.35": {
+        "success_rate": 1.0,
+        "count": 106
+      },
+      "0.55": {
+        "success_rate": 1.0,
+        "count": 87
+      },
+      "0.75": {
+        "success_rate": 1.0,
+        "count": 107
+      }
+    },
+    "success_by_topology": {
+      "3": {
+        "success_rate": 1.0,
+        "count": 108
+      },
+      "4": {
+        "success_rate": 1.0,
+        "count": 95
+      },
+      "5": {
+        "success_rate": 1.0,
+        "count": 97
+      }
+    },
+    "mean_total_fn": 30.58951084723529,
+    "peak_fn_max": 10.611918280781028,
+    "mean_impulse_Ns": 15.294755423617657,
+    "mean_mech_work_act_J": 0.02766534884796723,
+    "mean_tangential_work_J": 0.030085056670878327,
+    "mean_damage_proxy": 0.0,
+    "slew_violations": 0,
+    "bound_violations": 0,
+    "budget_violations": 0,
+    "max_wrench_residual": 23.508376869094267,
+    "latency_mean_ms": 0.09806293846728902,
+    "latency_p95_ms": 0.1680239988490939,
+    "latency_worst_ms": 10.864600073546171,
+    "under_preloading_rate": 0.0,
+    "over_preloading_rate": 0.0,
+    "mean_preload_error": 4.9413179413179416
+  },
+  "12.0N": {
+    "episodes": 300,
+    "grasp_success_rate": 1.0,
+    "success_by_friction": {
+      "0.35": {
+        "success_rate": 1.0,
+        "count": 106
+      },
+      "0.55": {
+        "success_rate": 1.0,
+        "count": 87
+      },
+      "0.75": {
+        "success_rate": 1.0,
+        "count": 107
+      }
+    },
+    "success_by_topology": {
+      "3": {
+        "success_rate": 1.0,
+        "count": 108
+      },
+      "4": {
+        "success_rate": 1.0,
+        "count": 95
+      },
+      "5": {
+        "success_rate": 1.0,
+        "count": 97
+      }
+    },
+    "mean_total_fn": 45.43830568481894,
+    "peak_fn_max": 15.636779641400116,
+    "mean_impulse_Ns": 22.719152842409486,
+    "mean_mech_work_act_J": 0.03697862343809181,
+    "mean_tangential_work_J": 0.040591615902147805,
+    "mean_damage_proxy": 0.0025620563127091303,
+    "slew_violations": 0,
+    "bound_violations": 0,
+    "budget_violations": 0,
+    "max_wrench_residual": 17.17550159577329,
+    "latency_mean_ms": 0.09866044266615064,
+    "latency_p95_ms": 0.16666973853716624,
+    "latency_worst_ms": 14.939099899493158,
+    "under_preloading_rate": 0.0,
+    "over_preloading_rate": 1.0,
+    "mean_preload_error": 8.941317941317942
+  },
+  "16.0N": {
+    "episodes": 300,
+    "grasp_success_rate": 1.0,
+    "success_by_friction": {
+      "0.35": {
+        "success_rate": 1.0,
+        "count": 106
+      },
+      "0.55": {
+        "success_rate": 1.0,
+        "count": 87
+      },
+      "0.75": {
+        "success_rate": 1.0,
+        "count": 107
+      }
+    },
+    "success_by_topology": {
+      "3": {
+        "success_rate": 1.0,
+        "count": 108
+      },
+      "4": {
+        "success_rate": 1.0,
+        "count": 95
+      },
+      "5": {
+        "success_rate": 1.0,
+        "count": 97
+      }
+    },
+    "mean_total_fn": 60.51025288083782,
+    "peak_fn_max": 20.657539330978985,
+    "mean_impulse_Ns": 30.25512644041893,
+    "mean_mech_work_act_J": 0.04489288262421911,
+    "mean_tangential_work_J": 0.04886775594892621,
+    "mean_damage_proxy": 4.394766014314564,
+    "slew_violations": 0,
+    "bound_violations": 0,
+    "budget_violations": 0,
+    "max_wrench_residual": 16.64291894862822,
+    "latency_mean_ms": 0.09843180287629366,
+    "latency_p95_ms": 0.16751174494856969,
+    "latency_worst_ms": 12.714699958451092,
+    "under_preloading_rate": 0.0,
+    "over_preloading_rate": 1.0,
+    "mean_preload_error": 12.941317941317942
+  },
+  "20.0N": {
+    "episodes": 300,
+    "grasp_success_rate": 1.0,
+    "success_by_friction": {
+      "0.35": {
+        "success_rate": 1.0,
+        "count": 106
+      },
+      "0.55": {
+        "success_rate": 1.0,
+        "count": 87
+      },
+      "0.75": {
+        "success_rate": 1.0,
+        "count": 107
+      }
+    },
+    "success_by_topology": {
+      "3": {
+        "success_rate": 1.0,
+        "count": 108
+      },
+      "4": {
+        "success_rate": 1.0,
+        "count": 95
+      },
+      "5": {
+        "success_rate": 1.0,
+        "count": 97
+      }
+    },
+    "mean_total_fn": 75.75120078994641,
+    "peak_fn_max": 25.0,
+    "mean_impulse_Ns": 37.875600394973226,
+    "mean_mech_work_act_J": 0.05176890655094624,
+    "mean_tangential_work_J": 0.057560051050715016,
+    "mean_damage_proxy": 40.572138873455955,
+    "slew_violations": 0,
+    "bound_violations": 0,
+    "budget_violations": 0,
+    "max_wrench_residual": 26.93671934479675,
+    "latency_mean_ms": 0.09843837149286022,
+    "latency_p95_ms": 0.16975001199170944,
+    "latency_worst_ms": 24.54280003439635,
+    "under_preloading_rate": 0.0,
+    "over_preloading_rate": 1.0,
+    "mean_preload_error": 16.941317941317937
+  },
+  "25.0N": {
+    "episodes": 300,
+    "grasp_success_rate": 1.0,
+    "success_by_friction": {
+      "0.35": {
+        "success_rate": 1.0,
+        "count": 106
+      },
+      "0.55": {
+        "success_rate": 1.0,
+        "count": 87
+      },
+      "0.75": {
+        "success_rate": 1.0,
+        "count": 107
+      }
+    },
+    "success_by_topology": {
+      "3": {
+        "success_rate": 1.0,
+        "count": 108
+      },
+      "4": {
+        "success_rate": 1.0,
+        "count": 95
+      },
+      "5": {
+        "success_rate": 1.0,
+        "count": 97
+      }
+    },
+    "mean_total_fn": 92.44278716290637,
+    "peak_fn_max": 25.0,
+    "mean_impulse_Ns": 46.22139358145322,
+    "mean_mech_work_act_J": 0.05014450825920645,
+    "mean_tangential_work_J": 0.048045798866460744,
+    "mean_damage_proxy": 139.84822220606125,
+    "slew_violations": 0,
+    "bound_violations": 0,
+    "budget_violations": 0,
+    "max_wrench_residual": 7.456605851465812,
+    "latency_mean_ms": 0.09843258137038599,
+    "latency_p95_ms": 0.16972951154457405,
+    "latency_worst_ms": 11.453700019046664,
+    "under_preloading_rate": 0.0,
+    "over_preloading_rate": 1.0,
+    "mean_preload_error": 21.941317941317937
+  }
+}

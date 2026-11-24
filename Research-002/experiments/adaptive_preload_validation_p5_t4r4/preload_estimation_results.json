@@ -1,0 +1,10 @@
+{
+  "val_episodes": 300,
+  "mean_estimation_error": -0.14481777777777777,
+  "mean_abs_error": 0.18457333333333334,
+  "rmse": 0.22557369412562603,
+  "mean_reported_sigma": 0.17865792122477708,
+  "mean_confidence": 0.33400529214639474,
+  "coverage_95_rate": 1.0,
+  "fallback_trigger_rate": 0.66
+}

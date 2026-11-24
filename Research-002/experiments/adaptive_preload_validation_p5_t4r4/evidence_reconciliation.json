@@ -1,0 +1,91 @@
+{
+  "task": "P5-T4R4",
+  "audit_date": "2026-11-24T22:00:00+05:30",
+  "audited_milestones": ["P4-T4B", "P5-T4R2"],
+  "p4_t4b_reconciliation": {
+    "total_episodes": 300,
+    "reactive_success_rate": 0.6333333333333333,
+    "hybrid_success_rate": 0.6333333333333333,
+    "mcnemar_p_value": 1.0,
+    "discordant_pairs": {
+      "b_hybrid_only": 0,
+      "c_reactive_only": 0
+    },
+    "by_friction_strata": {
+      "low_mu_0.35": {
+        "reactive_success": 0.47,
+        "hybrid_success": 0.47,
+        "fixed_force_3N_success": 0.0,
+        "fixed_force_12N_success": 0.32,
+        "hybrid_3N_success": 0.44,
+        "hybrid_12N_success": 0.52
+      },
+      "moderate_mu_0.55": {
+        "reactive_success": 0.60,
+        "hybrid_success": 0.60
+      },
+      "high_mu_0.75": {
+        "reactive_success": 0.83,
+        "hybrid_success": 0.83
+      }
+    },
+    "criterion_c2_status": "UNMET",
+    "criterion_c2_reason": "Exact statistical parity with reactive baseline; higher impulse (+1.3%) and 0 pp advantage in all strata",
+    "noise_robustness_4_quadrant": {
+      "test_episodes_per_condition": 24,
+      "recall_condition_A_nominal": 0.7083333333333334,
+      "recall_condition_B_force_noise": 0.7083333333333334,
+      "recall_condition_C_disp_noise": 0.7083333333333334,
+      "recall_condition_D_dual_noise": 0.7083333333333334,
+      "precision_all_conditions": 1.0,
+      "finding": "Noise invariance demonstrated relative to nominal, but baseline nominal recall is only 70.83% (29.17% undetected slips)"
+    }
+  },
+  "p5_t4r2_reconciliation": {
+    "held_out_episodes": 600,
+    "denominators": {
+      "protocol_a_feasible": 303,
+      "protocol_a_infeasible": 297,
+      "protocol_b_feasible": 286,
+      "protocol_b_infeasible": 314,
+      "feasible_difference_reason": "17 episodes require total normal force between 8 N * N_active and 25 N * N_active; feasible under Protocol A individual limits, infeasible under Protocol B sum budget",
+      "achievable_recontact_episodes": 419,
+      "episodes_with_contact_formation": 247,
+      "total_individual_formed_contacts": 380,
+      "formation_distribution": {
+        "0_formations": 172,
+        "1_formation": 143,
+        "2_formations": 75,
+        "3_formations": 29
+      }
+    },
+    "classification_confusion_matrix_protocol_a": {
+      "oracle_feasible_pred_feasible": 288,
+      "oracle_feasible_pred_degraded": 13,
+      "oracle_feasible_pred_infeasible": 2,
+      "oracle_feasible_pred_uncertain": 0,
+      "oracle_infeasible_pred_feasible": 11,
+      "oracle_infeasible_pred_degraded": 116,
+      "oracle_infeasible_pred_infeasible": 169,
+      "oracle_infeasible_pred_uncertain": 1
+    },
+    "metrics_protocol_a": {
+      "infeasible_recall": 0.569023569023569,
+      "infeasible_recall_denominator": 297,
+      "infeasible_recall_numerator": 169,
+      "false_feasible_rate": 0.037037037037037035,
+      "false_feasible_denominator": 297,
+      "false_feasible_numerator": 11,
+      "safe_termination_rate": 0.5925925925925926,
+      "safe_termination_denominator": 297,
+      "safe_termination_numerator": 176,
+      "controlled_release_count": 170,
+      "support_rest_count": 6,
+      "failed_infeasible_drops": 121
+    },
+    "worst_case_latency_ms": 47.025399981066585,
+    "worst_case_seed": 4910131,
+    "worst_case_cause": "Synchronous first-call invocation of scipy.optimize.linprog in CausalFeasibilityEstimator.estimate() during evaluate state transition",
+    "causal_link_force_to_recall": "Lower normal force (14 N) allowed higher object velocity (> 0.08 m/s), triggering speed-based relabeling to DEGRADED_RECOVERY on 116 infeasible episodes, directly degrading infeasible recall from 97.6% to 56.9%"
+  }
+}

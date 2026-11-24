@@ -1,0 +1,62 @@
+{
+  "Fixed_3N": {
+    "total_failures": 89,
+    "failure_rate": 0.14833333333333334,
+    "failures_by_disturbance": {
+      "tangential_shock": 53,
+      "fast_ramp": 24,
+      "shear_ramp": 6,
+      "micro_probe": 6
+    }
+  },
+  "Fixed_5N": {
+    "total_failures": 11,
+    "failure_rate": 0.018333333333333333,
+    "failures_by_disturbance": {
+      "tangential_shock": 10,
+      "fast_ramp": 1
+    }
+  },
+  "Fixed_8N": {
+    "total_failures": 0,
+    "failure_rate": 0.0,
+    "failures_by_disturbance": {}
+  },
+  "Fixed_12N": {
+    "total_failures": 0,
+    "failure_rate": 0.0,
+    "failures_by_disturbance": {}
+  },
+  "Fixed_16N": {
+    "total_failures": 0,
+    "failure_rate": 0.0,
+    "failures_by_disturbance": {}
+  },
+  "Fixed_20N": {
+    "total_failures": 0,
+    "failure_rate": 0.0,
+    "failures_by_disturbance": {}
+  },
+  "preload_25": {
+    "total_failures": 0,
+    "failure_rate": 0.0,
+    "failures_by_disturbance": {}
+  },
+  "P5T3Cooperative": {
+    "total_failures": 0,
+    "failure_rate": 0.0,
+    "failures_by_disturbance": {}
+  },
+  "P5T4R2Topology14": {
+    "total_failures": 0,
+    "failure_rate": 0.0,
+    "failures_by_disturbance": {}
+  },
+  "AdaptivePreloadPlanner": {
+    "total_failures": 8,
+    "failure_rate": 0.013333333333333334,
+    "failures_by_disturbance": {
+      "tangential_shock": 8
+    }
+  }
+}

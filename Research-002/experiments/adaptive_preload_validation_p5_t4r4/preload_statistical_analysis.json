@@ -1,0 +1,101 @@
+{
+  "Fixed_3N": {
+    "n_pairs": 600,
+    "b_proposed_only": 81,
+    "c_baseline_only": 0,
+    "difference_pp": 13.5,
+    "difference_95ci_pp": [
+      10.833333333333334,
+      16.333333333333332
+    ],
+    "exact_p_two_sided": 8.271806125530277e-25
+  },
+  "Fixed_5N": {
+    "n_pairs": 600,
+    "b_proposed_only": 7,
+    "c_baseline_only": 4,
+    "difference_pp": 0.5,
+    "difference_95ci_pp": [
+      -0.5,
+      1.5
+    ],
+    "exact_p_two_sided": 0.548828125
+  },
+  "Fixed_8N": {
+    "n_pairs": 600,
+    "b_proposed_only": 0,
+    "c_baseline_only": 8,
+    "difference_pp": -1.3333333333333335,
+    "difference_95ci_pp": [
+      -2.3333333333333335,
+      -0.5
+    ],
+    "exact_p_two_sided": 0.0078125
+  },
+  "Fixed_12N": {
+    "n_pairs": 600,
+    "b_proposed_only": 0,
+    "c_baseline_only": 8,
+    "difference_pp": -1.3333333333333335,
+    "difference_95ci_pp": [
+      -2.3333333333333335,
+      -0.5
+    ],
+    "exact_p_two_sided": 0.0078125
+  },
+  "Fixed_16N": {
+    "n_pairs": 600,
+    "b_proposed_only": 0,
+    "c_baseline_only": 8,
+    "difference_pp": -1.3333333333333335,
+    "difference_95ci_pp": [
+      -2.3333333333333335,
+      -0.5
+    ],
+    "exact_p_two_sided": 0.0078125
+  },
+  "Fixed_20N": {
+    "n_pairs": 600,
+    "b_proposed_only": 0,
+    "c_baseline_only": 8,
+    "difference_pp": -1.3333333333333335,
+    "difference_95ci_pp": [
+      -2.3333333333333335,
+      -0.5
+    ],
+    "exact_p_two_sided": 0.0078125
+  },
+  "preload_25": {
+    "n_pairs": 600,
+    "b_proposed_only": 0,
+    "c_baseline_only": 8,
+    "difference_pp": -1.3333333333333335,
+    "difference_95ci_pp": [
+      -2.3333333333333335,
+      -0.5
+    ],
+    "exact_p_two_sided": 0.0078125
+  },
+  "P5T3Cooperative": {
+    "n_pairs": 600,
+    "b_proposed_only": 0,
+    "c_baseline_only": 8,
+    "difference_pp": -1.3333333333333335,
+    "difference_95ci_pp": [
+      -2.3333333333333335,
+      -0.5
+    ],
+    "exact_p_two_sided": 0.0078125
+  },
+  "P5T4R2Topology14": {
+    "n_pairs": 600,
+    "b_proposed_only": 0,
+    "c_baseline_only": 8,
+    "difference_pp": -1.3333333333333335,
+    "difference_95ci_pp": [
+      -2.3333333333333335,
+      -0.5
+    ],
+    "exact_p_two_sided": 0.0078125
+  }
+}

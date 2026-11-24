@@ -1,0 +1,9 @@
+{
+  "protocol_a_topology": {
+    "formations": 380,
+    "verified_contacts": 380,
+    "attempts": 0,
+    "success_counter": 0,
+    "mean_max_persist_steps": 76.0453460620525
+  }
+}

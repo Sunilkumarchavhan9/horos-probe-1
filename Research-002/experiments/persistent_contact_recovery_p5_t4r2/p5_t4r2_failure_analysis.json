@@ -1,0 +1,8 @@
+{
+  "counts": {
+    "controller_did_not_stabilize": 254,
+    "correct_infeasibility_and_safe_stop": 176,
+    "infeasible_not_safely_stopped": 121,
+    "recovered": 49
+  }
+}

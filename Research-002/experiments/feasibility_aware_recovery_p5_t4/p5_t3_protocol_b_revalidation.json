@@ -1,0 +1,511 @@
+{
+  "budget_definition_in_report": "sum Fn,i <= N * 8.0 N with N the nominal topology size",
+  "pooled_ceiling_if_topologies_are_balanced": 32.0,
+  "how_mean_total_fn_is_defined_in_the_runner": "impulse_total / episode_time, i.e. the time average of the sum of applied normal forces",
+  "timestep_traces": "ABSENT. A timestep-resolved budget audit cannot be completed from the archived raw records.",
+  "what_can_be_concluded": "If an episode time-average exceeds N*8, then at least one timestep of that episode exceeded N*8. The converse is false: an episode average under the ceiling does not prove every timestep complied.",
+  "protocol_identity": {
+    "EqualForcePerContact": {
+      "matched_seeds": 900,
+      "success_mismatches_between_protocol_A_and_B": 0,
+      "mean_force_mismatches_between_protocol_A_and_B": 0,
+      "max_abs_mean_force_delta_N": 0.0,
+      "records_identical_on_success_and_mean_force": true
+    },
+    "FixedTotalForce": {
+      "matched_seeds": 900,
+      "success_mismatches_between_protocol_A_and_B": 0,
+      "mean_force_mismatches_between_protocol_A_and_B": 0,
+      "max_abs_mean_force_delta_N": 0.0,
+      "records_identical_on_success_and_mean_force": true
+    },
+    "IndependentP5T1Adaptive": {
+      "matched_seeds": 900,
+      "success_mismatches_between_protocol_A_and_B": 0,
+      "mean_force_mismatches_between_protocol_A_and_B": 0,
+      "max_abs_mean_force_delta_N": 0.0,
+      "records_identical_on_success_and_mean_force": true
+    },
+    "LearnedUncertaintyAwareNContact": {
+      "matched_seeds": 900,
+      "success_mismatches_between_protocol_A_and_B": 29,
+      "mean_force_mismatches_between_protocol_A_and_B": 819,
+      "max_abs_mean_force_delta_N": 13.209634754144837,
+      "records_identical_on_success_and_mean_force": false
+    },
+    "P5T2LearnedExtension": {
+      "matched_seeds": 900,
+      "success_mismatches_between_protocol_A_and_B": 0,
+      "mean_force_mismatches_between_protocol_A_and_B": 0,
+      "max_abs_mean_force_delta_N": 0.0,
+      "records_identical_on_success_and_mean_force": true
+    },
+    "PredictiveMarginBalancing": {
+      "matched_seeds": 900,
+      "success_mismatches_between_protocol_A_and_B": 0,
+      "mean_force_mismatches_between_protocol_A_and_B": 0,
+      "max_abs_mean_force_delta_N": 0.0,
+      "records_identical_on_success_and_mean_force": true
+    },
+    "RuleBasedCooperative": {
+      "matched_seeds": 900,
+      "success_mismatches_between_protocol_A_and_B": 0,
+      "mean_force_mismatches_between_protocol_A_and_B": 0,
+      "max_abs_mean_force_delta_N": 0.0,
+      "records_identical_on_success_and_mean_force": true
+    }
+  },
+  "published_mean_versus_raw": {
+    "Protocol_A_EqualActuatorLimits": {
+      "EqualForcePerContact": {
+        "summary_json_average_total_fn_mean": 31.069342665832853,
+        "recomputed_from_raw_episode_means": 31.069342665832853,
+        "abs_delta": 0.0
+      },
+      "FixedTotalForce": {
+        "summary_json_average_total_fn_mean": 31.211168803766437,
+        "recomputed_from_raw_episode_means": 31.211168803766437,
+        "abs_delta": 0.0
+      },
+      "IndependentP5T1Adaptive": {
+        "summary_json_average_total_fn_mean": 31.625061315357872,
+        "recomputed_from_raw_episode_means": 31.625061315357872,
+        "abs_delta": 0.0
+      },
+      "LearnedUncertaintyAwareNContact": {
+        "summary_json_average_total_fn_mean": 31.46562212383517,
+        "recomputed_from_raw_episode_means": 31.46562212383517,
+        "abs_delta": 0.0
+      },
+      "P5T2LearnedExtension": {
+        "summary_json_average_total_fn_mean": 31.627759403652473,
+        "recomputed_from_raw_episode_means": 31.627759403652473,
+        "abs_delta": 0.0
+      },
+      "PredictiveMarginBalancing": {
+        "summary_json_average_total_fn_mean": 33.166585047815715,
+        "recomputed_from_raw_episode_means": 33.166585047815715,
+        "abs_delta": 0.0
+      },
+      "RuleBasedCooperative": {
+        "summary_json_average_total_fn_mean": 30.66972698456935,
+        "recomputed_from_raw_episode_means": 30.66972698456935,
+        "abs_delta": 0.0
+      }
+    },
+    "Protocol_B_EqualTotalForceBudgets": {
+      "EqualForcePerContact": {
+        "summary_json_average_total_fn_mean": 31.069342665832853,
+        "recomputed_from_raw_episode_means": 31.069342665832853,
+        "abs_delta": 0.0
+      },
+      "FixedTotalForce": {
+        "summary_json_average_total_fn_mean": 31.211168803766437,
+        "recomputed_from_raw_episode_means": 31.211168803766437,
+        "abs_delta": 0.0
+      },
+      "IndependentP5T1Adaptive": {
+        "summary_json_average_total_fn_mean": 31.625061315357872,
+        "recomputed_from_raw_episode_means": 31.625061315357872,
+        "abs_delta": 0.0
+      },
+      "LearnedUncertaintyAwareNContact": {
+        "summary_json_average_total_fn_mean": 30.69901394362682,
+        "recomputed_from_raw_episode_means": 30.69901394362682,
+        "abs_delta": 0.0
+      },
+      "P5T2LearnedExtension": {
+        "summary_json_average_total_fn_mean": 31.627759403652473,
+        "recomputed_from_raw_episode_means": 31.627759403652473,
+        "abs_delta": 0.0
+      },
+      "PredictiveMarginBalancing": {
+        "summary_json_average_total_fn_mean": 33.166585047815715,
+        "recomputed_from_raw_episode_means": 33.166585047815715,
+        "abs_delta": 0.0
+      },
+      "RuleBasedCooperative": {
+        "summary_json_average_total_fn_mean": 30.66972698456935,
+        "recomputed_from_raw_episode_means": 30.66972698456935,
+        "abs_delta": 0.0
+      }
+    }
+  },
+  "episode_average_versus_topology_ceiling": {
+    "Protocol_A_EqualActuatorLimits": {
+      "EqualForcePerContact": {
+        "episodes": 900,
+        "episodes_whose_mean_total_force_exceeds_topology_ceiling": 0,
+        "worst_episode_mean_excess_N": 0.0,
+        "per_topology": {
+          "N_3": {
+            "count": 300,
+            "episode_mean_exceeds_N_times_8": 0,
+            "mean_of_episode_mean_fn": 23.32455866469477,
+            "ceiling": 24.0
+          },
+          "N_4": {
+            "count": 300,
+            "episode_mean_exceeds_N_times_8": 0,
+            "mean_of_episode_mean_fn": 31.03577755881169,
+            "ceiling": 32.0
+          },
+          "N_5": {
+            "count": 300,
+            "episode_mean_exceeds_N_times_8": 0,
+            "mean_of_episode_mean_fn": 38.847691773992146,
+            "ceiling": 40.0
+          }
+        },
+        "timestep_traces_present": false
+      },
+      "FixedTotalForce": {
+        "episodes": 900,
+        "episodes_whose_mean_total_force_exceeds_topology_ceiling": 0,
+        "worst_episode_mean_excess_N": 0.0,
+        "per_topology": {
+          "N_3": {
+            "count": 300,
+            "episode_mean_exceeds_N_times_8": 0,
+            "mean_of_episode_mean_fn": 23.336031550938365,
+            "ceiling": 24.0
+          },
+          "N_4": {
+            "count": 300,
+            "episode_mean_exceeds_N_times_8": 0,
+            "mean_of_episode_mean_fn": 31.223806757133854,
+            "ceiling": 32.0
+          },
+          "N_5": {
+            "count": 300,
+            "episode_mean_exceeds_N_times_8": 0,
+            "mean_of_episode_mean_fn": 39.0736681032271,
+            "ceiling": 40.0
+          }
+        },
+        "timestep_traces_present": false
+      },
+      "IndependentP5T1Adaptive": {
+        "episodes": 900,
+        "episodes_whose_mean_total_force_exceeds_topology_ceiling": 200,
+        "worst_episode_mean_excess_N": 1.9999999999998792,
+        "per_topology": {
+          "N_3": {
+            "count": 300,
+            "episode_mean_exceeds_N_times_8": 100,
+            "mean_of_episode_mean_fn": 24.257245136899417,
+            "ceiling": 24.0
+          },
+          "N_4": {
+            "count": 300,
+            "episode_mean_exceeds_N_times_8": 0,
+            "mean_of_episode_mean_fn": 31.121578663134702,
+            "ceiling": 32.0
+          },
+          "N_5": {
+            "count": 300,
+            "episode_mean_exceeds_N_times_8": 100,
+            "mean_of_episode_mean_fn": 39.496360146039514,
+            "ceiling": 40.0
+          }
+        },
+        "timestep_traces_present": false
+      },
+      "LearnedUncertaintyAwareNContact": {
+        "episodes": 900,
+        "episodes_whose_mean_total_force_exceeds_topology_ceiling": 144,
+        "worst_episode_mean_excess_N": 12.230894069939147,
+        "per_topology": {
+          "N_3": {
+            "count": 300,
+            "episode_mean_exceeds_N_times_8": 41,
+            "mean_of_episode_mean_fn": 23.403881433330618,
+            "ceiling": 24.0
+          },
+          "N_4": {
+            "count": 300,
+            "episode_mean_exceeds_N_times_8": 48,
+            "mean_of_episode_mean_fn": 32.069185408528156,
+            "ceiling": 32.0
+          },
+          "N_5": {
+            "count": 300,
+            "episode_mean_exceeds_N_times_8": 55,
+            "mean_of_episode_mean_fn": 38.92379952964672,
+            "ceiling": 40.0
+          }
+        },
+        "timestep_traces_present": false
+      },
+      "P5T2LearnedExtension": {
+        "episodes": 900,
+        "episodes_whose_mean_total_force_exceeds_topology_ceiling": 349,
+        "worst_episode_mean_excess_N": 12.617157704904635,
+        "per_topology": {
+          "N_3": {
+            "count": 300,
+            "episode_mean_exceeds_N_times_8": 274,
+            "mean_of_episode_mean_fn": 26.86985855797839,
+            "ceiling": 24.0
+          },
+          "N_4": {
+            "count": 300,
+            "episode_mean_exceeds_N_times_8": 47,
+            "mean_of_episode_mean_fn": 30.469348395929718,
+            "ceiling": 32.0
+          },
+          "N_5": {
+            "count": 300,
+            "episode_mean_exceeds_N_times_8": 28,
+            "mean_of_episode_mean_fn": 37.54407125704932,
+            "ceiling": 40.0
+          }
+        },
+        "timestep_traces_present": false
+      },
+      "PredictiveMarginBalancing": {
+        "episodes": 900,
+        "episodes_whose_mean_total_force_exceeds_topology_ceiling": 349,
+        "worst_episode_mean_excess_N": 10.710672966985165,
+        "per_topology": {
+          "N_3": {
+            "count": 300,
+            "episode_mean_exceeds_N_times_8": 160,
+            "mean_of_episode_mean_fn": 26.809495275120362,
+            "ceiling": 24.0
+          },
+          "N_4": {
+            "count": 300,
+            "episode_mean_exceeds_N_times_8": 127,
+            "mean_of_episode_mean_fn": 32.57613904198884,
+            "ceiling": 32.0
+          },
+          "N_5": {
+            "count": 300,
+            "episode_mean_exceeds_N_times_8": 62,
+            "mean_of_episode_mean_fn": 40.11412082633798,
+            "ceiling": 40.0
+          }
+        },
+        "timestep_traces_present": false
+      },
+      "RuleBasedCooperative": {
+        "episodes": 900,
+        "episodes_whose_mean_total_force_exceeds_topology_ceiling": 2,
+        "worst_episode_mean_excess_N": 0.1564205814697317,
+        "per_topology": {
+          "N_3": {
+            "count": 300,
+            "episode_mean_exceeds_N_times_8": 0,
+            "mean_of_episode_mean_fn": 23.0428661407705,
+            "ceiling": 24.0
+          },
+          "N_4": {
+            "count": 300,
+            "episode_mean_exceeds_N_times_8": 0,
+            "mean_of_episode_mean_fn": 30.76136886489042,
+            "ceiling": 32.0
+          },
+          "N_5": {
+            "count": 300,
+            "episode_mean_exceeds_N_times_8": 2,
+            "mean_of_episode_mean_fn": 38.20494594804708,
+            "ceiling": 40.0
+          }
+        },
+        "timestep_traces_present": false
+      }
+    },
+    "Protocol_B_EqualTotalForceBudgets": {
+      "EqualForcePerContact": {
+        "episodes": 900,
+        "episodes_whose_mean_total_force_exceeds_topology_ceiling": 0,
+        "worst_episode_mean_excess_N": 0.0,
+        "per_topology": {
+          "N_3": {
+            "count": 300,
+            "episode_mean_exceeds_N_times_8": 0,
+            "mean_of_episode_mean_fn": 23.32455866469477,
+            "ceiling": 24.0
+          },
+          "N_4": {
+            "count": 300,
+            "episode_mean_exceeds_N_times_8": 0,
+            "mean_of_episode_mean_fn": 31.03577755881169,
+            "ceiling": 32.0
+          },
+          "N_5": {
+            "count": 300,
+            "episode_mean_exceeds_N_times_8": 0,
+            "mean_of_episode_mean_fn": 38.847691773992146,
+            "ceiling": 40.0
+          }
+        },
+        "timestep_traces_present": false
+      },
+      "FixedTotalForce": {
+        "episodes": 900,
+        "episodes_whose_mean_total_force_exceeds_topology_ceiling": 0,
+        "worst_episode_mean_excess_N": 0.0,
+        "per_topology": {
+          "N_3": {
+            "count": 300,
+            "episode_mean_exceeds_N_times_8": 0,
+            "mean_of_episode_mean_fn": 23.336031550938365,
+            "ceiling": 24.0
+          },
+          "N_4": {
+            "count": 300,
+            "episode_mean_exceeds_N_times_8": 0,
+            "mean_of_episode_mean_fn": 31.223806757133854,
+            "ceiling": 32.0
+          },
+          "N_5": {
+            "count": 300,
+            "episode_mean_exceeds_N_times_8": 0,
+            "mean_of_episode_mean_fn": 39.0736681032271,
+            "ceiling": 40.0
+          }
+        },
+        "timestep_traces_present": false
+      },
+      "IndependentP5T1Adaptive": {
+        "episodes": 900,
+        "episodes_whose_mean_total_force_exceeds_topology_ceiling": 200,
+        "worst_episode_mean_excess_N": 1.9999999999998792,
+        "per_topology": {
+          "N_3": {
+            "count": 300,
+            "episode_mean_exceeds_N_times_8": 100,
+            "mean_of_episode_mean_fn": 24.257245136899417,
+            "ceiling": 24.0
+          },
+          "N_4": {
+            "count": 300,
+            "episode_mean_exceeds_N_times_8": 0,
+            "mean_of_episode_mean_fn": 31.121578663134702,
+            "ceiling": 32.0
+          },
+          "N_5": {
+            "count": 300,
+            "episode_mean_exceeds_N_times_8": 100,
+            "mean_of_episode_mean_fn": 39.496360146039514,
+            "ceiling": 40.0
+          }
+        },
+        "timestep_traces_present": false
+      },
+      "LearnedUncertaintyAwareNContact": {
+        "episodes": 900,
+        "episodes_whose_mean_total_force_exceeds_topology_ceiling": 0,
+        "worst_episode_mean_excess_N": 0.0,
+        "per_topology": {
+          "N_3": {
+            "count": 300,
+            "episode_mean_exceeds_N_times_8": 0,
+            "mean_of_episode_mean_fn": 23.07966276571869,
+            "ceiling": 24.0
+          },
+          "N_4": {
+            "count": 300,
+            "episode_mean_exceeds_N_times_8": 0,
+            "mean_of_episode_mean_fn": 30.72861507854921,
+            "ceiling": 32.0
+          },
+          "N_5": {
+            "count": 300,
+            "episode_mean_exceeds_N_times_8": 0,
+            "mean_of_episode_mean_fn": 38.288763986612565,
+            "ceiling": 40.0
+          }
+        },
+        "timestep_traces_present": false
+      },
+      "P5T2LearnedExtension": {
+        "episodes": 900,
+        "episodes_whose_mean_total_force_exceeds_topology_ceiling": 349,
+        "worst_episode_mean_excess_N": 12.617157704904635,
+        "per_topology": {
+          "N_3": {
+            "count": 300,
+            "episode_mean_exceeds_N_times_8": 274,
+            "mean_of_episode_mean_fn": 26.86985855797839,
+            "ceiling": 24.0
+          },
+          "N_4": {
+            "count": 300,
+            "episode_mean_exceeds_N_times_8": 47,
+            "mean_of_episode_mean_fn": 30.469348395929718,
+            "ceiling": 32.0
+          },
+          "N_5": {
+            "count": 300,
+            "episode_mean_exceeds_N_times_8": 28,
+            "mean_of_episode_mean_fn": 37.54407125704932,
+            "ceiling": 40.0
+          }
+        },
+        "timestep_traces_present": false
+      },
+      "PredictiveMarginBalancing": {
+        "episodes": 900,
+        "episodes_whose_mean_total_force_exceeds_topology_ceiling": 349,
+        "worst_episode_mean_excess_N": 10.710672966985165,
+        "per_topology": {
+          "N_3": {
+            "count": 300,
+            "episode_mean_exceeds_N_times_8": 160,
+            "mean_of_episode_mean_fn": 26.809495275120362,
+            "ceiling": 24.0
+          },
+          "N_4": {
+            "count": 300,
+            "episode_mean_exceeds_N_times_8": 127,
+            "mean_of_episode_mean_fn": 32.57613904198884,
+            "ceiling": 32.0
+          },
+          "N_5": {
+            "count": 300,
+            "episode_mean_exceeds_N_times_8": 62,
+            "mean_of_episode_mean_fn": 40.11412082633798,
+            "ceiling": 40.0
+          }
+        },
+        "timestep_traces_present": false
+      },
+      "RuleBasedCooperative": {
+        "episodes": 900,
+        "episodes_whose_mean_total_force_exceeds_topology_ceiling": 2,
+        "worst_episode_mean_excess_N": 0.1564205814697317,
+        "per_topology": {
+          "N_3": {
+            "count": 300,
+            "episode_mean_exceeds_N_times_8": 0,
+            "mean_of_episode_mean_fn": 23.0428661407705,
+            "ceiling": 24.0
+          },
+          "N_4": {
+            "count": 300,
+            "episode_mean_exceeds_N_times_8": 0,
+            "mean_of_episode_mean_fn": 30.76136886489042,
+            "ceiling": 32.0
+          },
+          "N_5": {
+            "count": 300,
+            "episode_mean_exceeds_N_times_8": 2,
+            "mean_of_episode_mean_fn": 38.20494594804708,
+            "ceiling": 40.0
+          }
+        },
+        "timestep_traces_present": false
+      }
+    }
+  },
+  "runner_behavior": "run_p5_t3_experiments.py passes total_force_budget only into LearnedUncertaintyAwareNContact, and only when the protocol is Protocol B. The other six controllers are constructed identically in both protocols.",
+  "interpretation": {
+    "baselines_protocol_A_records_equal_protocol_B_records": true,
+    "learned_protocol_records_differ": true,
+    "predictive_margin_pooled_mean_N": 33.166585047815715,
+    "conclusion": "The 33.17 N Predictive Margin figure is the Protocol A pooled mean of episode-average total force. The same figure and the same episode outcomes were stored for Protocol B. It is not evidence that a Protocol B budget was enforced on that controller. Per-topology episode averages for Predictive Margin also exceed N*8 on N=3, N=4, and N=5. This is not a pooled-average artifact and it is not a copy from a different force definition."
+  }
+}

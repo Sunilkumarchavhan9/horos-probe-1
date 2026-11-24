@@ -1,0 +1,44 @@
+{
+  "residual_mode": "oppose_load",
+  "residual_training_scores": {
+    "none": 0.07291666666666667,
+    "boost_best_mu": 0.03125,
+    "oppose_load": 0.10416666666666667
+  },
+  "p_low": 0.2,
+  "p_high": 0.65,
+  "cutoff_grid": [
+    {
+      "p_low": 0.2,
+      "p_high": 0.65,
+      "utility": 1.5655737704918034
+    },
+    {
+      "p_low": 0.2,
+      "p_high": 0.8,
+      "utility": 1.5655737704918034
+    },
+    {
+      "p_low": 0.2,
+      "p_high": 0.9,
+      "utility": 1.5655737704918034
+    },
+    {
+      "p_low": 0.35,
+      "p_high": 0.65,
+      "utility": 1.5655737704918034
+    },
+    {
+      "p_low": 0.35,
+      "p_high": 0.8,
+      "utility": 1.5655737704918034
+    },
+    {
+      "p_low": 0.35,
+      "p_high": 0.9,
+      "utility": 1.5655737704918034
+    }
+  ],
+  "primary_baseline": "P5T3RecoveryNoFeasibility",
+  "held_out_scenarios_already_frozen": 900
+}

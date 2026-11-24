@@ -1,0 +1,1449 @@
+{
+  "verdict": "FAIL",
+  "scorecard": {
+    "criteria": {
+      "C1": {
+        "status": "PASS",
+        "value": 0.9976359338061466
+      },
+      "C2": {
+        "status": "PASS",
+        "value": 0.0
+      },
+      "C3": {
+        "status": "FAIL",
+        "value": 0.10062893081761007
+      },
+      "C4": {
+        "status": "FAIL",
+        "value": 0.038461538461538464
+      },
+      "C5": {
+        "status": "PASS",
+        "value": 0.950354609929078
+      },
+      "C6": {
+        "status": "PASS",
+        "value": 0
+      },
+      "C7": {
+        "status": "PASS",
+        "value": 0
+      },
+      "C8": {
+        "status": "PASS",
+        "value": 0
+      },
+      "C9": {
+        "status": "PASS",
+        "value": 0
+      },
+      "C10": {
+        "status": "FAIL",
+        "value": 5.3303905061329715
+      },
+      "C11": {
+        "status": "PASS",
+        "value": 0
+      }
+    },
+    "verdict": "FAIL",
+    "minimum_topology_feasible_recovery": 0.038461538461538464
+  },
+  "frozen_configuration": {
+    "residual_mode": "oppose_load",
+    "residual_training_scores": {
+      "none": 0.07291666666666667,
+      "boost_best_mu": 0.03125,
+      "oppose_load": 0.10416666666666667
+    },
+    "p_low": 0.2,
+    "p_high": 0.65,
+    "cutoff_grid": [
+      {
+        "p_low": 0.2,
+        "p_high": 0.65,
+        "utility": 1.5655737704918034
+      },
+      {
+        "p_low": 0.2,
+        "p_high": 0.8,
+        "utility": 1.5655737704918034
+      },
+      {
+        "p_low": 0.2,
+        "p_high": 0.9,
+        "utility": 1.5655737704918034
+      },
+      {
+        "p_low": 0.35,
+        "p_high": 0.65,
+        "utility": 1.5655737704918034
+      },
+      {
+        "p_low": 0.35,
+        "p_high": 0.8,
+        "utility": 1.5655737704918034
+      },
+      {
+        "p_low": 0.35,
+        "p_high": 0.9,
+        "utility": 1.5655737704918034
+      }
+    ],
+    "primary_baseline": "P5T3RecoveryNoFeasibility",
+    "held_out_scenarios_already_frozen": 900
+  },
+  "controllers": {
+    "EqualForcePerContact": {
+      "Protocol_A": {
+        "episodes": 900,
+        "overall_grasp_recovery": 0.20333333333333334,
+        "feasible_recovery": 0.3836477987421384,
+        "infeasible_grasp_recovery_not_expected": 0.0,
+        "safe_termination_on_infeasible": 0.0,
+        "classification": null,
+        "by_topology_feasible": {
+          "3": {
+            "feasible_recovery": 0.14102564102564102,
+            "n_feasible": 156,
+            "infeasible_recall": 0.0,
+            "safe_termination": 0.0
+          },
+          "4": {
+            "feasible_recovery": 0.45,
+            "n_feasible": 160,
+            "infeasible_recall": 0.0,
+            "safe_termination": 0.0
+          },
+          "5": {
+            "feasible_recovery": 0.5527950310559007,
+            "n_feasible": 161,
+            "infeasible_recall": 0.0,
+            "safe_termination": 0.0
+          }
+        },
+        "mean_total_fn": 20.58617019681709,
+        "max_peak_fn": 24.01344398711716,
+        "mean_impulse": 14.410319137771973,
+        "mean_work_normal_J": 0.003432550825004298,
+        "mean_work_tangent_J": 5.466693735541546,
+        "mean_damage": 0.009706681471256888,
+        "applied_budget_violations": 0,
+        "applied_bound_violations": 0,
+        "applied_slew_violations": 0,
+        "consistency_violations": 0,
+        "invalid_force_violations": 0,
+        "latency_p95_ms": 0.030621500336565067,
+        "latency_mean_ms": 0.01811849927374472,
+        "latency_worst_ms": 0.48720004269853234
+      },
+      "Protocol_B": {
+        "episodes": 900,
+        "overall_grasp_recovery": 0.20333333333333334,
+        "feasible_recovery": 0.40486725663716816,
+        "infeasible_grasp_recovery_not_expected": 0.0,
+        "safe_termination_on_infeasible": 0.002232142857142857,
+        "classification": null,
+        "by_topology_feasible": {
+          "3": {
+            "feasible_recovery": 0.16176470588235295,
+            "n_feasible": 136,
+            "infeasible_recall": 0.0,
+            "safe_termination": 0.006097560975609756
+          },
+          "4": {
+            "feasible_recovery": 0.4585987261146497,
+            "n_feasible": 157,
+            "infeasible_recall": 0.0,
+            "safe_termination": 0.0
+          },
+          "5": {
+            "feasible_recovery": 0.559748427672956,
+            "n_feasible": 159,
+            "infeasible_recall": 0.0,
+            "safe_termination": 0.0
+          }
+        },
+        "mean_total_fn": 20.57434204339794,
+        "max_peak_fn": 14.94636267232668,
+        "mean_impulse": 14.402039430378569,
+        "mean_work_normal_J": 0.003364009938050396,
+        "mean_work_tangent_J": 5.460541339160853,
+        "mean_damage": 0.0,
+        "applied_budget_violations": 0,
+        "applied_bound_violations": 0,
+        "applied_slew_violations": 0,
+        "consistency_violations": 0,
+        "invalid_force_violations": 0,
+        "latency_p95_ms": 0.03540548146702345,
+        "latency_mean_ms": 0.021603535635337706,
+        "latency_worst_ms": 1.1837000492960215
+      }
+    },
+    "FixedTotalForce": {
+      "Protocol_A": {
+        "episodes": 900,
+        "overall_grasp_recovery": 0.20444444444444446,
+        "feasible_recovery": 0.3857442348008386,
+        "infeasible_grasp_recovery_not_expected": 0.0,
+        "safe_termination_on_infeasible": 0.0,
+        "classification": null,
+        "by_topology_feasible": {
+          "3": {
+            "feasible_recovery": 0.15384615384615385,
+            "n_feasible": 156,
+            "infeasible_recall": 0.0,
+            "safe_termination": 0.0
+          },
+          "4": {
+            "feasible_recovery": 0.45,
+            "n_feasible": 160,
+            "infeasible_recall": 0.0,
+            "safe_termination": 0.0
+          },
+          "5": {
+            "feasible_recovery": 0.546583850931677,
+            "n_feasible": 161,
+            "infeasible_recall": 0.0,
+            "safe_termination": 0.0
+          }
+        },
+        "mean_total_fn": 27.3957577753593,
+        "max_peak_fn": 24.01344398711716,
+        "mean_impulse": 19.177030442751516,
+        "mean_work_normal_J": 0.0065961921494522855,
+        "mean_work_tangent_J": 12.144834843952141,
+        "mean_damage": 4.551003428932656,
+        "applied_budget_violations": 0,
+        "applied_bound_violations": 0,
+        "applied_slew_violations": 0,
+        "consistency_violations": 0,
+        "invalid_force_violations": 0,
+        "latency_p95_ms": 0.032738763547968106,
+        "latency_mean_ms": 0.01963329357547789,
+        "latency_worst_ms": 0.7190000033006072
+      },
+      "Protocol_B": {
+        "episodes": 900,
+        "overall_grasp_recovery": 0.20333333333333334,
+        "feasible_recovery": 0.40486725663716816,
+        "infeasible_grasp_recovery_not_expected": 0.0,
+        "safe_termination_on_infeasible": 0.002232142857142857,
+        "classification": null,
+        "by_topology_feasible": {
+          "3": {
+            "feasible_recovery": 0.16176470588235295,
+            "n_feasible": 136,
+            "infeasible_recall": 0.0,
+            "safe_termination": 0.006097560975609756
+          },
+          "4": {
+            "feasible_recovery": 0.4585987261146497,
+            "n_feasible": 157,
+            "infeasible_recall": 0.0,
+            "safe_termination": 0.0
+          },
+          "5": {
+            "feasible_recovery": 0.559748427672956,
+            "n_feasible": 159,
+            "infeasible_recall": 0.0,
+            "safe_termination": 0.0
+          }
+        },
+        "mean_total_fn": 20.57434204339794,
+        "max_peak_fn": 14.94636267232668,
+        "mean_impulse": 14.402039430378569,
+        "mean_work_normal_J": 0.003364009938050396,
+        "mean_work_tangent_J": 5.460541339160853,
+        "mean_damage": 0.0,
+        "applied_budget_violations": 0,
+        "applied_bound_violations": 0,
+        "applied_slew_violations": 0,
+        "consistency_violations": 0,
+        "invalid_force_violations": 0,
+        "latency_p95_ms": 0.03958120229071931,
+        "latency_mean_ms": 0.02429723730292319,
+        "latency_worst_ms": 4.767400037962943
+      }
+    },
+    "RuleBasedCooperative": {
+      "Protocol_A": {
+        "episodes": 900,
+        "overall_grasp_recovery": 0.12777777777777777,
+        "feasible_recovery": 0.24109014675052412,
+        "infeasible_grasp_recovery_not_expected": 0.0,
+        "safe_termination_on_infeasible": 0.0,
+        "classification": null,
+        "by_topology_feasible": {
+          "3": {
+            "feasible_recovery": 0.08333333333333333,
+            "n_feasible": 156,
+            "infeasible_recall": 0.0,
+            "safe_termination": 0.0
+          },
+          "4": {
+            "feasible_recovery": 0.225,
+            "n_feasible": 160,
+            "infeasible_recall": 0.0,
+            "safe_termination": 0.0
+          },
+          "5": {
+            "feasible_recovery": 0.40993788819875776,
+            "n_feasible": 161,
+            "infeasible_recall": 0.0,
+            "safe_termination": 0.0
+          }
+        },
+        "mean_total_fn": 39.89599735608113,
+        "max_peak_fn": 25.0,
+        "mean_impulse": 27.927198149256817,
+        "mean_work_normal_J": 0.020594431651455903,
+        "mean_work_tangent_J": 20.323848779191064,
+        "mean_damage": 54.01889195463915,
+        "applied_budget_violations": 0,
+        "applied_bound_violations": 0,
+        "applied_slew_violations": 0,
+        "consistency_violations": 0,
+        "invalid_force_violations": 0,
+        "latency_p95_ms": 0.03951950711780226,
+        "latency_mean_ms": 0.024404742180310662,
+        "latency_worst_ms": 5.058500042650849
+      },
+      "Protocol_B": {
+        "episodes": 900,
+        "overall_grasp_recovery": 0.13,
+        "feasible_recovery": 0.2588495575221239,
+        "infeasible_grasp_recovery_not_expected": 0.0,
+        "safe_termination_on_infeasible": 0.002232142857142857,
+        "classification": null,
+        "by_topology_feasible": {
+          "3": {
+            "feasible_recovery": 0.11029411764705882,
+            "n_feasible": 136,
+            "infeasible_recall": 0.0,
+            "safe_termination": 0.006097560975609756
+          },
+          "4": {
+            "feasible_recovery": 0.2356687898089172,
+            "n_feasible": 157,
+            "infeasible_recall": 0.0,
+            "safe_termination": 0.0
+          },
+          "5": {
+            "feasible_recovery": 0.4088050314465409,
+            "n_feasible": 159,
+            "infeasible_recall": 0.0,
+            "safe_termination": 0.0
+          }
+        },
+        "mean_total_fn": 19.43129193164268,
+        "max_peak_fn": 19.897102669126873,
+        "mean_impulse": 13.601904352149884,
+        "mean_work_normal_J": 0.005308659273115066,
+        "mean_work_tangent_J": 5.704153691195985,
+        "mean_damage": 0.01015631111303366,
+        "applied_budget_violations": 0,
+        "applied_bound_violations": 0,
+        "applied_slew_violations": 0,
+        "consistency_violations": 0,
+        "invalid_force_violations": 0,
+        "latency_p95_ms": 0.047402758791576995,
+        "latency_mean_ms": 0.029302520588287966,
+        "latency_worst_ms": 4.184699966572225
+      }
+    },
+    "PredictiveMarginBalancing": {
+      "Protocol_A": {
+        "episodes": 900,
+        "overall_grasp_recovery": 0.15666666666666668,
+        "feasible_recovery": 0.29559748427672955,
+        "infeasible_grasp_recovery_not_expected": 0.0,
+        "safe_termination_on_infeasible": 0.0,
+        "classification": null,
+        "by_topology_feasible": {
+          "3": {
+            "feasible_recovery": 0.11538461538461539,
+            "n_feasible": 156,
+            "infeasible_recall": 0.0,
+            "safe_termination": 0.0
+          },
+          "4": {
+            "feasible_recovery": 0.3,
+            "n_feasible": 160,
+            "infeasible_recall": 0.0,
+            "safe_termination": 0.0
+          },
+          "5": {
+            "feasible_recovery": 0.4658385093167702,
+            "n_feasible": 161,
+            "infeasible_recall": 0.0,
+            "safe_termination": 0.0
+          }
+        },
+        "mean_total_fn": 42.83017990710796,
+        "max_peak_fn": 25.0,
+        "mean_impulse": 29.981125934975594,
+        "mean_work_normal_J": 0.021940100841854722,
+        "mean_work_tangent_J": 22.27229912610469,
+        "mean_damage": 66.09847021642068,
+        "applied_budget_violations": 0,
+        "applied_bound_violations": 0,
+        "applied_slew_violations": 0,
+        "consistency_violations": 0,
+        "invalid_force_violations": 0,
+        "latency_p95_ms": 0.07616374787176027,
+        "latency_mean_ms": 0.04165141513462119,
+        "latency_worst_ms": 5.238700017798692
+      },
+      "Protocol_B": {
+        "episodes": 900,
+        "overall_grasp_recovery": 0.14222222222222222,
+        "feasible_recovery": 0.2831858407079646,
+        "infeasible_grasp_recovery_not_expected": 0.0,
+        "safe_termination_on_infeasible": 0.002232142857142857,
+        "classification": null,
+        "by_topology_feasible": {
+          "3": {
+            "feasible_recovery": 0.09558823529411764,
+            "n_feasible": 136,
+            "infeasible_recall": 0.0,
+            "safe_termination": 0.006097560975609756
+          },
+          "4": {
+            "feasible_recovery": 0.25477707006369427,
+            "n_feasible": 157,
+            "infeasible_recall": 0.0,
+            "safe_termination": 0.0
+          },
+          "5": {
+            "feasible_recovery": 0.4716981132075472,
+            "n_feasible": 159,
+            "infeasible_recall": 0.0,
+            "safe_termination": 0.0
+          }
+        },
+        "mean_total_fn": 19.971797748074806,
+        "max_peak_fn": 18.794533393278048,
+        "mean_impulse": 13.980258423652373,
+        "mean_work_normal_J": 0.006190582180770287,
+        "mean_work_tangent_J": 5.7686479565347115,
+        "mean_damage": 0.010806746578768161,
+        "applied_budget_violations": 0,
+        "applied_bound_violations": 0,
+        "applied_slew_violations": 0,
+        "consistency_violations": 0,
+        "invalid_force_violations": 0,
+        "latency_p95_ms": 0.08341149485204369,
+        "latency_mean_ms": 0.04688024608693678,
+        "latency_worst_ms": 12.378399958834052
+      }
+    },
+    "IndependentP5T1Adaptive": {
+      "Protocol_A": {
+        "episodes": 900,
+        "overall_grasp_recovery": 0.17222222222222222,
+        "feasible_recovery": 0.3249475890985325,
+        "infeasible_grasp_recovery_not_expected": 0.0,
+        "safe_termination_on_infeasible": 0.0,
+        "classification": null,
+        "by_topology_feasible": {
+          "3": {
+            "feasible_recovery": 0.10897435897435898,
+            "n_feasible": 156,
+            "infeasible_recall": 0.0,
+            "safe_termination": 0.0
+          },
+          "4": {
+            "feasible_recovery": 0.36875,
+            "n_feasible": 160,
+            "infeasible_recall": 0.0,
+            "safe_termination": 0.0
+          },
+          "5": {
+            "feasible_recovery": 0.4906832298136646,
+            "n_feasible": 161,
+            "infeasible_recall": 0.0,
+            "safe_termination": 0.0
+          }
+        },
+        "mean_total_fn": 23.70156954752156,
+        "max_peak_fn": 24.01344398711716,
+        "mean_impulse": 16.591098683265106,
+        "mean_work_normal_J": 0.005134792355175961,
+        "mean_work_tangent_J": 8.339754274354512,
+        "mean_damage": 0.009706681471256888,
+        "applied_budget_violations": 0,
+        "applied_bound_violations": 0,
+        "applied_slew_violations": 0,
+        "consistency_violations": 0,
+        "invalid_force_violations": 0,
+        "latency_p95_ms": 0.030887752363923906,
+        "latency_mean_ms": 0.018434966677829383,
+        "latency_worst_ms": 1.152199984062463
+      },
+      "Protocol_B": {
+        "episodes": 900,
+        "overall_grasp_recovery": 0.17444444444444446,
+        "feasible_recovery": 0.3473451327433628,
+        "infeasible_grasp_recovery_not_expected": 0.0,
+        "safe_termination_on_infeasible": 0.0,
+        "classification": null,
+        "by_topology_feasible": {
+          "3": {
+            "feasible_recovery": 0.125,
+            "n_feasible": 136,
+            "infeasible_recall": 0.0,
+            "safe_termination": 0.0
+          },
+          "4": {
+            "feasible_recovery": 0.3821656050955414,
+            "n_feasible": 157,
+            "infeasible_recall": 0.0,
+            "safe_termination": 0.0
+          },
+          "5": {
+            "feasible_recovery": 0.5031446540880503,
+            "n_feasible": 159,
+            "infeasible_recall": 0.0,
+            "safe_termination": 0.0
+          }
+        },
+        "mean_total_fn": 18.57854013218015,
+        "max_peak_fn": 14.94636267232668,
+        "mean_impulse": 13.004978092526118,
+        "mean_work_normal_J": 0.003463798852774191,
+        "mean_work_tangent_J": 6.224762566898234,
+        "mean_damage": 0.0,
+        "applied_budget_violations": 0,
+        "applied_bound_violations": 0,
+        "applied_slew_violations": 0,
+        "consistency_violations": 0,
+        "invalid_force_violations": 0,
+        "latency_p95_ms": 0.03803024839726275,
+        "latency_mean_ms": 0.02339244131202115,
+        "latency_worst_ms": 11.871499998960644
+      }
+    },
+    "P5T3LearnedUncertaintyAware": {
+      "Protocol_A": {
+        "episodes": 900,
+        "overall_grasp_recovery": 0.1711111111111111,
+        "feasible_recovery": 0.3228511530398323,
+        "infeasible_grasp_recovery_not_expected": 0.0,
+        "safe_termination_on_infeasible": 0.0,
+        "classification": null,
+        "by_topology_feasible": {
+          "3": {
+            "feasible_recovery": 0.11538461538461539,
+            "n_feasible": 156,
+            "infeasible_recall": 0.0,
+            "safe_termination": 0.0
+          },
+          "4": {
+            "feasible_recovery": 0.3375,
+            "n_feasible": 160,
+            "infeasible_recall": 0.0,
+            "safe_termination": 0.0
+          },
+          "5": {
+            "feasible_recovery": 0.5093167701863354,
+            "n_feasible": 161,
+            "infeasible_recall": 0.0,
+            "safe_termination": 0.0
+          }
+        },
+        "mean_total_fn": 43.050438269958484,
+        "max_peak_fn": 25.0,
+        "mean_impulse": 30.13530678897096,
+        "mean_work_normal_J": 0.021472723064627663,
+        "mean_work_tangent_J": 22.65085571025337,
+        "mean_damage": 69.2257886725601,
+        "applied_budget_violations": 0,
+        "applied_bound_violations": 0,
+        "applied_slew_violations": 0,
+        "consistency_violations": 0,
+        "invalid_force_violations": 0,
+        "latency_p95_ms": 0.07110101723810656,
+        "latency_mean_ms": 0.039190749995805886,
+        "latency_worst_ms": 2.2770999930799007
+      },
+      "Protocol_B": {
+        "episodes": 900,
+        "overall_grasp_recovery": 0.15444444444444444,
+        "feasible_recovery": 0.3075221238938053,
+        "infeasible_grasp_recovery_not_expected": 0.0,
+        "safe_termination_on_infeasible": 0.0,
+        "classification": null,
+        "by_topology_feasible": {
+          "3": {
+            "feasible_recovery": 0.11029411764705882,
+            "n_feasible": 136,
+            "infeasible_recall": 0.0,
+            "safe_termination": 0.0
+          },
+          "4": {
+            "feasible_recovery": 0.31210191082802546,
+            "n_feasible": 157,
+            "infeasible_recall": 0.0,
+            "safe_termination": 0.0
+          },
+          "5": {
+            "feasible_recovery": 0.4716981132075472,
+            "n_feasible": 159,
+            "infeasible_recall": 0.0,
+            "safe_termination": 0.0
+          }
+        },
+        "mean_total_fn": 19.885871012064857,
+        "max_peak_fn": 18.91059988822287,
+        "mean_impulse": 13.920109708445407,
+        "mean_work_normal_J": 0.0064257605091705,
+        "mean_work_tangent_J": 5.708545831308454,
+        "mean_damage": 0.009491471626297418,
+        "applied_budget_violations": 0,
+        "applied_bound_violations": 0,
+        "applied_slew_violations": 0,
+        "consistency_violations": 0,
+        "invalid_force_violations": 0,
+        "latency_p95_ms": 0.0799162762996275,
+        "latency_mean_ms": 0.044534934839392665,
+        "latency_worst_ms": 11.768899974413216
+      }
+    },
+    "P5T3RecoveryNoFeasibility": {
+      "Protocol_A": {
+        "episodes": 900,
+        "overall_grasp_recovery": 0.19777777777777777,
+        "feasible_recovery": 0.3731656184486373,
+        "infeasible_grasp_recovery_not_expected": 0.0,
+        "safe_termination_on_infeasible": 0.0,
+        "classification": null,
+        "by_topology_feasible": {
+          "3": {
+            "feasible_recovery": 0.12179487179487179,
+            "n_feasible": 156,
+            "infeasible_recall": 0.0,
+            "safe_termination": 0.0
+          },
+          "4": {
+            "feasible_recovery": 0.45,
+            "n_feasible": 160,
+            "infeasible_recall": 0.0,
+            "safe_termination": 0.0
+          },
+          "5": {
+            "feasible_recovery": 0.5403726708074534,
+            "n_feasible": 161,
+            "infeasible_recall": 0.0,
+            "safe_termination": 0.0
+          }
+        },
+        "mean_total_fn": 47.30276679343088,
+        "max_peak_fn": 25.0,
+        "mean_impulse": 33.11193675540164,
+        "mean_work_normal_J": 0.022681937384999504,
+        "mean_work_tangent_J": 23.71392133567652,
+        "mean_damage": 81.71083135329339,
+        "applied_budget_violations": 0,
+        "applied_bound_violations": 0,
+        "applied_slew_violations": 0,
+        "consistency_violations": 0,
+        "invalid_force_violations": 0,
+        "latency_p95_ms": 0.033979220461333136,
+        "latency_mean_ms": 0.02059163189943998,
+        "latency_worst_ms": 0.5624000332318246
+      },
+      "Protocol_B": {
+        "episodes": 900,
+        "overall_grasp_recovery": 0.20333333333333334,
+        "feasible_recovery": 0.40486725663716816,
+        "infeasible_grasp_recovery_not_expected": 0.0,
+        "safe_termination_on_infeasible": 0.002232142857142857,
+        "classification": null,
+        "by_topology_feasible": {
+          "3": {
+            "feasible_recovery": 0.16176470588235295,
+            "n_feasible": 136,
+            "infeasible_recall": 0.0,
+            "safe_termination": 0.006097560975609756
+          },
+          "4": {
+            "feasible_recovery": 0.4585987261146497,
+            "n_feasible": 157,
+            "infeasible_recall": 0.0,
+            "safe_termination": 0.0
+          },
+          "5": {
+            "feasible_recovery": 0.559748427672956,
+            "n_feasible": 159,
+            "infeasible_recall": 0.0,
+            "safe_termination": 0.0
+          }
+        },
+        "mean_total_fn": 20.57434204339794,
+        "max_peak_fn": 14.94636267232668,
+        "mean_impulse": 14.402039430378569,
+        "mean_work_normal_J": 0.003364009938050396,
+        "mean_work_tangent_J": 5.4605413391608435,
+        "mean_damage": 0.0,
+        "applied_budget_violations": 0,
+        "applied_bound_violations": 0,
+        "applied_slew_violations": 0,
+        "consistency_violations": 0,
+        "invalid_force_violations": 0,
+        "latency_p95_ms": 0.04094026779057457,
+        "latency_mean_ms": 0.025536558759908772,
+        "latency_worst_ms": 0.6560999900102615
+      }
+    },
+    "P5T4FeasibilityAwareRecovery": {
+      "Protocol_A": {
+        "episodes": 900,
+        "overall_grasp_recovery": 0.05333333333333334,
+        "feasible_recovery": 0.10062893081761007,
+        "infeasible_grasp_recovery_not_expected": 0.0,
+        "safe_termination_on_infeasible": 0.950354609929078,
+        "classification": {
+          "matrix": {
+            "oracle_True__pred_FEASIBLE": 352,
+            "oracle_True__pred_INFEASIBLE": 4,
+            "oracle_True__pred_UNCERTAIN": 5,
+            "oracle_True__pred_DEGRADED_RECOVERY": 114,
+            "oracle_True__pred_None": 2,
+            "oracle_False__pred_FEASIBLE": 0,
+            "oracle_False__pred_INFEASIBLE": 422,
+            "oracle_False__pred_UNCERTAIN": 1,
+            "oracle_False__pred_DEGRADED_RECOVERY": 0,
+            "oracle_False__pred_None": 0
+          },
+          "infeasible_recall": 0.9976359338061466,
+          "false_feasible_rate": 0.0,
+          "false_infeasible_rate": 0.008385744234800839,
+          "brier": 0.005446130289532294,
+          "ece": {
+            "ece": 0.006263919821826281,
+            "bins": [
+              {
+                "bin_low": 0.0,
+                "bin_high": 0.125,
+                "count": 424,
+                "confidence": 0.0,
+                "frequency": 0.0047169811320754715
+              },
+              {
+                "bin_low": 0.125,
+                "bin_high": 0.25,
+                "count": 2,
+                "confidence": 0.125,
+                "frequency": 1.0
+              },
+              {
+                "bin_low": 0.5,
+                "bin_high": 0.625,
+                "count": 2,
+                "confidence": 0.5,
+                "frequency": 1.0
+              },
+              {
+                "bin_low": 0.625,
+                "bin_high": 0.75,
+                "count": 4,
+                "confidence": 0.625,
+                "frequency": 0.75
+              },
+              {
+                "bin_low": 0.875,
+                "bin_high": 1.0,
+                "count": 466,
+                "confidence": 0.9991952789699571,
+                "frequency": 1.0
+              }
+            ]
+          },
+          "n_feasible": 477,
+          "n_infeasible": 423
+        },
+        "by_topology_feasible": {
+          "3": {
+            "feasible_recovery": 0.038461538461538464,
+            "n_feasible": 156,
+            "infeasible_recall": 0.9930555555555556,
+            "safe_termination": 0.9513888888888888
+          },
+          "4": {
+            "feasible_recovery": 0.075,
+            "n_feasible": 160,
+            "infeasible_recall": 1.0,
+            "safe_termination": 0.9428571428571428
+          },
+          "5": {
+            "feasible_recovery": 0.18633540372670807,
+            "n_feasible": 161,
+            "infeasible_recall": 1.0,
+            "safe_termination": 0.9568345323741008
+          }
+        },
+        "mean_total_fn": 4.519130678990288,
+        "max_peak_fn": 25.0,
+        "mean_impulse": 3.1633914752932033,
+        "mean_work_normal_J": 0.0022564729007123665,
+        "mean_work_tangent_J": 0.5814273798665277,
+        "mean_damage": 0.05921315860522521,
+        "applied_budget_violations": 0,
+        "applied_bound_violations": 0,
+        "applied_slew_violations": 0,
+        "consistency_violations": 0,
+        "invalid_force_violations": 0,
+        "latency_p95_ms": 5.3303905061329715,
+        "latency_mean_ms": 2.311633942014028,
+        "latency_worst_ms": 32.4347999994643
+      },
+      "Protocol_B": {
+        "episodes": 900,
+        "overall_grasp_recovery": 0.05444444444444444,
+        "feasible_recovery": 0.1084070796460177,
+        "infeasible_grasp_recovery_not_expected": 0.0,
+        "safe_termination_on_infeasible": 0.9397321428571429,
+        "classification": {
+          "matrix": {
+            "oracle_True__pred_FEASIBLE": 342,
+            "oracle_True__pred_INFEASIBLE": 6,
+            "oracle_True__pred_UNCERTAIN": 5,
+            "oracle_True__pred_DEGRADED_RECOVERY": 97,
+            "oracle_True__pred_None": 2,
+            "oracle_False__pred_FEASIBLE": 4,
+            "oracle_False__pred_INFEASIBLE": 437,
+            "oracle_False__pred_UNCERTAIN": 5,
+            "oracle_False__pred_DEGRADED_RECOVERY": 2,
+            "oracle_False__pred_None": 0
+          },
+          "infeasible_recall": 0.9754464285714286,
+          "false_feasible_rate": 0.008928571428571428,
+          "false_infeasible_rate": 0.01327433628318584,
+          "brier": 0.014372216035634744,
+          "ece": {
+            "ece": 0.01308463251670378,
+            "bins": [
+              {
+                "bin_low": 0.0,
+                "bin_high": 0.125,
+                "count": 441,
+                "confidence": 0.0,
+                "frequency": 0.011337868480725623
+              },
+              {
+                "bin_low": 0.125,
+                "bin_high": 0.25,
+                "count": 2,
+                "confidence": 0.125,
+                "frequency": 0.5
+              },
+              {
+                "bin_low": 0.25,
+                "bin_high": 0.375,
+                "count": 3,
+                "confidence": 0.25,
+                "frequency": 0.0
+              },
+              {
+                "bin_low": 0.375,
+                "bin_high": 0.5,
+                "count": 2,
+                "confidence": 0.375,
+                "frequency": 0.5
+              },
+              {
+                "bin_low": 0.625,
+                "bin_high": 0.75,
+                "count": 5,
+                "confidence": 0.625,
+                "frequency": 0.8
+              },
+              {
+                "bin_low": 0.75,
+                "bin_high": 0.875,
+                "count": 5,
+                "confidence": 0.75,
+                "frequency": 0.8
+              },
+              {
+                "bin_low": 0.875,
+                "bin_high": 1.0,
+                "count": 440,
+                "confidence": 0.9974431818181818,
+                "frequency": 0.9886363636363636
+              }
+            ]
+          },
+          "n_feasible": 452,
+          "n_infeasible": 448
+        },
+        "by_topology_feasible": {
+          "3": {
+            "feasible_recovery": 0.051470588235294115,
+            "n_feasible": 136,
+            "infeasible_recall": 0.9573170731707317,
+            "safe_termination": 0.9390243902439024
+          },
+          "4": {
+            "feasible_recovery": 0.07643312101910828,
+            "n_feasible": 157,
+            "infeasible_recall": 0.9790209790209791,
+            "safe_termination": 0.9300699300699301
+          },
+          "5": {
+            "feasible_recovery": 0.18867924528301888,
+            "n_feasible": 159,
+            "infeasible_recall": 0.9929078014184397,
+            "safe_termination": 0.950354609929078
+          }
+        },
+        "mean_total_fn": 4.1175657537509585,
+        "max_peak_fn": 15.361409158530325,
+        "mean_impulse": 2.882296027625673,
+        "mean_work_normal_J": 0.0019353378631909275,
+        "mean_work_tangent_J": 0.4802429551422572,
+        "mean_damage": 2.6996577342314077e-06,
+        "applied_budget_violations": 0,
+        "applied_bound_violations": 0,
+        "applied_slew_violations": 0,
+        "consistency_violations": 0,
+        "invalid_force_violations": 0,
+        "latency_p95_ms": 5.293044206919148,
+        "latency_mean_ms": 2.2881034064367194,
+        "latency_worst_ms": 33.797699958086014
+      }
+    },
+    "P5T4SafeDegradation": {
+      "Protocol_A": {
+        "episodes": 900,
+        "overall_grasp_recovery": 0.035555555555555556,
+        "feasible_recovery": 0.06708595387840671,
+        "infeasible_grasp_recovery_not_expected": 0.0,
+        "safe_termination_on_infeasible": 0.9692671394799054,
+        "classification": null,
+        "by_topology_feasible": {
+          "3": {
+            "feasible_recovery": 0.08333333333333333,
+            "n_feasible": 156,
+            "infeasible_recall": 0.9930555555555556,
+            "safe_termination": 0.9722222222222222
+          },
+          "4": {
+            "feasible_recovery": 0.05625,
+            "n_feasible": 160,
+            "infeasible_recall": 1.0,
+            "safe_termination": 0.9642857142857143
+          },
+          "5": {
+            "feasible_recovery": 0.062111801242236024,
+            "n_feasible": 161,
+            "infeasible_recall": 1.0,
+            "safe_termination": 0.9712230215827338
+          }
+        },
+        "mean_total_fn": 3.9782648667245706,
+        "max_peak_fn": 24.26344398711716,
+        "mean_impulse": 2.7847854067072015,
+        "mean_work_normal_J": 0.0013727536269557315,
+        "mean_work_tangent_J": 0.6046112502084561,
+        "mean_damage": 0.05451243554658088,
+        "applied_budget_violations": 0,
+        "applied_bound_violations": 0,
+        "applied_slew_violations": 0,
+        "consistency_violations": 0,
+        "invalid_force_violations": 0,
+        "latency_p95_ms": 2.6878017182752947,
+        "latency_mean_ms": 1.2202393166122156,
+        "latency_worst_ms": 24.0017999894917
+      },
+      "Protocol_B": {
+        "episodes": 900,
+        "overall_grasp_recovery": 0.035555555555555556,
+        "feasible_recovery": 0.07079646017699115,
+        "infeasible_grasp_recovery_not_expected": 0.0,
+        "safe_termination_on_infeasible": 0.9508928571428571,
+        "classification": null,
+        "by_topology_feasible": {
+          "3": {
+            "feasible_recovery": 0.09558823529411764,
+            "n_feasible": 136,
+            "infeasible_recall": 0.9573170731707317,
+            "safe_termination": 0.9390243902439024
+          },
+          "4": {
+            "feasible_recovery": 0.05732484076433121,
+            "n_feasible": 157,
+            "infeasible_recall": 0.986013986013986,
+            "safe_termination": 0.951048951048951
+          },
+          "5": {
+            "feasible_recovery": 0.06289308176100629,
+            "n_feasible": 159,
+            "infeasible_recall": 0.9929078014184397,
+            "safe_termination": 0.9645390070921985
+          }
+        },
+        "mean_total_fn": 3.9379824379478516,
+        "max_peak_fn": 15.037258640349476,
+        "mean_impulse": 2.756587706563498,
+        "mean_work_normal_J": 0.001290713042987271,
+        "mean_work_tangent_J": 0.5663964433535124,
+        "mean_damage": 6.169805691962713e-08,
+        "applied_budget_violations": 0,
+        "applied_bound_violations": 0,
+        "applied_slew_violations": 0,
+        "consistency_violations": 0,
+        "invalid_force_violations": 0,
+        "latency_p95_ms": 2.7212367294123387,
+        "latency_mean_ms": 1.2370904642129537,
+        "latency_worst_ms": 18.953900027554482
+      }
+    }
+  },
+  "paired_comparisons": {
+    "Protocol_A:feasible:grasp_recovery:vs:EqualForcePerContact": {
+      "b_proposed_only": 4,
+      "c_baseline_only": 139,
+      "n": 477,
+      "difference": -0.2830188679245283,
+      "difference_95ci": [
+        -0.3249475890985325,
+        -0.2389937106918239
+      ],
+      "exact_p_two_sided": 3.083156701172942e-36,
+      "bonferroni_alpha": 0.00625,
+      "significant_after_bonferroni": false
+    },
+    "Protocol_A:infeasible:safe_termination:vs:EqualForcePerContact": {
+      "b_proposed_only": 402,
+      "c_baseline_only": 0,
+      "n": 423,
+      "difference": 0.950354609929078,
+      "difference_95ci": [
+        0.9290780141843972,
+        0.9692671394799054
+      ],
+      "exact_p_two_sided": 1.9362959574246591e-121,
+      "bonferroni_alpha": 0.00625,
+      "significant_after_bonferroni": true
+    },
+    "Protocol_A:feasible:grasp_recovery:vs:FixedTotalForce": {
+      "b_proposed_only": 4,
+      "c_baseline_only": 140,
+      "n": 477,
+      "difference": -0.2851153039832285,
+      "difference_95ci": [
+        -0.32914046121593293,
+        -0.2431865828092243
+      ],
+      "exact_p_two_sided": 1.5852977864761847e-36,
+      "bonferroni_alpha": 0.00625,
+      "significant_after_bonferroni": false
+    },
+    "Protocol_A:infeasible:safe_termination:vs:FixedTotalForce": {
+      "b_proposed_only": 402,
+      "c_baseline_only": 0,
+      "n": 423,
+      "difference": 0.950354609929078,
+      "difference_95ci": [
+        0.9290780141843972,
+        0.9692671394799054
+      ],
+      "exact_p_two_sided": 1.9362959574246591e-121,
+      "bonferroni_alpha": 0.00625,
+      "significant_after_bonferroni": true
+    },
+    "Protocol_A:feasible:grasp_recovery:vs:RuleBasedCooperative": {
+      "b_proposed_only": 11,
+      "c_baseline_only": 78,
+      "n": 477,
+      "difference": -0.14046121593291405,
+      "difference_95ci": [
+        -0.1761006289308176,
+        -0.10272536687631027
+      ],
+      "exact_p_two_sided": 1.367383267102241e-13,
+      "bonferroni_alpha": 0.00625,
+      "significant_after_bonferroni": false
+    },
+    "Protocol_A:infeasible:safe_termination:vs:RuleBasedCooperative": {
+      "b_proposed_only": 402,
+      "c_baseline_only": 0,
+      "n": 423,
+      "difference": 0.950354609929078,
+      "difference_95ci": [
+        0.9290780141843972,
+        0.9692671394799054
+      ],
+      "exact_p_two_sided": 1.9362959574246591e-121,
+      "bonferroni_alpha": 0.00625,
+      "significant_after_bonferroni": true
+    },
+    "Protocol_A:feasible:grasp_recovery:vs:PredictiveMarginBalancing": {
+      "b_proposed_only": 3,
+      "c_baseline_only": 96,
+      "n": 477,
+      "difference": -0.1949685534591195,
+      "difference_95ci": [
+        -0.2348008385744235,
+        -0.15723270440251572
+      ],
+      "exact_p_two_sided": 5.105507778590388e-25,
+      "bonferroni_alpha": 0.00625,
+      "significant_after_bonferroni": false
+    },
+    "Protocol_A:infeasible:safe_termination:vs:PredictiveMarginBalancing": {
+      "b_proposed_only": 402,
+      "c_baseline_only": 0,
+      "n": 423,
+      "difference": 0.950354609929078,
+      "difference_95ci": [
+        0.9290780141843972,
+        0.9692671394799054
+      ],
+      "exact_p_two_sided": 1.9362959574246591e-121,
+      "bonferroni_alpha": 0.00625,
+      "significant_after_bonferroni": true
+    },
+    "Protocol_A:feasible:grasp_recovery:vs:IndependentP5T1Adaptive": {
+      "b_proposed_only": 5,
+      "c_baseline_only": 112,
+      "n": 477,
+      "difference": -0.22431865828092243,
+      "difference_95ci": [
+        -0.2641509433962264,
+        -0.18448637316561844
+      ],
+      "exact_p_two_sided": 2.109260082461932e-27,
+      "bonferroni_alpha": 0.00625,
+      "significant_after_bonferroni": false
+    },
+    "Protocol_A:infeasible:safe_termination:vs:IndependentP5T1Adaptive": {
+      "b_proposed_only": 402,
+      "c_baseline_only": 0,
+      "n": 423,
+      "difference": 0.950354609929078,
+      "difference_95ci": [
+        0.9290780141843972,
+        0.9692671394799054
+      ],
+      "exact_p_two_sided": 1.9362959574246591e-121,
+      "bonferroni_alpha": 0.00625,
+      "significant_after_bonferroni": true
+    },
+    "Protocol_A:feasible:grasp_recovery:vs:P5T3LearnedUncertaintyAware": {
+      "b_proposed_only": 5,
+      "c_baseline_only": 111,
+      "n": 477,
+      "difference": -0.2222222222222222,
+      "difference_95ci": [
+        -0.2620545073375262,
+        -0.18238993710691823
+      ],
+      "exact_p_two_sided": 4.0398783181127895e-27,
+      "bonferroni_alpha": 0.00625,
+      "significant_after_bonferroni": false
+    },
+    "Protocol_A:infeasible:safe_termination:vs:P5T3LearnedUncertaintyAware": {
+      "b_proposed_only": 402,
+      "c_baseline_only": 0,
+      "n": 423,
+      "difference": 0.950354609929078,
+      "difference_95ci": [
+        0.9290780141843972,
+        0.9692671394799054
+      ],
+      "exact_p_two_sided": 1.9362959574246591e-121,
+      "bonferroni_alpha": 0.00625,
+      "significant_after_bonferroni": true
+    },
+    "Protocol_A:feasible:grasp_recovery:vs:P5T3RecoveryNoFeasibility": {
+      "b_proposed_only": 3,
+      "c_baseline_only": 133,
+      "n": 477,
+      "difference": -0.27253668763102723,
+      "difference_95ci": [
+        -0.31446540880503143,
+        -0.23060796645702306
+      ],
+      "exact_p_two_sided": 9.62796454058168e-36,
+      "bonferroni_alpha": 0.00625,
+      "significant_after_bonferroni": false
+    },
+    "Protocol_A:infeasible:safe_termination:vs:P5T3RecoveryNoFeasibility": {
+      "b_proposed_only": 402,
+      "c_baseline_only": 0,
+      "n": 423,
+      "difference": 0.950354609929078,
+      "difference_95ci": [
+        0.9290780141843972,
+        0.9692671394799054
+      ],
+      "exact_p_two_sided": 1.9362959574246591e-121,
+      "bonferroni_alpha": 0.00625,
+      "significant_after_bonferroni": true
+    },
+    "Protocol_A:feasible:grasp_recovery:vs:P5T4SafeDegradation": {
+      "b_proposed_only": 26,
+      "c_baseline_only": 10,
+      "n": 477,
+      "difference": 0.033542976939203356,
+      "difference_95ci": [
+        0.010482180293501049,
+        0.05870020964360587
+      ],
+      "exact_p_two_sided": 0.011330984183587134,
+      "bonferroni_alpha": 0.00625,
+      "significant_after_bonferroni": false
+    },
+    "Protocol_A:infeasible:safe_termination:vs:P5T4SafeDegradation": {
+      "b_proposed_only": 2,
+      "c_baseline_only": 10,
+      "n": 423,
+      "difference": -0.018912529550827423,
+      "difference_95ci": [
+        -0.03546099290780142,
+        -0.0046690307328608426
+      ],
+      "exact_p_two_sided": 0.03857421875,
+      "bonferroni_alpha": 0.00625,
+      "significant_after_bonferroni": false
+    }
+  },
+  "stress": {
+    "Protocol_A": {
+      "episodes": 90,
+      "overall_grasp_recovery": 0.022222222222222223,
+      "feasible_recovery": 0.045454545454545456,
+      "infeasible_grasp_recovery_not_expected": 0.0,
+      "safe_termination_on_infeasible": 0.8478260869565217,
+      "classification": {
+        "matrix": {
+          "oracle_True__pred_FEASIBLE": 35,
+          "oracle_True__pred_INFEASIBLE": 0,
+          "oracle_True__pred_UNCERTAIN": 2,
+          "oracle_True__pred_DEGRADED_RECOVERY": 7,
+          "oracle_True__pred_None": 0,
+          "oracle_False__pred_FEASIBLE": 0,
+          "oracle_False__pred_INFEASIBLE": 46,
+          "oracle_False__pred_UNCERTAIN": 0,
+          "oracle_False__pred_DEGRADED_RECOVERY": 0,
+          "oracle_False__pred_None": 0
+        },
+        "infeasible_recall": 1.0,
+        "false_feasible_rate": 0.0,
+        "false_infeasible_rate": 0.0,
+        "brier": 0.0067708333333333336,
+        "ece": {
+          "ece": 0.015277777777777779,
+          "bins": [
+            {
+              "bin_low": 0.0,
+              "bin_high": 0.125,
+              "count": 46,
+              "confidence": 0.0,
+              "frequency": 0.0
+            },
+            {
+              "bin_low": 0.375,
+              "bin_high": 0.5,
+              "count": 1,
+              "confidence": 0.375,
+              "frequency": 1.0
+            },
+            {
+              "bin_low": 0.625,
+              "bin_high": 0.75,
+              "count": 1,
+              "confidence": 0.625,
+              "frequency": 1.0
+            },
+            {
+              "bin_low": 0.75,
+              "bin_high": 0.875,
+              "count": 1,
+              "confidence": 0.75,
+              "frequency": 1.0
+            },
+            {
+              "bin_low": 0.875,
+              "bin_high": 1.0,
+              "count": 41,
+              "confidence": 0.9969512195121951,
+              "frequency": 1.0
+            }
+          ]
+        },
+        "n_feasible": 44,
+        "n_infeasible": 46
+      },
+      "by_topology_feasible": {
+        "3": {
+          "feasible_recovery": 0.0,
+          "n_feasible": 15,
+          "infeasible_recall": 1.0,
+          "safe_termination": 0.8
+        },
+        "4": {
+          "feasible_recovery": 0.0,
+          "n_feasible": 15,
+          "infeasible_recall": 1.0,
+          "safe_termination": 0.8
+        },
+        "5": {
+          "feasible_recovery": 0.14285714285714285,
+          "n_feasible": 14,
+          "infeasible_recall": 1.0,
+          "safe_termination": 0.9375
+        }
+      },
+      "mean_total_fn": 5.384041699947148,
+      "max_peak_fn": 20.56453385946924,
+      "mean_impulse": 3.768829189963007,
+      "mean_work_normal_J": 0.0029880698390484213,
+      "mean_work_tangent_J": 0.490763815069325,
+      "mean_damage": 0.08063802410644201,
+      "applied_budget_violations": 0,
+      "applied_bound_violations": 0,
+      "applied_slew_violations": 0,
+      "consistency_violations": 0,
+      "invalid_force_violations": 0,
+      "latency_p95_ms": 5.152675728022586,
+      "latency_mean_ms": 2.2186298886663276,
+      "latency_worst_ms": 26.420700014568865
+    },
+    "Protocol_B": {
+      "episodes": 0,
+      "overall_grasp_recovery": NaN,
+      "feasible_recovery": NaN,
+      "infeasible_grasp_recovery_not_expected": NaN,
+      "safe_termination_on_infeasible": NaN,
+      "classification": null,
+      "by_topology_feasible": {
+        "3": {
+          "feasible_recovery": NaN,
+          "n_feasible": 0,
+          "infeasible_recall": NaN,
+          "safe_termination": NaN
+        },
+        "4": {
+          "feasible_recovery": NaN,
+          "n_feasible": 0,
+          "infeasible_recall": NaN,
+          "safe_termination": NaN
+        },
+        "5": {
+          "feasible_recovery": NaN,
+          "n_feasible": 0,
+          "infeasible_recall": NaN,
+          "safe_termination": NaN
+        }
+      },
+      "mean_total_fn": null,
+      "max_peak_fn": null,
+      "mean_impulse": null,
+      "mean_work_normal_J": null,
+      "mean_work_tangent_J": null,
+      "mean_damage": null,
+      "applied_budget_violations": 0,
+      "applied_bound_violations": 0,
+      "applied_slew_violations": 0,
+      "consistency_violations": 0,
+      "invalid_force_violations": 0,
+      "latency_p95_ms": null,
+      "latency_mean_ms": null,
+      "latency_worst_ms": null
+    }
+  },
+  "replay_matched": true,
+  "elapsed_s": 974.8989503383636,
+  "gateway_answers": {
+    "1. Distinguish feasible from infeasible configurations?": "The offline oracle separates them by a verified linear program. The causal estimator's held-out infeasible recall is 0.998 and its false-feasible rate is 0.000.",
+    "2. Predict infeasibility from causal noisy observations?": "Yes only to the extent of that recall. Brier score 0.005446130289532294.",
+    "3. Does feasibility awareness improve recovery?": "Held-out feasible recovery is 0.101. The validation-selected baseline P5T3RecoveryNoFeasibility feasible recovery is 0.3731656184486373. Paired difference (proposed minus baseline) is -0.27253668763102723.",
+    "4. Does recovery generalize across N=3, 4 and 5?": "{\"3\": 0.038461538461538464, \"4\": 0.075, \"5\": 0.18633540372670807}",
+    "5. Can it avoid force escalation when recovery is impossible?": "Safe termination on infeasible episodes is 0.950.",
+    "6. Can it safely degrade?": "That rate is the C5 value. Verdict component PASS.",
+    "7. Does it keep the force budget?": "Protocol B applied budget violations: 0.",
+    "8. Does it respect actuator limits?": "Protocol A bound/slew violations: 0/0.",
+    "9. Physical consistency?": "Consistency violations 0, invalid-contact force violations 0.",
+    "10. Does it outperform the strongest fair baseline?": "Primary baseline is P5T3RecoveryNoFeasibility. Paired feasible-recovery difference is -0.27253668763102723. A positive difference with a Bonferroni-significant exact test is required before claiming an improvement.",
+    "11. Uncertainty calibration on unseen configurations?": "Held-out ECE is 0.006263919821826281. Stress false-feasible rate is 0.0.",
+    "12. Latency?": "P95 of per-episode P95 latencies is 5.3304 ms. Worst step 32.4348 ms.",
+    "13. Remaining physical limitations?": "A lost contact is not recreated unless the object is still within a 5 mm stroke when the finger returns 0.40 s later. Two radial contacts below the symmetric friction threshold still have no positive-force balance. The plant is an isolated planar Coulomb model, not Contact Physics v2.",
+    "14. Is another simulation milestone required?": "Yes. This milestone does not authorize hardware, and any failed acceptance criterion remains open."
+  },
+  "comparison_note": "Primary baseline selected on validation Protocol A feasible recovery: P5T3RecoveryNoFeasibility. Residual selected on training: oppose_load. Cutoffs selected on validation: p_low=0.2, p_high=0.65.",
+  "shortfall": {
+    "train": {
+      "3": {
+        "feasible": 0,
+        "infeasible": 0,
+        "extra": 0
+      },
+      "4": {
+        "feasible": 0,
+        "infeasible": 0,
+        "extra": 0
+      },
+      "5": {
+        "feasible": 0,
+        "infeasible": 0,
+        "extra": 0
+      }
+    },
+    "validation": {
+      "3": {
+        "feasible": 0,
+        "infeasible": 0,
+        "extra": 0
+      },
+      "4": {
+        "feasible": 0,
+        "infeasible": 0,
+        "extra": 0
+      },
+      "5": {
+        "feasible": 0,
+        "infeasible": 0,
+        "extra": 0
+      }
+    },
+    "held_out": {
+      "3": {
+        "feasible": 0,
+        "infeasible": 0,
+        "extra": 0
+      },
+      "4": {
+        "feasible": 0,
+        "infeasible": 0,
+        "extra": 0
+      },
+      "5": {
+        "feasible": 0,
+        "infeasible": 0,
+        "extra": 0
+      }
+    },
+    "stress": {
+      "3": {
+        "feasible": 0,
+        "infeasible": 0,
+        "extra": 0
+      },
+      "4": {
+        "feasible": 0,
+        "infeasible": 0,
+        "extra": 0
+      },
+      "5": {
+        "feasible": 0,
+        "infeasible": 0,
+        "extra": 0
+      }
+    }
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "counts": {
+    "failed_contact_reestablishment": 40,
+    "controller_did_not_stabilize": 385,
+    "correct_infeasibility_and_safe_stop": 402,
+    "insufficient_friction_capacity": 15,
+    "uncertain": 6,
+    "false_infeasible": 4
+  },
+  "by_group": {
+    "N3": {
+      "failed_contact_reestablishment": 12,
+      "controller_did_not_stabilize": 131,
+      "correct_infeasibility_and_safe_stop": 137,
+      "insufficient_friction_capacity": 4,
+      "uncertain": 6,
+      "false_infeasible": 4
+    },
+    "N4": {
+      "controller_did_not_stabilize": 134,
+      "correct_infeasibility_and_safe_stop": 132,
+      "failed_contact_reestablishment": 17,
+      "insufficient_friction_capacity": 5
+    },
+    "N5": {
+      "controller_did_not_stabilize": 120,
+      "correct_infeasibility_and_safe_stop": 133,
+      "failed_contact_reestablishment": 11,
+      "insufficient_friction_capacity": 6
+    },
+    "feasible": {
+      "controller_did_not_stabilize": 385,
+      "failed_contact_reestablishment": 35,
+      "uncertain": 5,
+      "false_infeasible": 4
+    },
+    "infeasible": {
+      "failed_contact_reestablishment": 5,
+      "correct_infeasibility_and_safe_stop": 402,
+      "insufficient_friction_capacity": 15,
+      "uncertain": 1
+    },
+    "uncertain": {
+      "uncertain": 6
+    }
+  }
+}

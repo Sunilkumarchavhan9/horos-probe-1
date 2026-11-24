@@ -1,0 +1,2210 @@
+{
+  "manifest_version": "1.0.0",
+  "protocol": "HOROS-P1-R002-STAGE3.3-PROD-GEN-PROTOCOL",
+  "date_generated": "2026-11-24 23:57:39",
+  "audit_salt_sha256": "e18f59dc496b35efc76ba653a6b64355d28bb59dbda871c59a9361a612927c49",
+  "total_generated": 1000,
+  "total_accepted": 1000,
+  "total_rejected": 0,
+  "overall_acceptance_rate": 1.0,
+  "task_statistics": {
+    "compliant_prelift": {
+      "total_generated": 500,
+      "total_accepted": 500,
+      "total_rejected": 0,
+      "strata": {
+        "nominal": {
+          "generated": 250,
+          "accepted": 250,
+          "rejected": 0,
+          "acceptance_rate": 1.0
+        },
+        "probe": {
+          "generated": 150,
+          "accepted": 150,
+          "rejected": 0,
+          "acceptance_rate": 1.0
+        },
+        "nonstationary": {
+          "generated": 100,
+          "accepted": 100,
+          "rejected": 0,
+          "acceptance_rate": 1.0
+        }
+      }
+    },
+    "peg_in_hole": {
+      "total_generated": 500,
+      "total_accepted": 500,
+      "total_rejected": 0,
+      "strata": {
+        "nominal": {
+          "generated": 250,
+          "accepted": 250,
+          "rejected": 0,
+          "acceptance_rate": 1.0
+        },
+        "impact": {
+          "generated": 150,
+          "accepted": 150,
+          "rejected": 0,
+          "acceptance_rate": 1.0
+        },
+        "wedging": {
+          "generated": 100,
+          "accepted": 100,
+          "rejected": 0,
+          "acceptance_rate": 1.0
+        }
+      }
+    }
+  },
+  "mode_distribution": {
+    "Free": 8445,
+    "FirstContact": 561,
+    "Sticking": 12936,
+    "Sliding": 2670,
+    "Impact": 388
+  },
+  "mode_counts_by_id": {
+    "0": 8445,
+    "4": 388,
+    "2": 12936,
+    "3": 2670,
+    "1": 561
+  },
+  "reserve_pool": {
+    "reserve_base_seed": 3390000,
+    "reserve_seeds_per_stratum": 50,
+    "total_reserve_seeds": 300,
+    "policy": "Non-silent fail-closed. Rejections commit to rejected_manifest.json. Reserve seeds require audited allocation manifest in Stage 3.4.",
+    "strata_ranges": {
+      "compliant_prelift_nominal": [
+        3401000,
+        3401049
+      ],
+      "compliant_prelift_probe": [
+        3402000,
+        3402049
+      ],
+      "compliant_prelift_nonstationary": [
+        3403000,
+        3403049
+      ],
+      "peg_in_hole_nominal": [
+        3411000,
+        3411049
+      ],
+      "peg_in_hole_impact": [
+        3414000,
+        3414049
+      ],
+      "peg_in_hole_wedging": [
+        3415000,
+        3415049
+      ]
+    },
+    "reserve_seeds": [
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 0,
+        "seed": 3401000,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 1,
+        "seed": 3401001,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 2,
+        "seed": 3401002,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 3,
+        "seed": 3401003,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 4,
+        "seed": 3401004,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 5,
+        "seed": 3401005,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 6,
+        "seed": 3401006,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 7,
+        "seed": 3401007,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 8,
+        "seed": 3401008,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 9,
+        "seed": 3401009,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 10,
+        "seed": 3401010,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 11,
+        "seed": 3401011,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 12,
+        "seed": 3401012,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 13,
+        "seed": 3401013,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 14,
+        "seed": 3401014,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 15,
+        "seed": 3401015,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 16,
+        "seed": 3401016,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 17,
+        "seed": 3401017,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 18,
+        "seed": 3401018,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 19,
+        "seed": 3401019,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 20,
+        "seed": 3401020,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 21,
+        "seed": 3401021,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 22,
+        "seed": 3401022,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 23,
+        "seed": 3401023,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 24,
+        "seed": 3401024,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 25,
+        "seed": 3401025,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 26,
+        "seed": 3401026,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 27,
+        "seed": 3401027,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 28,
+        "seed": 3401028,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 29,
+        "seed": 3401029,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 30,
+        "seed": 3401030,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 31,
+        "seed": 3401031,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 32,
+        "seed": 3401032,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 33,
+        "seed": 3401033,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 34,
+        "seed": 3401034,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 35,
+        "seed": 3401035,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 36,
+        "seed": 3401036,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 37,
+        "seed": 3401037,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 38,
+        "seed": 3401038,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 39,
+        "seed": 3401039,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 40,
+        "seed": 3401040,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 41,
+        "seed": 3401041,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 42,
+        "seed": 3401042,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 43,
+        "seed": 3401043,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 44,
+        "seed": 3401044,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 45,
+        "seed": 3401045,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 46,
+        "seed": 3401046,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 47,
+        "seed": 3401047,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 48,
+        "seed": 3401048,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nominal",
+        "reserve_index": 49,
+        "seed": 3401049,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 0,
+        "seed": 3402000,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 1,
+        "seed": 3402001,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 2,
+        "seed": 3402002,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 3,
+        "seed": 3402003,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 4,
+        "seed": 3402004,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 5,
+        "seed": 3402005,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 6,
+        "seed": 3402006,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 7,
+        "seed": 3402007,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 8,
+        "seed": 3402008,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 9,
+        "seed": 3402009,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 10,
+        "seed": 3402010,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 11,
+        "seed": 3402011,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 12,
+        "seed": 3402012,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 13,
+        "seed": 3402013,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 14,
+        "seed": 3402014,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 15,
+        "seed": 3402015,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 16,
+        "seed": 3402016,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 17,
+        "seed": 3402017,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 18,
+        "seed": 3402018,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 19,
+        "seed": 3402019,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 20,
+        "seed": 3402020,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 21,
+        "seed": 3402021,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 22,
+        "seed": 3402022,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 23,
+        "seed": 3402023,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 24,
+        "seed": 3402024,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 25,
+        "seed": 3402025,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 26,
+        "seed": 3402026,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 27,
+        "seed": 3402027,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 28,
+        "seed": 3402028,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 29,
+        "seed": 3402029,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 30,
+        "seed": 3402030,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 31,
+        "seed": 3402031,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 32,
+        "seed": 3402032,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 33,
+        "seed": 3402033,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 34,
+        "seed": 3402034,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 35,
+        "seed": 3402035,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 36,
+        "seed": 3402036,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 37,
+        "seed": 3402037,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 38,
+        "seed": 3402038,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 39,
+        "seed": 3402039,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 40,
+        "seed": 3402040,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 41,
+        "seed": 3402041,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 42,
+        "seed": 3402042,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 43,
+        "seed": 3402043,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 44,
+        "seed": 3402044,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 45,
+        "seed": 3402045,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 46,
+        "seed": 3402046,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 47,
+        "seed": 3402047,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 48,
+        "seed": 3402048,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "probe",
+        "reserve_index": 49,
+        "seed": 3402049,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 0,
+        "seed": 3403000,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 1,
+        "seed": 3403001,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 2,
+        "seed": 3403002,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 3,
+        "seed": 3403003,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 4,
+        "seed": 3403004,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 5,
+        "seed": 3403005,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 6,
+        "seed": 3403006,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 7,
+        "seed": 3403007,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 8,
+        "seed": 3403008,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 9,
+        "seed": 3403009,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 10,
+        "seed": 3403010,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 11,
+        "seed": 3403011,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 12,
+        "seed": 3403012,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 13,
+        "seed": 3403013,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 14,
+        "seed": 3403014,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 15,
+        "seed": 3403015,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 16,
+        "seed": 3403016,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 17,
+        "seed": 3403017,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 18,
+        "seed": 3403018,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 19,
+        "seed": 3403019,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 20,
+        "seed": 3403020,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 21,
+        "seed": 3403021,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 22,
+        "seed": 3403022,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 23,
+        "seed": 3403023,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 24,
+        "seed": 3403024,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 25,
+        "seed": 3403025,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 26,
+        "seed": 3403026,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 27,
+        "seed": 3403027,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 28,
+        "seed": 3403028,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 29,
+        "seed": 3403029,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 30,
+        "seed": 3403030,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 31,
+        "seed": 3403031,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 32,
+        "seed": 3403032,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 33,
+        "seed": 3403033,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 34,
+        "seed": 3403034,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 35,
+        "seed": 3403035,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 36,
+        "seed": 3403036,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 37,
+        "seed": 3403037,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 38,
+        "seed": 3403038,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 39,
+        "seed": 3403039,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 40,
+        "seed": 3403040,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 41,
+        "seed": 3403041,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 42,
+        "seed": 3403042,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 43,
+        "seed": 3403043,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 44,
+        "seed": 3403044,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 45,
+        "seed": 3403045,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 46,
+        "seed": 3403046,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 47,
+        "seed": 3403047,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 48,
+        "seed": 3403048,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "compliant_prelift",
+        "stratum": "nonstationary",
+        "reserve_index": 49,
+        "seed": 3403049,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 0,
+        "seed": 3411000,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 1,
+        "seed": 3411001,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 2,
+        "seed": 3411002,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 3,
+        "seed": 3411003,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 4,
+        "seed": 3411004,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 5,
+        "seed": 3411005,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 6,
+        "seed": 3411006,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 7,
+        "seed": 3411007,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 8,
+        "seed": 3411008,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 9,
+        "seed": 3411009,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 10,
+        "seed": 3411010,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 11,
+        "seed": 3411011,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 12,
+        "seed": 3411012,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 13,
+        "seed": 3411013,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 14,
+        "seed": 3411014,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 15,
+        "seed": 3411015,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 16,
+        "seed": 3411016,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 17,
+        "seed": 3411017,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 18,
+        "seed": 3411018,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 19,
+        "seed": 3411019,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 20,
+        "seed": 3411020,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 21,
+        "seed": 3411021,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 22,
+        "seed": 3411022,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 23,
+        "seed": 3411023,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 24,
+        "seed": 3411024,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 25,
+        "seed": 3411025,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 26,
+        "seed": 3411026,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 27,
+        "seed": 3411027,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 28,
+        "seed": 3411028,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 29,
+        "seed": 3411029,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 30,
+        "seed": 3411030,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 31,
+        "seed": 3411031,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 32,
+        "seed": 3411032,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 33,
+        "seed": 3411033,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 34,
+        "seed": 3411034,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 35,
+        "seed": 3411035,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 36,
+        "seed": 3411036,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 37,
+        "seed": 3411037,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 38,
+        "seed": 3411038,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 39,
+        "seed": 3411039,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 40,
+        "seed": 3411040,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 41,
+        "seed": 3411041,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 42,
+        "seed": 3411042,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 43,
+        "seed": 3411043,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 44,
+        "seed": 3411044,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 45,
+        "seed": 3411045,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 46,
+        "seed": 3411046,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 47,
+        "seed": 3411047,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 48,
+        "seed": 3411048,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "nominal",
+        "reserve_index": 49,
+        "seed": 3411049,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 0,
+        "seed": 3414000,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 1,
+        "seed": 3414001,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 2,
+        "seed": 3414002,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 3,
+        "seed": 3414003,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 4,
+        "seed": 3414004,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 5,
+        "seed": 3414005,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 6,
+        "seed": 3414006,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 7,
+        "seed": 3414007,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 8,
+        "seed": 3414008,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 9,
+        "seed": 3414009,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 10,
+        "seed": 3414010,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 11,
+        "seed": 3414011,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 12,
+        "seed": 3414012,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 13,
+        "seed": 3414013,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 14,
+        "seed": 3414014,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 15,
+        "seed": 3414015,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 16,
+        "seed": 3414016,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 17,
+        "seed": 3414017,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 18,
+        "seed": 3414018,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 19,
+        "seed": 3414019,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 20,
+        "seed": 3414020,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 21,
+        "seed": 3414021,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 22,
+        "seed": 3414022,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 23,
+        "seed": 3414023,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 24,
+        "seed": 3414024,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 25,
+        "seed": 3414025,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 26,
+        "seed": 3414026,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 27,
+        "seed": 3414027,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 28,
+        "seed": 3414028,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 29,
+        "seed": 3414029,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 30,
+        "seed": 3414030,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 31,
+        "seed": 3414031,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 32,
+        "seed": 3414032,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 33,
+        "seed": 3414033,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 34,
+        "seed": 3414034,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 35,
+        "seed": 3414035,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 36,
+        "seed": 3414036,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 37,
+        "seed": 3414037,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 38,
+        "seed": 3414038,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 39,
+        "seed": 3414039,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 40,
+        "seed": 3414040,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 41,
+        "seed": 3414041,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 42,
+        "seed": 3414042,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 43,
+        "seed": 3414043,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 44,
+        "seed": 3414044,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 45,
+        "seed": 3414045,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 46,
+        "seed": 3414046,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 47,
+        "seed": 3414047,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 48,
+        "seed": 3414048,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "impact",
+        "reserve_index": 49,
+        "seed": 3414049,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 0,
+        "seed": 3415000,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 1,
+        "seed": 3415001,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 2,
+        "seed": 3415002,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 3,
+        "seed": 3415003,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 4,
+        "seed": 3415004,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 5,
+        "seed": 3415005,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 6,
+        "seed": 3415006,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 7,
+        "seed": 3415007,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 8,
+        "seed": 3415008,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 9,
+        "seed": 3415009,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 10,
+        "seed": 3415010,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 11,
+        "seed": 3415011,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 12,
+        "seed": 3415012,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 13,
+        "seed": 3415013,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 14,
+        "seed": 3415014,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 15,
+        "seed": 3415015,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 16,
+        "seed": 3415016,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 17,
+        "seed": 3415017,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 18,
+        "seed": 3415018,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 19,
+        "seed": 3415019,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 20,
+        "seed": 3415020,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 21,
+        "seed": 3415021,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 22,
+        "seed": 3415022,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 23,
+        "seed": 3415023,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 24,
+        "seed": 3415024,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 25,
+        "seed": 3415025,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 26,
+        "seed": 3415026,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 27,
+        "seed": 3415027,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 28,
+        "seed": 3415028,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 29,
+        "seed": 3415029,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 30,
+        "seed": 3415030,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 31,
+        "seed": 3415031,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 32,
+        "seed": 3415032,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 33,
+        "seed": 3415033,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 34,
+        "seed": 3415034,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 35,
+        "seed": 3415035,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 36,
+        "seed": 3415036,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 37,
+        "seed": 3415037,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 38,
+        "seed": 3415038,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 39,
+        "seed": 3415039,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 40,
+        "seed": 3415040,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 41,
+        "seed": 3415041,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 42,
+        "seed": 3415042,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 43,
+        "seed": 3415043,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 44,
+        "seed": 3415044,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 45,
+        "seed": 3415045,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 46,
+        "seed": 3415046,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 47,
+        "seed": 3415047,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 48,
+        "seed": 3415048,
+        "status": "UNALLOCATED_LOCKED"
+      },
+      {
+        "task": "peg_in_hole",
+        "stratum": "wedging",
+        "reserve_index": 49,
+        "seed": 3415049,
+        "status": "UNALLOCATED_LOCKED"
+      }
+    ]
+  }
+}

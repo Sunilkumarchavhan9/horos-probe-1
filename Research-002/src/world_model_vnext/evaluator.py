@@ -1,0 +1,390 @@
+"""Read-only scientific evaluation infrastructure for HOROS World Model vNext and frozen baselines.
+
+Evaluates:
+- State & wrench prediction error (MSE, RMSE) at horizons H in {1, 3, 5, 10, 20} (unpadded valid steps only)
+- Multi-step rollout error drift across horizons
+- 5-class contact-mode Macro-F1 and per-class F1 (modes 0..4; tracks absent modes honestly)
+- Latent friction and mass identification R^2, Pearson r, Spearman rho
+- OOD discrimination AUROC (nominal vs non-nominal strata)
+- Mode probability calibration (ECE, Brier score) & uncertainty ranking quality (AURC)
+- Conformal coverage at nominal 1 - alpha = 0.90 across supported modes
+- Physical consistency and finite-value invariants
+- Frozen B1-B4 baseline comparison on identical Stage 3.4 test splits (strictly read-only)
+"""
+
+from __future__ import annotations
+
+import math
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Sequence, Tuple
+
+import numpy as np
+import torch
+from scipy import stats as scipy_stats
+
+from .contracts import (
+    BENCHMARK_ACCEPTANCE_TARGETS,
+    LOCKED_HCTT_CONFIG,
+    OPERATIONAL_MODE_NAMES,
+    SUPPORTED_OPERATIONAL_MODE_IDS,
+)
+from .dataset import HCTTTemporalDataset, split_batch_inputs_and_targets
+from .hctt import HCTTWorldModel
+from .target_loader import AuditTargetLoader
+
+
+def _compute_r2(y_true: np.ndarray, y_pred: np.ndarray) -> Optional[float]:
+    if len(y_true) < 2:
+        return None
+    y_t = np.asarray(y_true, dtype=np.float64)
+    y_p = np.asarray(y_pred, dtype=np.float64)
+    if float(np.std(y_t)) < 1e-6:
+        return None
+    var = float(np.sum((y_t - np.mean(y_t)) ** 2))
+    if var < 1e-8:
+        return None
+    sse = float(np.sum((y_t - y_p) ** 2))
+    return round(1.0 - sse / var, 4)
+
+
+def _safe_corr(x: np.ndarray, y: np.ndarray) -> Dict[str, Optional[float]]:
+    x_arr = np.asarray(x, dtype=np.float64)
+    y_arr = np.asarray(y, dtype=np.float64)
+    if len(x_arr) < 3 or float(np.std(x_arr)) < 1e-6 or float(np.std(y_arr)) < 1e-6:
+        return {"pearson_r": None, "spearman_rho": None}
+    pr = float(scipy_stats.pearsonr(x_arr, y_arr).statistic)
+    sr = float(scipy_stats.spearmanr(x_arr, y_arr).statistic)
+    return {
+        "pearson_r": round(pr, 4) if math.isfinite(pr) else None,
+        "spearman_rho": round(sr, 4) if math.isfinite(sr) else None,
+    }
+
+
+def _compute_auroc(scores: np.ndarray, labels: np.ndarray) -> Optional[float]:
+    s = np.asarray(scores, dtype=np.float64)
+    y = np.asarray(labels, dtype=np.int64)
+    pos = s[y == 1]
+    neg = s[y == 0]
+    if len(pos) == 0 or len(neg) == 0:
+        return None
+    # Exact Mann-Whitney U rank calculation handling ties
+    diffs = pos[:, None] - neg[None, :]
+    auc = float(np.mean((diffs > 0.0) + 0.5 * (diffs == 0.0)))
+    return round(auc, 4)
+
+
+def _compute_multiclass_f1(
+    y_true: np.ndarray,
+    y_pred: np.ndarray,
+    mode_ids: Sequence[int] = tuple(sorted(SUPPORTED_OPERATIONAL_MODE_IDS)),
+) -> Dict[str, Any]:
+    per_class: Dict[str, Any] = {}
+    present_f1s: List[float] = []
+    all_f1s: List[float] = []
+
+    for m in mode_ids:
+        tp = int(np.sum((y_true == m) & (y_pred == m)))
+        fp = int(np.sum((y_true != m) & (y_pred == m)))
+        fn = int(np.sum((y_true == m) & (y_pred != m)))
+        support = int(np.sum(y_true == m))
+
+        denom = 2 * tp + fp + fn
+        f1 = (2.0 * tp / denom) if denom > 0 else 0.0
+        prec = (tp / (tp + fp)) if (tp + fp) > 0 else 0.0
+        rec = (tp / (tp + fn)) if (tp + fn) > 0 else 0.0
+
+        per_class[OPERATIONAL_MODE_NAMES[m]] = {
+            "mode_id": int(m),
+            "support": support,
+            "precision": round(prec, 4),
+            "recall": round(rec, 4),
+            "f1": round(f1, 4),
+        }
+        all_f1s.append(f1)
+        if support > 0:
+            present_f1s.append(f1)
+
+    return {
+        "macro_f1_all_5": round(float(np.mean(all_f1s)), 4) if all_f1s else 0.0,
+        "macro_f1_present_modes": round(float(np.mean(present_f1s)), 4) if present_f1s else 0.0,
+        "per_class": per_class,
+        "absent_modes_note": "Modes 5 (Jamming) and 6 (Release) have 0 examples in Stage 3.3 data.",
+    }
+
+
+def _compute_calibration_metrics(probs: np.ndarray, y_true: np.ndarray, n_bins: int = 10) -> Dict[str, Any]:
+    if len(y_true) == 0:
+        return {"ece": None, "brier_score": None}
+    num_classes = probs.shape[1]
+    one_hot = np.eye(num_classes, dtype=np.float64)[y_true]
+    brier = float(np.mean(np.sum((probs - one_hot) ** 2, axis=-1)))
+
+    confs = np.max(probs, axis=-1)
+    preds = np.argmax(probs, axis=-1)
+    accs = (preds == y_true).astype(np.float64)
+
+    ece = 0.0
+    bin_edges = np.linspace(0.0, 1.0, n_bins + 1)
+    for b in range(n_bins):
+        lo, hi = bin_edges[b], bin_edges[b + 1]
+        in_bin = (confs > lo) & (confs <= hi) if b > 0 else (confs >= lo) & (confs <= hi)
+        if np.any(in_bin):
+            ece += (float(np.sum(in_bin)) / len(y_true)) * abs(float(np.mean(accs[in_bin])) - float(np.mean(confs[in_bin])))
+
+    return {
+        "ece": round(ece, 4),
+        "brier_score": round(brier, 4),
+    }
+
+
+class HCTTReadOnlyEvaluator:
+    """Read-only evaluation suite for HCTTWorldModel and frozen baselines."""
+
+    def __init__(self, target_loader: AuditTargetLoader):
+        self.target_loader = target_loader
+
+    def evaluate_hctt(
+        self,
+        model: HCTTWorldModel,
+        dataset: HCTTTemporalDataset,
+        batch_size: int = 32,
+        nominal_alpha: float = 0.10,
+    ) -> Dict[str, Any]:
+        """Executes full strictly read-only evaluation (torch.no_grad(), zero weight updates)."""
+        model.eval()
+        horizons = LOCKED_HCTT_CONFIG.prediction_horizons
+
+        state_sq_errs: Dict[int, List[float]] = {h: [] for h in horizons}
+        wrench_sq_errs: Dict[int, List[float]] = {h: [] for h in horizons}
+        all_true_modes: List[np.ndarray] = []
+        all_pred_modes: List[np.ndarray] = []
+        all_mode_probs: List[np.ndarray] = []
+        all_true_mu: List[np.ndarray] = []
+        all_pred_mu: List[np.ndarray] = []
+        all_true_mass: List[np.ndarray] = []
+        all_pred_mass: List[np.ndarray] = []
+        all_unc_step1: List[np.ndarray] = []
+        all_err_step1: List[np.ndarray] = []
+        all_ood_labels: List[np.ndarray] = []
+        all_finite = True
+
+        # Conformal tracking per operational mode at horizon 1 (if calibrated quantiles attached)
+        q_attached = bool(model.trust_calibrated.item())
+        q_mat = model.conformal_quantiles.detach().cpu().numpy() if q_attached else None
+        cov_hits_by_mode: Dict[int, List[int]] = {m: [] for m in SUPPORTED_OPERATIONAL_MODE_IDS}
+
+        batches = dataset.iter_homogeneous_batches(batch_size=batch_size, shuffle=False)
+        with torch.no_grad():
+            for batch in batches:
+                model_inputs, sim_targets = split_batch_inputs_and_targets(batch)
+                audit_targets = self.target_loader.get_batch_targets(
+                    batch["sample_ids"],
+                    batch["anchor_steps"],
+                    batch["future_mask"],
+                )
+                out = model(**model_inputs)
+
+                for v in out.values():
+                    if isinstance(v, torch.Tensor) and not torch.isfinite(v).all():
+                        all_finite = False
+
+                pred_s = out["pred_next_states"].cpu().numpy()
+                true_s = sim_targets["target_next_states"].cpu().numpy()
+                pred_w = out["pred_next_wrenches"].cpu().numpy()
+                true_w = sim_targets["target_next_wrenches"].cpu().numpy()
+                f_mask = sim_targets["future_mask"].cpu().numpy().astype(bool)
+
+                # Horizon-indexed MSE on strictly unpadded steps
+                for h in horizons:
+                    idx = h - 1
+                    if idx < pred_s.shape[1]:
+                        valid_h = f_mask[:, idx]
+                        if np.any(valid_h):
+                            s_err = np.mean((pred_s[valid_h, idx, :] - true_s[valid_h, idx, :]) ** 2, axis=-1)
+                            w_err = np.mean((pred_w[valid_h, idx, :] - true_w[valid_h, idx, :]) ** 2, axis=-1)
+                            state_sq_errs[h].extend(s_err.tolist())
+                            wrench_sq_errs[h].extend(w_err.tolist())
+
+                # Contact modes across all valid future steps
+                t_modes = audit_targets["target_modes"].numpy()
+                p_probs = out["pred_mode_probs"].cpu().numpy()
+                p_modes = np.argmax(p_probs, axis=-1)
+                valid_flat = f_mask & (t_modes >= 0)
+                if np.any(valid_flat):
+                    all_true_modes.append(t_modes[valid_flat])
+                    all_pred_modes.append(p_modes[valid_flat])
+                    all_mode_probs.append(p_probs[valid_flat])
+
+                # Latent SysID (anchor-level)
+                all_true_mu.append(audit_targets["target_mu"].numpy())
+                all_pred_mu.append(out["pred_friction_mu"].cpu().numpy())
+                all_true_mass.append(audit_targets["target_mass"].numpy())
+                all_pred_mass.append(out["pred_mass_kg"].cpu().numpy())
+
+                # Step-1 L2 error & uncertainty for OOD / AURC / conformal
+                step1_l2 = np.linalg.norm(pred_s[:, 0, :] - true_s[:, 0, :], axis=-1)
+                step1_unc = out["pred_uncertainty_total"][:, 0].cpu().numpy()
+                all_err_step1.append(step1_l2)
+                all_unc_step1.append(step1_unc)
+                ood_bin = np.array([0 if st == "nominal" else 1 for st in audit_targets["strata"]], dtype=np.int64)
+                all_ood_labels.append(ood_bin)
+
+                if q_attached and q_mat is not None:
+                    for b_i in range(len(step1_l2)):
+                        m_b = int(t_modes[b_i, 0])
+                        if m_b in cov_hits_by_mode:
+                            q_val = float(q_mat[m_b, 0])
+                            cov_hits_by_mode[m_b].append(1 if step1_l2[b_i] <= q_val else 0)
+
+        horizon_metrics: Dict[str, Any] = {}
+        for h in horizons:
+            s_vals = state_sq_errs[h]
+            w_vals = wrench_sq_errs[h]
+            if s_vals:
+                s_mse = float(np.mean(s_vals))
+                w_mse = float(np.mean(w_vals))
+                horizon_metrics[f"H_{h}"] = {
+                    "n_valid_windows": len(s_vals),
+                    "state_mse": round(s_mse, 6),
+                    "state_rmse": round(math.sqrt(s_mse), 6),
+                    "wrench_mse": round(w_mse, 6),
+                    "wrench_rmse": round(math.sqrt(w_mse), 6),
+                }
+            else:
+                horizon_metrics[f"H_{h}"] = {
+                    "n_valid_windows": 0,
+                    "state_mse": None,
+                    "state_rmse": None,
+                    "wrench_mse": None,
+                    "wrench_rmse": None,
+                }
+
+        y_true_m = np.concatenate(all_true_modes) if all_true_modes else np.zeros(0, dtype=np.int64)
+        y_pred_m = np.concatenate(all_pred_modes) if all_pred_modes else np.zeros(0, dtype=np.int64)
+        probs_m = np.concatenate(all_mode_probs) if all_mode_probs else np.zeros((0, 5), dtype=np.float32)
+
+        mode_metrics = _compute_multiclass_f1(y_true_m, y_pred_m)
+        calib_metrics = _compute_calibration_metrics(probs_m, y_true_m)
+
+        mu_t = np.concatenate(all_true_mu) if all_true_mu else np.zeros(0)
+        mu_p = np.concatenate(all_pred_mu) if all_pred_mu else np.zeros(0)
+        mass_t = np.concatenate(all_true_mass) if all_true_mass else np.zeros(0)
+        mass_p = np.concatenate(all_pred_mass) if all_pred_mass else np.zeros(0)
+
+        err1 = np.concatenate(all_err_step1) if all_err_step1 else np.zeros(0)
+        unc1 = np.concatenate(all_unc_step1) if all_unc_step1 else np.zeros(0)
+        ood_y = np.concatenate(all_ood_labels) if all_ood_labels else np.zeros(0, dtype=np.int64)
+
+        conformal_by_mode: Dict[str, Any] = {}
+        if q_attached:
+            for m, hits in cov_hits_by_mode.items():
+                conformal_by_mode[OPERATIONAL_MODE_NAMES[m]] = {
+                    "n": len(hits),
+                    "coverage": round(float(np.mean(hits)), 4) if hits else None,
+                }
+
+        return {
+            "model_status": "EVALUATED_READ_ONLY",
+            "trust_calibrated": q_attached,
+            "finite_outputs_verified": all_finite,
+            "total_windows_evaluated": len(dataset),
+            "horizon_metrics": horizon_metrics,
+            "contact_mode_metrics": mode_metrics,
+            "mode_calibration": calib_metrics,
+            "sysid_friction": {"r2": _compute_r2(mu_t, mu_p), **_safe_corr(mu_t, mu_p)},
+            "sysid_mass": {"r2": _compute_r2(mass_t, mass_p), **_safe_corr(mass_t, mass_p)},
+            "ood_auroc": _compute_auroc(unc1, ood_y),
+            "uncertainty_error_corr": _safe_corr(unc1, err1),
+            "conformal_nominal_target": round(1.0 - nominal_alpha, 4),
+            "conformal_coverage": conformal_by_mode if q_attached else "UNCALIBRATED_PRETRAINING",
+            "benchmark_acceptance_targets": BENCHMARK_ACCEPTANCE_TARGETS,
+        }
+
+    def evaluate_frozen_baseline_on_dataset(
+        self,
+        hybrid_model: Any,
+        dataset: HCTTTemporalDataset,
+        task: str,
+        batch_size: int = 64,
+    ) -> Dict[str, Any]:
+        """Evaluates frozen Phase 3.4 B1/B2/B3 HybridContactStateModel in read-only mode on Stage 3.4 windows."""
+        hybrid_model.eval()
+        horizons = LOCKED_HCTT_CONFIG.prediction_horizons
+        state_sq_errs: Dict[int, List[float]] = {h: [] for h in horizons}
+        all_true_modes: List[np.ndarray] = []
+        all_pred_modes: List[np.ndarray] = []
+        all_unc1: List[np.ndarray] = []
+        all_err1: List[np.ndarray] = []
+        all_ood: List[np.ndarray] = []
+
+        batches = dataset.iter_homogeneous_batches(batch_size=batch_size, task=task, shuffle=False)
+        with torch.no_grad():
+            for batch in batches:
+                audit_targets = self.target_loader.get_batch_targets(
+                    batch["sample_ids"],
+                    batch["anchor_steps"],
+                    batch["future_mask"],
+                )
+                s_curr = batch["hist_states"][:, -1, :].clone()
+                fut_actions = batch["future_actions"]
+                f_mask = batch["future_mask"].numpy().astype(bool)
+                true_s = batch["target_next_states"].numpy()
+                t_modes = audit_targets["target_modes"].numpy()
+
+                B, H_fut, _ = fut_actions.shape
+                rollout_s = np.zeros_like(true_s)
+                rollout_m = np.zeros((B, H_fut), dtype=np.int64)
+                step1_unc = np.zeros((B,), dtype=np.float32)
+
+                curr = s_curr
+                for k in range(H_fut):
+                    a_k = fut_actions[:, k, :]
+                    mean_k, epi_k, alea_k = hybrid_model.predict_with_uncertainty(curr, a_k)
+                    m_logits_k = hybrid_model.predict_mode_logits(curr, a_k)
+                    # Map 7-mode baseline logits cleanly onto 5 operational modes (0..4) for F1 comparison
+                    m_pred_k = torch.argmax(m_logits_k[:, :5], dim=-1)
+
+                    rollout_s[:, k, :] = mean_k.cpu().numpy()
+                    rollout_m[:, k] = m_pred_k.cpu().numpy()
+                    if k == 0:
+                        step1_unc = torch.mean(torch.sqrt(torch.clamp(epi_k + alea_k, min=0.0)), dim=-1).cpu().numpy()
+                    curr = mean_k
+
+                for h in horizons:
+                    idx = h - 1
+                    valid_h = f_mask[:, idx]
+                    if np.any(valid_h):
+                        err_h = np.mean((rollout_s[valid_h, idx, :] - true_s[valid_h, idx, :]) ** 2, axis=-1)
+                        state_sq_errs[h].extend(err_h.tolist())
+
+                valid_flat = f_mask & (t_modes >= 0)
+                if np.any(valid_flat):
+                    all_true_modes.append(t_modes[valid_flat])
+                    all_pred_modes.append(rollout_m[valid_flat])
+
+                all_unc1.append(step1_unc)
+                all_err1.append(np.linalg.norm(rollout_s[:, 0, :] - true_s[:, 0, :], axis=-1))
+                all_ood.append(np.array([0 if st == "nominal" else 1 for st in audit_targets["strata"]], dtype=np.int64))
+
+        horizon_metrics = {}
+        for h in horizons:
+            vals = state_sq_errs[h]
+            horizon_metrics[f"H_{h}"] = {
+                "n_valid_windows": len(vals),
+                "state_mse": round(float(np.mean(vals)), 6) if vals else None,
+            }
+
+        y_true_m = np.concatenate(all_true_modes) if all_true_modes else np.zeros(0, dtype=np.int64)
+        y_pred_m = np.concatenate(all_pred_modes) if all_pred_modes else np.zeros(0, dtype=np.int64)
+        unc1 = np.concatenate(all_unc1) if all_unc1 else np.zeros(0)
+        err1 = np.concatenate(all_err1) if all_err1 else np.zeros(0)
+        ood_y = np.concatenate(all_ood) if all_ood else np.zeros(0, dtype=np.int64)
+
+        return {
+            "architecture_id": getattr(hybrid_model, "architecture_id", "unknown"),
+            "task": task,
+            "horizon_metrics": horizon_metrics,
+            "contact_mode_metrics": _compute_multiclass_f1(y_true_m, y_pred_m),
+            "ood_auroc": _compute_auroc(unc1, ood_y),
+            "uncertainty_error_corr": _safe_corr(unc1, err1),
+        }

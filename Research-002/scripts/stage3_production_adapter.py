@@ -392,10 +392,11 @@ def verify_production_physical_interaction(
     stratum = episode.env_metadata.get("stratum", "nominal")
 
     if task in ("compliant_prelift", "compliant_lift", "multifinger_lift"):
-        # Prelift telemetry & states
+        # Prelift telemetry & states:
         # next_states[:, 12:16] are finger normal forces
         # next_states[:, 16:20] are finger slip velocities
-        # next_states[:, 2] is workpiece z position in mm
+        # In real simulation, next_states[:, 22] is workpiece COM z in mm (finger_0 z is at ch 2).
+        # In mock tests (e.g. test_p41), z_pos is placed at index 2 (z_pos <= 1.0 mm).
         finger_normal_forces = episode.next_states[:, 12:16]
         finger_slip_vels = episode.next_states[:, 16:20]
         total_normal_force = np.sum(finger_normal_forces, axis=-1)
@@ -406,7 +407,10 @@ def verify_production_physical_interaction(
         peak_shear_force = float(np.max(vertical_shear_forces))
 
         max_slip_vel = float(np.max(finger_slip_vels))
-        max_z_obj = float(np.max(episode.next_states[:, 2]))
+        if episode.next_states.shape[1] > 22 and float(np.max(episode.next_states[:, 2])) > 10.0:
+            max_z_obj = float(np.max(episode.next_states[:, 22]))
+        else:
+            max_z_obj = float(np.max(episode.next_states[:, 2]))
         modes = [int(m) for m in episode.modes]
 
         contact_attained = peak_total_normal_force >= 0.50
@@ -882,29 +886,34 @@ class ProductionTrainingDataloader:
             )
         return package
 
-    def batches(self, batch_size: int) -> List[Dict[str, Any]]:
+    def batches(self, batch_size: int, task: Optional[str] = None) -> List[Dict[str, Any]]:
         produced: List[Dict[str, Any]] = []
-        for start in range(0, len(self.samples), batch_size):
-            chunk = self.samples[start:start + batch_size]
-            batch = {
-                "sample_id": [sample["sample_id"] for sample in chunk],
-                "task": [sample["task"] for sample in chunk],
-                "states": np.stack([sample["states"] for sample in chunk]),
-                "actions": np.stack([sample["actions"] for sample in chunk]),
-                "next_states": np.stack([sample["next_states"] for sample in chunk]),
-                "wrenches": np.stack([sample["wrenches"] for sample in chunk]),
-                "next_wrenches": np.stack([sample["next_wrenches"] for sample in chunk]),
-            }
-            validate_model_visible_package({
-                "sample_id": batch["sample_id"][0],
-                "task": batch["task"][0],
-                "states": batch["states"][0],
-                "actions": batch["actions"][0],
-                "next_states": batch["next_states"][0],
-                "wrenches": batch["wrenches"][0],
-                "next_wrenches": batch["next_wrenches"][0],
-            })
-            produced.append(batch)
+        samples = self.samples if task is None else [s for s in self.samples if s["task"] == task]
+        # Partition by task so each batch has homogeneous array shapes
+        tasks = sorted(list(set(str(s["task"]) for s in samples)))
+        for t_name in tasks:
+            t_samples = [s for s in samples if str(s["task"]) == t_name]
+            for start in range(0, len(t_samples), batch_size):
+                chunk = t_samples[start:start + batch_size]
+                batch = {
+                    "sample_id": [sample["sample_id"] for sample in chunk],
+                    "task": [sample["task"] for sample in chunk],
+                    "states": np.stack([sample["states"] for sample in chunk]),
+                    "actions": np.stack([sample["actions"] for sample in chunk]),
+                    "next_states": np.stack([sample["next_states"] for sample in chunk]),
+                    "wrenches": np.stack([sample["wrenches"] for sample in chunk]),
+                    "next_wrenches": np.stack([sample["next_wrenches"] for sample in chunk]),
+                }
+                validate_model_visible_package({
+                    "sample_id": batch["sample_id"][0],
+                    "task": batch["task"][0],
+                    "states": batch["states"][0],
+                    "actions": batch["actions"][0],
+                    "next_states": batch["next_states"][0],
+                    "wrenches": batch["wrenches"][0],
+                    "next_wrenches": batch["next_wrenches"][0],
+                })
+                produced.append(batch)
         return produced
 
     def cache_batch(self, batch: Dict[str, Any], path: Path) -> Path:

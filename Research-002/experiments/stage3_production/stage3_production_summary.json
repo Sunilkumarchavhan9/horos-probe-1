@@ -1,0 +1,66 @@
+{
+  "total_generated": 1000,
+  "total_accepted": 1000,
+  "total_rejected": 0,
+  "overall_acceptance_rate": 1.0,
+  "elapsed_seconds": 8.49,
+  "task_statistics": {
+    "compliant_prelift": {
+      "total_generated": 500,
+      "total_accepted": 500,
+      "total_rejected": 0,
+      "strata": {
+        "nominal": {
+          "generated": 250,
+          "accepted": 250,
+          "rejected": 0,
+          "acceptance_rate": 1.0
+        },
+        "probe": {
+          "generated": 150,
+          "accepted": 150,
+          "rejected": 0,
+          "acceptance_rate": 1.0
+        },
+        "nonstationary": {
+          "generated": 100,
+          "accepted": 100,
+          "rejected": 0,
+          "acceptance_rate": 1.0
+        }
+      }
+    },
+    "peg_in_hole": {
+      "total_generated": 500,
+      "total_accepted": 500,
+      "total_rejected": 0,
+      "strata": {
+        "nominal": {
+          "generated": 250,
+          "accepted": 250,
+          "rejected": 0,
+          "acceptance_rate": 1.0
+        },
+        "impact": {
+          "generated": 150,
+          "accepted": 150,
+          "rejected": 0,
+          "acceptance_rate": 1.0
+        },
+        "wedging": {
+          "generated": 100,
+          "accepted": 100,
+          "rejected": 0,
+          "acceptance_rate": 1.0
+        }
+      }
+    }
+  },
+  "mode_distribution": {
+    "0": 8445,
+    "4": 388,
+    "2": 12936,
+    "3": 2670,
+    "1": 561
+  }
+}

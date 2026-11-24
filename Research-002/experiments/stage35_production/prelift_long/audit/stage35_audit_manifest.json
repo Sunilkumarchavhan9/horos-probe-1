@@ -1,0 +1,25 @@
+{
+  "manifest_version": "1.0.0",
+  "protocol": "HOROS-P1-R002-STAGE3.5-PRELIFT_LONG",
+  "audit_salt_sha256": "864dd3d00a67b7edfcadc9c4bd99065b49c2fffd22368bfe353af0874a45344b",
+  "salt_source": "runtime_os_urandom_32bytes",
+  "hmac_verified_at_generation": true,
+  "total_generated": 500,
+  "total_accepted": 500,
+  "total_rejected": 0,
+  "task_episode_lengths": {
+    "compliant_prelift": 40
+  },
+  "mode_distribution": {
+    "Free": 500,
+    "Sticking": 12643,
+    "Sliding": 6507,
+    "Impact": 350
+  },
+  "mode_counts_by_id": {
+    "0": 500,
+    "4": 350,
+    "2": 12643,
+    "3": 6507
+  }
+}

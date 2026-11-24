@@ -1,0 +1,5183 @@
+[
+  {
+    "sample_id": "c2375c378d6267eeaa88c8e391dc39221eae81751a4adb2921aef4bee8561ea3",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3531000",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_nominal_000",
+    "seed": 3531000,
+    "task": "compliant_prelift",
+    "stratum": "nominal",
+    "index": 0,
+    "episode_length": 40,
+    "provenance_hash": "cdfde2beafd584c4ef8805e67b2c575641f60ad68da3275a7c2696f53c988840",
+    "npz_sha256": "97712105676523835c88d354a9db74475af3e9834ce014a1d31eb8ee06eef51a",
+    "privileged_json_sha256": "42ce4ab41a8f9f5cf2b0b1d4acd0e46be9c6b41e2c2dd694957c041b6fcb7f67",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 15.246,
+      "peak_finger_normal_force_n": 3.845,
+      "peak_shear_force_n": 5.201,
+      "max_slip_vel_m_s": 0.0,
+      "max_z_obj_mm": 1.054,
+      "modes_observed": [
+        0,
+        2,
+        4
+      ],
+      "mode_counts": {
+        "0": 1,
+        "4": 1,
+        "2": 38
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "00f31da718c1ef21359c87e201f4d4ae38a5e4141c034ecdb65fe4d7683d46fb",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3531001",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_nominal_001",
+    "seed": 3531001,
+    "task": "compliant_prelift",
+    "stratum": "nominal",
+    "index": 1,
+    "episode_length": 40,
+    "provenance_hash": "13371cfd34bdc7bfe556f08fa61ec4614dd8aa32e73dc5879a73aae57d53a5cb",
+    "npz_sha256": "8c2d4df78c6b02d044a20296b99c0b6f1919e538a0404ecbbecfa91427a1461c",
+    "privileged_json_sha256": "d65632d647bc7c0847ebb6d8e60cff040185649b32c1956c268ec9dbc54ae4a9",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 15.279,
+      "peak_finger_normal_force_n": 3.848,
+      "peak_shear_force_n": 3.499,
+      "max_slip_vel_m_s": 0.0,
+      "max_z_obj_mm": 1.304,
+      "modes_observed": [
+        0,
+        2,
+        4
+      ],
+      "mode_counts": {
+        "0": 1,
+        "4": 1,
+        "2": 38
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "7e93d2bec164ed84e6be42138eb1ddcd303fae2fa7680396d11ba2f65a0ab60c",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3531002",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_nominal_002",
+    "seed": 3531002,
+    "task": "compliant_prelift",
+    "stratum": "nominal",
+    "index": 2,
+    "episode_length": 40,
+    "provenance_hash": "c15ad0835921cd85bbf1d5511cdb31f68584c5f0353f9f9b83381e9ac3fb97a7",
+    "npz_sha256": "c40187850c9c1b9e23b42a54db24a44a17c0a2874e2a0a9f85e9eed166dc70bc",
+    "privileged_json_sha256": "6e4a540d97c2e0bdd2e25d3fca9aeae844c9a209ec7e30cbcb24c6227c58060b",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 15.268,
+      "peak_finger_normal_force_n": 3.844,
+      "peak_shear_force_n": 5.274,
+      "max_slip_vel_m_s": 0.0,
+      "max_z_obj_mm": 1.054,
+      "modes_observed": [
+        0,
+        2,
+        4
+      ],
+      "mode_counts": {
+        "0": 1,
+        "4": 1,
+        "2": 38
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "2f7149b080721a0ea82a147084a23a2b69d58a77ef538dbaba8488cbb8071e56",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3531003",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_nominal_003",
+    "seed": 3531003,
+    "task": "compliant_prelift",
+    "stratum": "nominal",
+    "index": 3,
+    "episode_length": 40,
+    "provenance_hash": "6abc044b6f0ad48f7d755021592edc85ed33b1c0769298c2d158939eca2a67af",
+    "npz_sha256": "bd74d514ddc469c0bddf93ba93e7a285dff49abac4fd0ad7db1acb768373dd42",
+    "privileged_json_sha256": "a4b55bb4b6ecc2fcf7dc5702810ea9fc00139e28aa7147e40bdbd7142aec37ee",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 15.26,
+      "peak_finger_normal_force_n": 3.831,
+      "peak_shear_force_n": 3.782,
+      "max_slip_vel_m_s": 0.0,
+      "max_z_obj_mm": 1.304,
+      "modes_observed": [
+        0,
+        2,
+        4
+      ],
+      "mode_counts": {
+        "0": 1,
+        "4": 1,
+        "2": 38
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "d4c9e5fef43520108f3e4037c69eea317063544f571483752319b29b56b67311",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3531004",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_nominal_004",
+    "seed": 3531004,
+    "task": "compliant_prelift",
+    "stratum": "nominal",
+    "index": 4,
+    "episode_length": 40,
+    "provenance_hash": "2dfaa25fd17895b3e53abcbd87ec11c1bf72ecd4ec6a333f49038272e131cb7f",
+    "npz_sha256": "6d885647e1aada7b00938540d73eab96052d254f9df660aaa7519c51119906db",
+    "privileged_json_sha256": "f25bf5e29d628b9f538875ba464c6e954c74977e2c4da847cded6f31d6681427",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 15.263,
+      "peak_finger_normal_force_n": 3.856,
+      "peak_shear_force_n": 5.241,
+      "max_slip_vel_m_s": 0.0,
+      "max_z_obj_mm": 1.054,
+      "modes_observed": [
+        0,
+        2,
+        4
+      ],
+      "mode_counts": {
+        "0": 1,
+        "4": 1,
+        "2": 38
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "4d4f3e9bed4082effbbe856aa6dd3d060dc239ba1c5826f694204e8eb0d303cc",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3531005",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_nominal_005",
+    "seed": 3531005,
+    "task": "compliant_prelift",
+    "stratum": "nominal",
+    "index": 5,
+    "episode_length": 40,
+    "provenance_hash": "3764586d0bd7434eae9d3b493c7c41e58c438f8a938c768c352b5d6e88e0d6c6",
+    "npz_sha256": "e07277e3c7c5a2bfb19af90700c7d8eb2b2f551441bc0fb82be01978896debfb",
+    "privileged_json_sha256": "895276555abc2d2cc6e49bc607981b009236ef13ff996c392a62e182e5e7b4b6",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 15.277,
+      "peak_finger_normal_force_n": 3.832,
+      "peak_shear_force_n": 4.638,
+      "max_slip_vel_m_s": 0.0,
+      "max_z_obj_mm": 1.154,
+      "modes_observed": [
+        0,
+        2,
+        4
+      ],
+      "mode_counts": {
+        "0": 1,
+        "4": 1,
+        "2": 38
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "558d022b8479d12923acc9f43b4ef9995b18b13db89902d5b8073f5ee61b80bc",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3531006",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_nominal_006",
+    "seed": 3531006,
+    "task": "compliant_prelift",
+    "stratum": "nominal",
+    "index": 6,
+    "episode_length": 40,
+    "provenance_hash": "73e5bdd1655ff4cdc26ef9ed2b0f4c71938f7258781bc0927bea888daa148320",
+    "npz_sha256": "85f331d4842e1a7cb14f59729ee6fc13e0fa21cc4975b1141016453292346de0",
+    "privileged_json_sha256": "4d1618b20f72e405c67edbf7513ba1a14af65bd6e4b83fccfeadab61ee1db6e6",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 15.258,
+      "peak_finger_normal_force_n": 3.847,
+      "peak_shear_force_n": 4.418,
+      "max_slip_vel_m_s": 0.0,
+      "max_z_obj_mm": 1.154,
+      "modes_observed": [
+        0,
+        2,
+        4
+      ],
+      "mode_counts": {
+        "0": 1,
+        "4": 1,
+        "2": 38
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "6a424e63294b8b3918b3ff42abd1bcb8cb53ada8cd8902e356113384fe2222e7",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3531007",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_nominal_007",
+    "seed": 3531007,
+    "task": "compliant_prelift",
+    "stratum": "nominal",
+    "index": 7,
+    "episode_length": 40,
+    "provenance_hash": "4a72d7be02bea1c657c6c89ceeb1ae758e50684b8eca2ccc5986432d8c2817f3",
+    "npz_sha256": "2cfd2c59210d3c4e5a58c421d76a06246db901c29d605b48cc5c36bb6e48583d",
+    "privileged_json_sha256": "ec11e6b1ab09e415fc2276687a42242247433d9e8d97327f1783df8add8475f6",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 15.284,
+      "peak_finger_normal_force_n": 3.868,
+      "peak_shear_force_n": 3.74,
+      "max_slip_vel_m_s": 0.0,
+      "max_z_obj_mm": 1.304,
+      "modes_observed": [
+        0,
+        2,
+        4
+      ],
+      "mode_counts": {
+        "0": 1,
+        "4": 1,
+        "2": 38
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "97dc98ab70b5aa74826ac903c86f3abcabd81fb55bcd6a8a9b5f0eb46fbaf9f5",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3531008",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_nominal_008",
+    "seed": 3531008,
+    "task": "compliant_prelift",
+    "stratum": "nominal",
+    "index": 8,
+    "episode_length": 40,
+    "provenance_hash": "b47a021d1a169d03f4c64a002c784855b1371e311499d6dbe3fde75217f7990b",
+    "npz_sha256": "2ce7a3dee40770f70c4f914f236934ad52ec358ee905d20dcd4306f4a1a1dcb7",
+    "privileged_json_sha256": "24bb37c21b2d2d0775dd6235b7a1204e02ad069e8374d36581e203a21018a398",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 15.281,
+      "peak_finger_normal_force_n": 3.858,
+      "peak_shear_force_n": 4.859,
+      "max_slip_vel_m_s": 0.0,
+      "max_z_obj_mm": 1.104,
+      "modes_observed": [
+        0,
+        2,
+        4
+      ],
+      "mode_counts": {
+        "0": 1,
+        "4": 1,
+        "2": 38
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "17d2b5ed39c1b76eed02ea1fb3c0774e8bf8d92977ff837f4775e379148b5a54",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3531009",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_nominal_009",
+    "seed": 3531009,
+    "task": "compliant_prelift",
+    "stratum": "nominal",
+    "index": 9,
+    "episode_length": 40,
+    "provenance_hash": "626c79f33168f35c4493b3e3609f9d5b6fd7052a6ab54a9bdc706ddccadf2b52",
+    "npz_sha256": "8634692e0d4d2bac3f0a2dc764fb673a603d9cc5f3b4732df10e21c8a9fdad09",
+    "privileged_json_sha256": "265438e5ce3ed31d0f8cd7e2215c105523a56951ab31b1f22be06d630149ef02",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 15.254,
+      "peak_finger_normal_force_n": 3.867,
+      "peak_shear_force_n": 3.076,
+      "max_slip_vel_m_s": 0.0,
+      "max_z_obj_mm": 1.404,
+      "modes_observed": [
+        0,
+        2,
+        4
+      ],
+      "mode_counts": {
+        "0": 1,
+        "4": 1,
+        "2": 38
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "cf8de5abf54b5420809e5205b294500804d5ac66c191aec829ff9de8dd2b4f8c",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3531010",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_nominal_010",
+    "seed": 3531010,
+    "task": "compliant_prelift",
+    "stratum": "nominal",
+    "index": 10,
+    "episode_length": 40,
+    "provenance_hash": "1c37946e8a80f8154bec18f9c9ba243125d4ba45cf78587d48c01415c0fd3d19",
+    "npz_sha256": "bba5dde6ce122f69d80c93c1a74e0ab924209b43695b5f4ebbf7c1d126216a1d",
+    "privileged_json_sha256": "d7eb9b8528e993026e800561a543c566f75336e0d1ef3cec1268a0c22d0e6afb",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 15.243,
+      "peak_finger_normal_force_n": 3.838,
+      "peak_shear_force_n": 4.389,
+      "max_slip_vel_m_s": 0.0,
+      "max_z_obj_mm": 1.20202,
+      "modes_observed": [
+        0,
+        2,
+        4
+      ],
+      "mode_counts": {
+        "0": 1,
+        "4": 1,
+        "2": 38
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "75f4b447e3c4d164d5f1cbdcfbe0caadb09791907562b8feeb8054d7f15a7969",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3531011",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_nominal_011",
+    "seed": 3531011,
+    "task": "compliant_prelift",
+    "stratum": "nominal",
+    "index": 11,
+    "episode_length": 40,
+    "provenance_hash": "877c085d140ac6d11c8f9d97ba761d8c53d23c002be9f419a5b933b8542fad03",
+    "npz_sha256": "93a49edd3743a9b505a58fd190073329209a4c0f8c7c9081ad79a1b0b340747b",
+    "privileged_json_sha256": "aa4250b05f639797f18a779508d316fc99ae77357b420d2b966fe4e4dadf4d7d",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 15.251,
+      "peak_finger_normal_force_n": 3.84,
+      "peak_shear_force_n": 3.082,
+      "max_slip_vel_m_s": 0.0,
+      "max_z_obj_mm": 1.404,
+      "modes_observed": [
+        0,
+        2,
+        4
+      ],
+      "mode_counts": {
+        "0": 1,
+        "4": 1,
+        "2": 38
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "87a1cd70b4189ce7a853050f53c9fc7c112fd7354c96667eb26a11604677d151",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3531012",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_nominal_012",
+    "seed": 3531012,
+    "task": "compliant_prelift",
+    "stratum": "nominal",
+    "index": 12,
+    "episode_length": 40,
+    "provenance_hash": "0be6017f000ad1f6f85d132374331d59f85cad8a4b58bac27773345ea92e3569",
+    "npz_sha256": "eeb207d1bc1228d12a4d0cd682a0c746418dba4c834fd2b12b6573c7fcbd7a2c",
+    "privileged_json_sha256": "e2a62ee07bcef5228b6e6b2545390438eab7e0268bd6c5ae88826d08d01877c7",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 15.275,
+      "peak_finger_normal_force_n": 3.833,
+      "peak_shear_force_n": 4.984,
+      "max_slip_vel_m_s": 0.0,
+      "max_z_obj_mm": 1.104,
+      "modes_observed": [
+        0,
+        2,
+        4
+      ],
+      "mode_counts": {
+        "0": 1,
+        "4": 1,
+        "2": 38
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "579fd8e7596b1eef89142595a98ad39282b5fdc540ec98d4eb93f5b0eed7559b",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3531013",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_nominal_013",
+    "seed": 3531013,
+    "task": "compliant_prelift",
+    "stratum": "nominal",
+    "index": 13,
+    "episode_length": 40,
+    "provenance_hash": "df62ed5cf4c3b9473fafe452da4bcb96f05e8b51e36083639be89d68cf3d2f0c",
+    "npz_sha256": "156fddf470f43ba3ae03f7e9fed86ec0e0ad4b997b9de67b545f7c5388575a2d",
+    "privileged_json_sha256": "e4c20248ce0f89cf96dc55bcdd72badf8f0725deeabdb4b9422e506f7c02c5a6",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 15.258,
+      "peak_finger_normal_force_n": 3.836,
+      "peak_shear_force_n": 5.348,
+      "max_slip_vel_m_s": 0.0,
+      "max_z_obj_mm": 1.05143,
+      "modes_observed": [
+        0,
+        2,
+        4
+      ],
+      "mode_counts": {
+        "0": 1,
+        "4": 1,
+        "2": 38
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "6124011f585d2b19be1f62242983f1051426c6c67c641918f3158c85278ed386",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3531014",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_nominal_014",
+    "seed": 3531014,
+    "task": "compliant_prelift",
+    "stratum": "nominal",
+    "index": 14,
+    "episode_length": 40,
+    "provenance_hash": "02ef8daccf378d22fb7e61abc1c3941a5ab3a8d8484eb732aebea9a2ac5e0d07",
+    "npz_sha256": "7acdc88e09e7fd3582855d54634568308b20f1b4e66f63b0a6b3236007823b39",
+    "privileged_json_sha256": "78312dd3c75c60d736d6248491cc697efaf8e4c0d2864a808bd6872ca8d0c4a0",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 15.241,
+      "peak_finger_normal_force_n": 3.835,
+      "peak_shear_force_n": 3.496,
+      "max_slip_vel_m_s": 0.0,
+      "max_z_obj_mm": 1.304,
+      "modes_observed": [
+        0,
+        2,
+        4
+      ],
+      "mode_counts": {
+        "0": 1,
+        "4": 1,
+        "2": 38
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "3a904be43bfb7911ffc624f2cf9f5d28960657f9a127b1baae7e793ecdb0a408",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3531015",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_nominal_015",
+    "seed": 3531015,
+    "task": "compliant_prelift",
+    "stratum": "nominal",
+    "index": 15,
+    "episode_length": 40,
+    "provenance_hash": "b632727427dfad6dbc2dd29d978a3079e6cb88d02a913994c7eb464f721eba2d",
+    "npz_sha256": "801c8d8ddd20b649ca109e464e1e8756399cbf27ed5bedcff0e8ffca501f9629",
+    "privileged_json_sha256": "eef44fc40cc63a61a912bb20c901a2cff396b074a1d6a4ca054a6281522ade8d",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 15.247,
+      "peak_finger_normal_force_n": 3.836,
+      "peak_shear_force_n": 3.946,
+      "max_slip_vel_m_s": 0.0,
+      "max_z_obj_mm": 1.254,
+      "modes_observed": [
+        0,
+        2,
+        4
+      ],
+      "mode_counts": {
+        "0": 1,
+        "4": 1,
+        "2": 38
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "6e0bc3f4ceed5bf3c9b25da90f39417f08682a4d9d0f4973a0ec7b01516405f3",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3531016",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_nominal_016",
+    "seed": 3531016,
+    "task": "compliant_prelift",
+    "stratum": "nominal",
+    "index": 16,
+    "episode_length": 40,
+    "provenance_hash": "089189ef4855aa8ad63fa74f702e2961b7b0b5636e731f4c7f0e8660c50a76e7",
+    "npz_sha256": "b4ad0bbe5b4b5bdf24de750efa8e107385632533495589f90659517b3ef88837",
+    "privileged_json_sha256": "4c9c7147f2001fabe04ba2cea7b9b76468c58e03bbee2f394dae5e2c93440e9d",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 15.262,
+      "peak_finger_normal_force_n": 3.835,
+      "peak_shear_force_n": 4.112,
+      "max_slip_vel_m_s": 0.0,
+      "max_z_obj_mm": 1.204,
+      "modes_observed": [
+        0,
+        2,
+        4
+      ],
+      "mode_counts": {
+        "0": 1,
+        "4": 1,
+        "2": 38
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "a60c7ce1f7010a399efb39de07fc97d22f6c486d103465f8115ebb4511ace549",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3531017",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_nominal_017",
+    "seed": 3531017,
+    "task": "compliant_prelift",
+    "stratum": "nominal",
+    "index": 17,
+    "episode_length": 40,
+    "provenance_hash": "45ac775cbaae516d67f9bf319a1f3202d487e478ad338d58cb658452a05a43f4",
+    "npz_sha256": "9f117ffe4ba968ebecf086a534e75f85b744224779ea0bc4c65bae2286500768",
+    "privileged_json_sha256": "2468c5304035a30c534938d3c53de000997371723db63e2c8e1ad1b77da48896",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 15.247,
+      "peak_finger_normal_force_n": 3.834,
+      "peak_shear_force_n": 5.09,
+      "max_slip_vel_m_s": 0.0,
+      "max_z_obj_mm": 1.054,
+      "modes_observed": [
+        0,
+        2,
+        4
+      ],
+      "mode_counts": {
+        "0": 1,
+        "4": 1,
+        "2": 38
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "cd670c202f9939bd29f5fd655a8705393f79277376cc85477ff79d611546d7d6",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3531018",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_nominal_018",
+    "seed": 3531018,
+    "task": "compliant_prelift",
+    "stratum": "nominal",
+    "index": 18,
+    "episode_length": 40,
+    "provenance_hash": "47734ba1e7acab94e195693cda099fcca8d9e0eba686a3d2cb18f015f55e45d4",
+    "npz_sha256": "fdb65994b0c2fa5d604cea2ecd57575e2a1d3ec7a80c10e748f6f296766608f1",
+    "privileged_json_sha256": "846a928d0f325bc17c865eb40cdae547acc0da524f359593c2e164d76463b15a",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 15.26,
+      "peak_finger_normal_force_n": 3.848,
+      "peak_shear_force_n": 4.956,
+      "max_slip_vel_m_s": 0.0,
+      "max_z_obj_mm": 1.104,
+      "modes_observed": [
+        0,
+        2,
+        4
+      ],
+      "mode_counts": {
+        "0": 1,
+        "4": 1,
+        "2": 38
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "93d212168a13b028b87d854fb3a198faa639d38ae19851a405787d93038ebf06",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3531019",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_nominal_019",
+    "seed": 3531019,
+    "task": "compliant_prelift",
+    "stratum": "nominal",
+    "index": 19,
+    "episode_length": 40,
+    "provenance_hash": "220bb4cb8f7e666ff1a048a96a2f9c68dd076e87f44c924ad9f963a67e430e9d",
+    "npz_sha256": "c46eb8260678d1260a70b164f627aa99c4ddd1e388852ab61df8473ba27826cb",
+    "privileged_json_sha256": "8d822a6411e92ad8448ad3b573d28542d9ab6a71ef926185c5322b5b06548272",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 15.25,
+      "peak_finger_normal_force_n": 3.839,
+      "peak_shear_force_n": 3.479,
+      "max_slip_vel_m_s": 0.0,
+      "max_z_obj_mm": 1.304,
+      "modes_observed": [
+        0,
+        2,
+        4
+      ],
+      "mode_counts": {
+        "0": 1,
+        "4": 1,
+        "2": 38
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "0ecd92b1f55677e8cde971d82972688adc82a8b5265fb94ac0479fd0d4d32afa",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3531020",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_nominal_020",
+    "seed": 3531020,
+    "task": "compliant_prelift",
+    "stratum": "nominal",
+    "index": 20,
+    "episode_length": 40,
+    "provenance_hash": "2664c56e9a76ca4b0e741e2565870f9bc92c212dc6300cdec0101a3338a878c5",
+    "npz_sha256": "d63dc96bc9a584fbdf6f7e4785cd48fed4d2b60ff7664872dea6a37062fa2857",
+    "privileged_json_sha256": "5b132419bffb9ce30d3caed94e0082eba91202ff4a983325b115d8a674d00890",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 15.272,
+      "peak_finger_normal_force_n": 3.837,
+      "peak_shear_force_n": 3.177,
+      "max_slip_vel_m_s": 0.0,
+      "max_z_obj_mm": 1.354,
+      "modes_observed": [
+        0,
+        2,
+        4
+      ],
+      "mode_counts": {
+        "0": 1,
+        "4": 1,
+        "2": 38
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "6f47f48880aec5c79a192d49b3b05d1d23b7601a8c79acb2f84188685bdfb913",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3531021",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_nominal_021",
+    "seed": 3531021,
+    "task": "compliant_prelift",
+    "stratum": "nominal",
+    "index": 21,
+    "episode_length": 40,
+    "provenance_hash": "8e4a728f2e5190be05c808428d0033ee970dcc0c575064f7603dc723a82c3a87",
+    "npz_sha256": "ffd58dbf978caf78e4d07c7bbb9839c98f0859aaae2422daeffacdfa20342609",
+    "privileged_json_sha256": "501db4a67e0f533ac80b3f6c25e282628e339ade82faf5f68b168d97a31f8d01",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 15.282,
+      "peak_finger_normal_force_n": 3.84,
+      "peak_shear_force_n": 3.769,
+      "max_slip_vel_m_s": 0.0,
+      "max_z_obj_mm": 1.304,
+      "modes_observed": [
+        0,
+        2,
+        4
+      ],
+      "mode_counts": {
+        "0": 1,
+        "4": 1,
+        "2": 38
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "539c3aadb7560e963f7a1a2e8d9b0e35be377fc4ff2db487bbbda31901e73051",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3531022",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_nominal_022",
+    "seed": 3531022,
+    "task": "compliant_prelift",
+    "stratum": "nominal",
+    "index": 22,
+    "episode_length": 40,
+    "provenance_hash": "5c2d00e31d9295f0dd59f2ecbb70c1dbfd1501a4e01f5e10b3865566b8f542fd",
+    "npz_sha256": "cd8f43438a7ce17a704a6c9d5235d97dd61c6e04ea0a368100267bd2da03fdc5",
+    "privileged_json_sha256": "619cccc44e425fe06a3a0abbe9d39004ca26d5460d95a6095126727068991d32",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 15.238,
+      "peak_finger_normal_force_n": 3.83,
+      "peak_shear_force_n": 4.988,
+      "max_slip_vel_m_s": 0.0,
+      "max_z_obj_mm": 1.104,
+      "modes_observed": [
+        0,
+        2,
+        4
+      ],
+      "mode_counts": {
+        "0": 1,
+        "4": 1,
+        "2": 38
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "4b5476055e3be80254a40e6075b8b1dc4c6131bd5e3e9fca52b93d61f2108619",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3531023",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_nominal_023",
+    "seed": 3531023,
+    "task": "compliant_prelift",
+    "stratum": "nominal",
+    "index": 23,
+    "episode_length": 40,
+    "provenance_hash": "b0d8484739c0102ea27b74fecfcf75101028584eccf50eed7a335928ece07963",
+    "npz_sha256": "fc7b99505b4ba0bc67e1f31a741252f034aed625e34c8ccf780dbb4f1b72814b",
+    "privileged_json_sha256": "1fc6703ee6e6e64996bfc9cc6edfe697082fd1b96678e2f36c9e6c9b13984231",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 15.296,
+      "peak_finger_normal_force_n": 3.845,
+      "peak_shear_force_n": 3.66,
+      "max_slip_vel_m_s": 0.0,
+      "max_z_obj_mm": 1.304,
+      "modes_observed": [
+        0,
+        2,
+        4
+      ],
+      "mode_counts": {
+        "0": 1,
+        "4": 1,
+        "2": 38
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "08cffb0c37d3be21943c6f8f0e9d8db344e6ddc9857274221af1be122d8c0395",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3531024",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_nominal_024",
+    "seed": 3531024,
+    "task": "compliant_prelift",
+    "stratum": "nominal",
+    "index": 24,
+    "episode_length": 40,
+    "provenance_hash": "11f6536c521796b420a136ac7de29ade2c728f7214609e92eb49a741eb9604cb",
+    "npz_sha256": "3fd33bb2e0d3f8f7545782a7131619f0b0ecaf3b1396206b77d49e10228ec204",
+    "privileged_json_sha256": "a5937cc9038e86d155b7d94b120e678818dcb68a63d9b6b763da2db41d98c0f8",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 15.267,
+      "peak_finger_normal_force_n": 3.845,
+      "peak_shear_force_n": 4.036,
+      "max_slip_vel_m_s": 0.0,
+      "max_z_obj_mm": 1.254,
+      "modes_observed": [
+        0,
+        2,
+        4
+      ],
+      "mode_counts": {
+        "0": 1,
+        "4": 1,
+        "2": 38
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "d310eead947ac3fcea68c5c678098d99570b5f1ff858c13eec96db1bc07174bd",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3531025",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_nominal_025",
+    "seed": 3531025,
+    "task": "compliant_prelift",
+    "stratum": "nominal",
+    "index": 25,
+    "episode_length": 40,
+    "provenance_hash": "d11f2967259eec5e54439edb642b752d2cc575150672a26082fbf548f771cfea",
+    "npz_sha256": "4343b917b9858d7964bdc0be10dd077308e7dc54697fb8699dcd7daeb5536161",
+    "privileged_json_sha256": "4091ffa44d0c3d404584d5624dfd715373cc7df941ad3d3a22b41b80c6de226d",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 15.249,
+      "peak_finger_normal_force_n": 3.835,
+      "peak_shear_force_n": 4.018,
+      "max_slip_vel_m_s": 0.0,
+      "max_z_obj_mm": 1.254,
+      "modes_observed": [
+        0,
+        2,
+        4
+      ],
+      "mode_counts": {
+        "0": 1,
+        "4": 1,
+        "2": 38
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "2864968935d888108fdd7641348a0d1c3f3cf5d8b0333815aa59e8d9b686f961",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3531026",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_nominal_026",
+    "seed": 3531026,
+    "task": "compliant_prelift",
+    "stratum": "nominal",
+    "index": 26,
+    "episode_length": 40,
+    "provenance_hash": "cb3b7813d9bb301b32fe6baddfcd60e6011ed87ab0a3b3ee079830cbbc22486d",
+    "npz_sha256": "e3aaf6d462d5720d7922eb0db0ae489d67e4d9a9c55d38e452e104a4bd22aa3d",
+    "privileged_json_sha256": "438cf7021bfbd6c7272a7606c14e798ce9ec1228f78308bba7257fab18e5db8a",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 15.263,
+      "peak_finger_normal_force_n": 3.838,
+      "peak_shear_force_n": 3.204,
+      "max_slip_vel_m_s": 0.0,
+      "max_z_obj_mm": 1.354,
+      "modes_observed": [
+        0,
+        2,
+        4
+      ],
+      "mode_counts": {
+        "0": 1,
+        "4": 1,
+        "2": 38
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "fc23463e1d187f6472b23e043ef34fd851fc6ff69df85e324756838c9d215004",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3531027",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_nominal_027",
+    "seed": 3531027,
+    "task": "compliant_prelift",
+    "stratum": "nominal",
+    "index": 27,
+    "episode_length": 40,
+    "provenance_hash": "006e4f6fe60c3351d8c06c7200323e784a3108444b89f2bd94585d25ae54b416",
+    "npz_sha256": "29b6f628890fbc967d5fcbf1e22d86407f7ce2a743fd337e6a6242def3a63faf",
+    "privileged_json_sha256": "1211f5d4fc6dcef6a5f9955990e5326ae24e0133dfeb90ce66be5785ddaa8cab",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 15.273,
+      "peak_finger_normal_force_n": 3.844,
+      "peak_shear_force_n": 4.87,
+      "max_slip_vel_m_s": 0.0,
+      "max_z_obj_mm": 1.104,
+      "modes_observed": [
+        0,
+        2,
+        4
+      ],
+      "mode_counts": {
+        "0": 1,
+        "4": 1,
+        "2": 38
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "fc627c64de2e9aab0bb6e854280d0e9c75df696b39b2cf5af9c5b6c9c8f2d4d8",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3531028",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_nominal_028",
+    "seed": 3531028,
+    "task": "compliant_prelift",
+    "stratum": "nominal",
+    "index": 28,
+    "episode_length": 40,
+    "provenance_hash": "4c420e88cb9bb6f6ec97ee8fbe7691d674b48ba2f42f0f50b401f39566a0f429",
+    "npz_sha256": "5886ee0211dd45648ff31bb54fcdc03a0cd91fe4ec04877d138e3776bebd0a80",
+    "privileged_json_sha256": "84f5cb67478da6a8cf160f09428a4aaf36a68c9311943d2a6f6c45fc22ddb156",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 15.269,
+      "peak_finger_normal_force_n": 3.835,
+      "peak_shear_force_n": 5.124,
+      "max_slip_vel_m_s": 0.0,
+      "max_z_obj_mm": 1.054,
+      "modes_observed": [
+        0,
+        2,
+        4
+      ],
+      "mode_counts": {
+        "0": 1,
+        "4": 1,
+        "2": 38
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "f0d3bc042b1c2885ef706c862dcbced6153d7a10dd31a4e2646e8f4348f6157b",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3531029",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_nominal_029",
+    "seed": 3531029,
+    "task": "compliant_prelift",
+    "stratum": "nominal",
+    "index": 29,
+    "episode_length": 40,
+    "provenance_hash": "55ff717787fda1fa44040b6edac00869522b4c10ff2c846fe527347695207c28",
+    "npz_sha256": "ea5545a928e68819532f7180ce7afa5b60337366624494f4a3e5e881333516d3",
+    "privileged_json_sha256": "22c31b28939951489c7b1e0f3421ec61a8401a7a8ea35e43f7cd01d9805c77d7",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 15.248,
+      "peak_finger_normal_force_n": 3.83,
+      "peak_shear_force_n": 4.199,
+      "max_slip_vel_m_s": 0.0,
+      "max_z_obj_mm": 1.204,
+      "modes_observed": [
+        0,
+        2,
+        4
+      ],
+      "mode_counts": {
+        "0": 1,
+        "4": 1,
+        "2": 38
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "ed8e6f82521a501e7e2f28ba134e932b3bcb3f92d3c39b98f2f9688c3b315525",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3532000",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_probe_000",
+    "seed": 3532000,
+    "task": "compliant_prelift",
+    "stratum": "probe",
+    "index": 0,
+    "episode_length": 40,
+    "provenance_hash": "5b738581004a78cbb3d4e0bd9e194d352711748a77bbb07e44a3b87c1b37c870",
+    "npz_sha256": "2f57902ef6e2a7adf63709e0de6962ebb7c33d0d740f13fb352a95437afed5b8",
+    "privileged_json_sha256": "1f703b7ae7811b0742dbb3f0a8d6f06df49e60e74162385d054280f58d53424d",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 3.725,
+      "peak_finger_normal_force_n": 0.952,
+      "peak_shear_force_n": 2.88,
+      "max_slip_vel_m_s": 0.008,
+      "max_z_obj_mm": 0.0,
+      "modes_observed": [
+        0,
+        2,
+        3
+      ],
+      "mode_counts": {
+        "0": 1,
+        "2": 7,
+        "3": 32
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "6abd29968f138dd7543bf5fe59d2a85cc2a5d555d74a63be93766b725390a782",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3532001",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_probe_001",
+    "seed": 3532001,
+    "task": "compliant_prelift",
+    "stratum": "probe",
+    "index": 1,
+    "episode_length": 40,
+    "provenance_hash": "202e388927a95d569c7c84cbc222389705616900b35df458ecc21541fb0f07a3",
+    "npz_sha256": "c781cf0e1de27af928e192fada386391bfa9366c4a6253dcff355f2994007262",
+    "privileged_json_sha256": "3f4a3e4019fc5bf90bf48460e9127f4b177526f78698be6e104521bf8963d143",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 3.736,
+      "peak_finger_normal_force_n": 0.956,
+      "peak_shear_force_n": 2.415,
+      "max_slip_vel_m_s": 0.008,
+      "max_z_obj_mm": 0.0,
+      "modes_observed": [
+        0,
+        2,
+        3
+      ],
+      "mode_counts": {
+        "0": 1,
+        "2": 6,
+        "3": 33
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "4b3fa0a8a0b7a4f6c0291226e981cb9b3a2e9243484bb21c3a94955b1aff048d",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3532002",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_probe_002",
+    "seed": 3532002,
+    "task": "compliant_prelift",
+    "stratum": "probe",
+    "index": 2,
+    "episode_length": 40,
+    "provenance_hash": "007095aebb695406cff297ed8054de7edc48abfd8d096222bae9a4a61e99b89a",
+    "npz_sha256": "6375c917608eb7831d2100791d271d54d46a2f681a6782281c136f1070a69f69",
+    "privileged_json_sha256": "95b6d966ac62ddb75393dabe8dc30e73521b8edc1c7392c859d8116f781e2262",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 3.759,
+      "peak_finger_normal_force_n": 0.963,
+      "peak_shear_force_n": 0.724,
+      "max_slip_vel_m_s": 0.008,
+      "max_z_obj_mm": 0.0,
+      "modes_observed": [
+        0,
+        2,
+        3
+      ],
+      "mode_counts": {
+        "0": 1,
+        "2": 2,
+        "3": 37
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "d24f62561320a31da50703c5042c166f1a896926ea2e9e2ec874d47dc29c0a82",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3532003",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_probe_003",
+    "seed": 3532003,
+    "task": "compliant_prelift",
+    "stratum": "probe",
+    "index": 3,
+    "episode_length": 40,
+    "provenance_hash": "87e3b3d27352c5d70d40b4eceb0ca59ef8e80d63179bec2da9f0b92280b85058",
+    "npz_sha256": "659be6b3ec3f988fb0c9bf4ba0c38c6ba5ed1738831f4453e59f2e0f7f32b1dd",
+    "privileged_json_sha256": "6cbea5d28d9eaf9fb03a049e85d506bd42f5127876506b21b7b2b882515378e9",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 3.807,
+      "peak_finger_normal_force_n": 0.971,
+      "peak_shear_force_n": 1.929,
+      "max_slip_vel_m_s": 0.008,
+      "max_z_obj_mm": 0.0,
+      "modes_observed": [
+        0,
+        2,
+        3
+      ],
+      "mode_counts": {
+        "0": 1,
+        "2": 5,
+        "3": 34
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "8c9d1057070d3d0d0ab1cd120a4de037cfcdf7b58fcc7d7efa3eb44c3b1ec0c3",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3532004",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_probe_004",
+    "seed": 3532004,
+    "task": "compliant_prelift",
+    "stratum": "probe",
+    "index": 4,
+    "episode_length": 40,
+    "provenance_hash": "d19f0163bedf54c4bdc53bc456dcd3b64b1e718644d97e44f3fd48dbe4730512",
+    "npz_sha256": "f1c7e8978aa161e5ccb1657484370ff240d0aaad646eedd7c90ec1b1d3d72b71",
+    "privileged_json_sha256": "af4715d2be113306cace51754be3d550121e8796ece2b3706b7efffdddc30f03",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 3.737,
+      "peak_finger_normal_force_n": 0.954,
+      "peak_shear_force_n": 2.861,
+      "max_slip_vel_m_s": 0.008,
+      "max_z_obj_mm": 0.0,
+      "modes_observed": [
+        0,
+        2,
+        3
+      ],
+      "mode_counts": {
+        "0": 1,
+        "2": 7,
+        "3": 32
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "229cd64961dd21f935dc3891966b075d0773970a5cad9e9ea3c1bdd333fb8f98",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3532005",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_probe_005",
+    "seed": 3532005,
+    "task": "compliant_prelift",
+    "stratum": "probe",
+    "index": 5,
+    "episode_length": 40,
+    "provenance_hash": "6e90de9f4d2fff0c4c6069690cb2a13cb9003819f7c15783f4896ba381d3be6f",
+    "npz_sha256": "43c1069756028b731fa15140bcdf950b64175081b1a77cad57f08a39b48141e5",
+    "privileged_json_sha256": "fb01eede2256871b31864f5df3e885f2812418b4ba4493204681d83e2c8cf172",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 3.729,
+      "peak_finger_normal_force_n": 0.957,
+      "peak_shear_force_n": 2.529,
+      "max_slip_vel_m_s": 0.008,
+      "max_z_obj_mm": 0.0,
+      "modes_observed": [
+        0,
+        2,
+        3
+      ],
+      "mode_counts": {
+        "0": 1,
+        "2": 6,
+        "3": 33
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "4796d07a08fc7a76087350362e6db3f2d5917a0a02980553e32969b01a157bf2",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3532006",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_probe_006",
+    "seed": 3532006,
+    "task": "compliant_prelift",
+    "stratum": "probe",
+    "index": 6,
+    "episode_length": 40,
+    "provenance_hash": "e8f4fb3c85d29220bf6946b4bd6c04d36582f1db34eee1d1fee60367191ff060",
+    "npz_sha256": "3350232a2d63fb2b7d1afdf6997a18fb3b6c0ff44d9f07eec4a883e33be5c9bb",
+    "privileged_json_sha256": "61b1b176d317ec41d8c86f7b4442f51d9cc5529dc64ab2c5c45bb5306d4500f1",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 3.742,
+      "peak_finger_normal_force_n": 0.95,
+      "peak_shear_force_n": 2.164,
+      "max_slip_vel_m_s": 0.008,
+      "max_z_obj_mm": 0.0,
+      "modes_observed": [
+        0,
+        2,
+        3
+      ],
+      "mode_counts": {
+        "0": 1,
+        "2": 5,
+        "3": 34
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "0e27c80502068d49868f0b7f6065ca40bea1812748bee5587f1bf882e846c473",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3532007",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_probe_007",
+    "seed": 3532007,
+    "task": "compliant_prelift",
+    "stratum": "probe",
+    "index": 7,
+    "episode_length": 40,
+    "provenance_hash": "0ae6006fb0af0bf93cdba28fa0701a5554e76ad261fc6ca46aff83ad9de2105d",
+    "npz_sha256": "2379e2d9a83d6ee97d961f74a6d861289481699449e69a296ceebb7f246af709",
+    "privileged_json_sha256": "a26205828cc38f727af0e3d26e0513fe0972d3539c24f51aab60b8767f9b29f6",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 3.749,
+      "peak_finger_normal_force_n": 0.963,
+      "peak_shear_force_n": 2.006,
+      "max_slip_vel_m_s": 0.008,
+      "max_z_obj_mm": 0.0,
+      "modes_observed": [
+        0,
+        2,
+        3
+      ],
+      "mode_counts": {
+        "0": 1,
+        "2": 5,
+        "3": 34
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "457b8df8b7191e1fd6642502292320e24661cacb4eec7ec891b3c941436d9385",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3532008",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_probe_008",
+    "seed": 3532008,
+    "task": "compliant_prelift",
+    "stratum": "probe",
+    "index": 8,
+    "episode_length": 40,
+    "provenance_hash": "be6ed46d164c3655e9b65215a52810a9e431da23b0f0664e993fb9c082e76907",
+    "npz_sha256": "27193991ab0059683e30c6657a88e25030c7bea51b2c1123017da382e3fbeeb5",
+    "privileged_json_sha256": "b6d62296e163387253457b758e81925dd9906d21d051d79a5c3801631bd0af6a",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 3.749,
+      "peak_finger_normal_force_n": 0.97,
+      "peak_shear_force_n": 2.392,
+      "max_slip_vel_m_s": 0.008,
+      "max_z_obj_mm": 0.0,
+      "modes_observed": [
+        0,
+        2,
+        3
+      ],
+      "mode_counts": {
+        "0": 1,
+        "2": 6,
+        "3": 33
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "8fe19e68c6d6ebeb4209174f1d58fb9785502ff8d6dd05c6449a61ca41cda521",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3532009",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_probe_009",
+    "seed": 3532009,
+    "task": "compliant_prelift",
+    "stratum": "probe",
+    "index": 9,
+    "episode_length": 40,
+    "provenance_hash": "0412fa74b8891b00117e7e23dc515ddc08bab941d93ffd26e1096f5de580b58c",
+    "npz_sha256": "ff61a9ba8573d6c175a8eed0b04a95ff804b7fe2aa2fc03cef341c56aa5a85b9",
+    "privileged_json_sha256": "ff93a3d49507d64d9cf4b1b24b6fb036b9899e87f5bcaf1bf46475859be70414",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 3.74,
+      "peak_finger_normal_force_n": 0.958,
+      "peak_shear_force_n": 1.218,
+      "max_slip_vel_m_s": 0.008,
+      "max_z_obj_mm": 0.0,
+      "modes_observed": [
+        0,
+        2,
+        3
+      ],
+      "mode_counts": {
+        "0": 1,
+        "2": 3,
+        "3": 36
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "2bddd87679160ffb3ac055e0139e6ad50ee25f067b13c31b20ce1738400b1e9f",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3532010",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_probe_010",
+    "seed": 3532010,
+    "task": "compliant_prelift",
+    "stratum": "probe",
+    "index": 10,
+    "episode_length": 40,
+    "provenance_hash": "d6790b3dc460832195821c32b4a42de979f157ce4c26ede3acd9b0f6200604cc",
+    "npz_sha256": "228b8b7b1f8e1a31f2a3a1630c34f702f57c95c48bd336720a4c009dcb67cb72",
+    "privileged_json_sha256": "e3bda2ab5b37cb029d38af3d3acc01e93201af47187a0aef78c6b8494983d12e",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 3.736,
+      "peak_finger_normal_force_n": 0.965,
+      "peak_shear_force_n": 2.102,
+      "max_slip_vel_m_s": 0.008,
+      "max_z_obj_mm": 0.0,
+      "modes_observed": [
+        0,
+        2,
+        3
+      ],
+      "mode_counts": {
+        "0": 1,
+        "2": 5,
+        "3": 34
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "7d5eb57fe4f8cd13306d0e6f01647577c6f7e3be298dc2272aa0a781c5f7172c",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3532011",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_probe_011",
+    "seed": 3532011,
+    "task": "compliant_prelift",
+    "stratum": "probe",
+    "index": 11,
+    "episode_length": 40,
+    "provenance_hash": "f5c83623502039648cb569f775d1a581212164609fb294208f1c8b9a74107c0f",
+    "npz_sha256": "2fb01e80db5964c78c55cac61a3e5406a3a45d1227aa0bff7fb5cb7a176d7f93",
+    "privileged_json_sha256": "3ed2cf81c39414b483e75c897b4cbe15947242c920f0de136a42c402e2fef235",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 3.733,
+      "peak_finger_normal_force_n": 0.955,
+      "peak_shear_force_n": 1.453,
+      "max_slip_vel_m_s": 0.008,
+      "max_z_obj_mm": 0.0,
+      "modes_observed": [
+        0,
+        2,
+        3
+      ],
+      "mode_counts": {
+        "0": 1,
+        "2": 4,
+        "3": 35
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "778d9c7b96312b0570cc66000d2a6ffb0faa820354726c51d6f413aaaaeff6e3",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3532012",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_probe_012",
+    "seed": 3532012,
+    "task": "compliant_prelift",
+    "stratum": "probe",
+    "index": 12,
+    "episode_length": 40,
+    "provenance_hash": "0e62586bd044d4c6e14e58044fdcf1204b40473e625e2cdbecdccd27d9aff9dd",
+    "npz_sha256": "7cbc1470459004507e9dc722e894a63568f81e5267b6790a64066bd4a857b1de",
+    "privileged_json_sha256": "8e52ba675a339e6d227ac56fa925ac62902656856481f64afb490919958b7168",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 3.725,
+      "peak_finger_normal_force_n": 0.97,
+      "peak_shear_force_n": 0.535,
+      "max_slip_vel_m_s": 0.008,
+      "max_z_obj_mm": 0.0,
+      "modes_observed": [
+        0,
+        2,
+        3
+      ],
+      "mode_counts": {
+        "0": 1,
+        "2": 2,
+        "3": 37
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "14a32713ab734f087c35b1b7b24ad9a3248f77ff6dbb86769ef4f8d2c13670ac",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3532013",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_probe_013",
+    "seed": 3532013,
+    "task": "compliant_prelift",
+    "stratum": "probe",
+    "index": 13,
+    "episode_length": 40,
+    "provenance_hash": "f9146142e82cb527579571d6693805366eb6da9e10303c27dba4b21daa71da49",
+    "npz_sha256": "9e962cc1797404d3e8fd101a529701bc66008b3891f564efeee349dbb7f439f9",
+    "privileged_json_sha256": "d94f2c8c31d9f28d9b89c7de7fbf66ff94813c624d38969c0cf7cbfb7f911b8a",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 3.733,
+      "peak_finger_normal_force_n": 0.95,
+      "peak_shear_force_n": 0.682,
+      "max_slip_vel_m_s": 0.008,
+      "max_z_obj_mm": 0.0,
+      "modes_observed": [
+        0,
+        2,
+        3
+      ],
+      "mode_counts": {
+        "0": 1,
+        "2": 2,
+        "3": 37
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "da7f221a5929b4ffaa46181848e0da69fa78db3f55aa3726eac161d0482a2068",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3532014",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_probe_014",
+    "seed": 3532014,
+    "task": "compliant_prelift",
+    "stratum": "probe",
+    "index": 14,
+    "episode_length": 40,
+    "provenance_hash": "cd855537ac70e83739782e6f95df3745d07733bd4fc348ebb979d94b386958c0",
+    "npz_sha256": "c959c5f724333df1128cdc3559b5343c7db3123d27bcc7f98b4c1cb1d2a7608f",
+    "privileged_json_sha256": "320bafbca5f8cf68fafa8f2f14cc29ab82a4d342832810384b6df69e5d857ebe",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 3.748,
+      "peak_finger_normal_force_n": 0.966,
+      "peak_shear_force_n": 0.53,
+      "max_slip_vel_m_s": 0.008,
+      "max_z_obj_mm": 0.0,
+      "modes_observed": [
+        0,
+        2,
+        3
+      ],
+      "mode_counts": {
+        "0": 1,
+        "2": 2,
+        "3": 37
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "c4d88ebab9530d42abdd7603fd0392417e5426ee1bf68f7051bb27be30c083f3",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3532015",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_probe_015",
+    "seed": 3532015,
+    "task": "compliant_prelift",
+    "stratum": "probe",
+    "index": 15,
+    "episode_length": 40,
+    "provenance_hash": "163f75030896cdf47bf1b17e649f99e6117e256517a475a842fba3fab83b91e9",
+    "npz_sha256": "72812b450abf9d4f847e4131b249bacbafbc67b40dc946ad26fb981401c387b9",
+    "privileged_json_sha256": "71c9f96e3c8cace20442fa84b44c00e412c2c27ec0a62dbc49b4f5e55c51173f",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 3.741,
+      "peak_finger_normal_force_n": 0.964,
+      "peak_shear_force_n": 1.941,
+      "max_slip_vel_m_s": 0.008,
+      "max_z_obj_mm": 0.0,
+      "modes_observed": [
+        0,
+        2,
+        3
+      ],
+      "mode_counts": {
+        "0": 1,
+        "2": 5,
+        "3": 34
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "83be7d883d00435f9ed96c3f27f867f100d70fea8aecb89abd7d4ea9b5b81784",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3532016",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_probe_016",
+    "seed": 3532016,
+    "task": "compliant_prelift",
+    "stratum": "probe",
+    "index": 16,
+    "episode_length": 40,
+    "provenance_hash": "0d4c9980e6b55d7877b6621a09221f84d22ead1c1887baa53348a7a1bf35d617",
+    "npz_sha256": "982ed738f7edeebab06dc4c210102b08ad7895359fdd51f21ff5b842ddeeacdd",
+    "privileged_json_sha256": "385aaf7fdfe7e1812653a66fac9e0939605c41dd3d3804c9622162ab48bbe39f",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 3.754,
+      "peak_finger_normal_force_n": 0.957,
+      "peak_shear_force_n": 1.579,
+      "max_slip_vel_m_s": 0.008,
+      "max_z_obj_mm": 0.0,
+      "modes_observed": [
+        0,
+        2,
+        3
+      ],
+      "mode_counts": {
+        "0": 1,
+        "2": 4,
+        "3": 35
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "4aa565f55914c5ab72ed5db4fbe1d4fbfc6a65864ed8c7c22fdbc79e345ab41d",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3532017",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_probe_017",
+    "seed": 3532017,
+    "task": "compliant_prelift",
+    "stratum": "probe",
+    "index": 17,
+    "episode_length": 40,
+    "provenance_hash": "549fa591a1affabbb9a509fad06d78e759dc494d0d4e31e2f89645d8271b1364",
+    "npz_sha256": "763e391134b1f2cd02d5cc6fda1f853bb8d835c96764576b38334257c5fa9880",
+    "privileged_json_sha256": "0c51406258cb72214655b21168009cddce5701b69849f51bc826ce5f58cab2ad",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 3.748,
+      "peak_finger_normal_force_n": 0.96,
+      "peak_shear_force_n": 1.336,
+      "max_slip_vel_m_s": 0.008,
+      "max_z_obj_mm": 0.0,
+      "modes_observed": [
+        0,
+        2,
+        3
+      ],
+      "mode_counts": {
+        "0": 1,
+        "2": 3,
+        "3": 36
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "6ece634360bb924f82c21ddfae5e3b0a36ed6bbc0e6c75558271159d530bf6e6",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3533000",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_nonstationary_000",
+    "seed": 3533000,
+    "task": "compliant_prelift",
+    "stratum": "nonstationary",
+    "index": 0,
+    "episode_length": 40,
+    "provenance_hash": "54a67751512c8397b5fe8041d97024b0fc5db39562b3eb2f16e631bd2dd9fdec",
+    "npz_sha256": "99a80b712d14d8c014d418533df83a1edffbb8968c4150966af11054d05b7b75",
+    "privileged_json_sha256": "a7181ee799fc187567bd3c12860927aa4dc427ecaddc63c0165bcb46342a02d5",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 11.25,
+      "peak_finger_normal_force_n": 2.845,
+      "peak_shear_force_n": 3.444,
+      "max_slip_vel_m_s": 0.005,
+      "max_z_obj_mm": 0.004,
+      "modes_observed": [
+        0,
+        2,
+        3,
+        4
+      ],
+      "mode_counts": {
+        "0": 1,
+        "4": 1,
+        "2": 12,
+        "3": 26
+      },
+      "interaction_passed": true,
+      "regime_a_causal": true
+    }
+  },
+  {
+    "sample_id": "3b054ca166908e5c218790de8f380ed0318c82898bc8b9c1ca0b2aa846f16a74",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3533001",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_nonstationary_001",
+    "seed": 3533001,
+    "task": "compliant_prelift",
+    "stratum": "nonstationary",
+    "index": 1,
+    "episode_length": 40,
+    "provenance_hash": "2fe2f7cf22f488167bfb010095bea0edc0a5cf5b3198538d355deba431888472",
+    "npz_sha256": "1511cd388946f4fdfe9e1150084e3a5f88bd2688116e5780f823a8100946f8b1",
+    "privileged_json_sha256": "48949fa6d9d2faf0cf323ea32478b8b9cfaf867e271a21e21a0e18d5ee3201c8",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 11.264,
+      "peak_finger_normal_force_n": 2.842,
+      "peak_shear_force_n": 4.408,
+      "max_slip_vel_m_s": 0.0,
+      "max_z_obj_mm": 1.254,
+      "modes_observed": [
+        0,
+        2,
+        4
+      ],
+      "mode_counts": {
+        "0": 1,
+        "4": 1,
+        "2": 38
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "d6bb1130cafbbbf1f09e99367dc48376517bfe56168a301f7caf3cd4ede65a8a",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3533002",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_nonstationary_002",
+    "seed": 3533002,
+    "task": "compliant_prelift",
+    "stratum": "nonstationary",
+    "index": 2,
+    "episode_length": 40,
+    "provenance_hash": "e09c808c8c861b0b6e99c4b0446a24d1e8b5df6b5a9ab92fd967c7533a5a6923",
+    "npz_sha256": "3e6147402b46ab462f0da18dd3e1c4a4d814be641526fb77a9b4810b00655271",
+    "privileged_json_sha256": "febce83f00e191de51d67466981a71604afc799a0e08b0bfdd8189263cf2a484",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 11.279,
+      "peak_finger_normal_force_n": 2.836,
+      "peak_shear_force_n": 3.436,
+      "max_slip_vel_m_s": 0.005,
+      "max_z_obj_mm": 0.004,
+      "modes_observed": [
+        0,
+        2,
+        3,
+        4
+      ],
+      "mode_counts": {
+        "0": 1,
+        "4": 1,
+        "2": 12,
+        "3": 26
+      },
+      "interaction_passed": true,
+      "regime_a_causal": true
+    }
+  },
+  {
+    "sample_id": "e290477dd668a7593e83e2e16a0f35c08268cb973125e45cccf311d6cf1fbee8",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3533003",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_nonstationary_003",
+    "seed": 3533003,
+    "task": "compliant_prelift",
+    "stratum": "nonstationary",
+    "index": 3,
+    "episode_length": 40,
+    "provenance_hash": "e4c325021279f075aed3d047f82fcafea48a5712f6dfb0833a99ad0da7dc4d85",
+    "npz_sha256": "1abd6efcfc510dd5d2c4a3a1f59a55316fc537051e8d4101d16806583a2cfa5a",
+    "privileged_json_sha256": "46b9efbb01f4109cb135472e0abdd8876915032b117016d702d57e45abf5bd86",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 11.245,
+      "peak_finger_normal_force_n": 2.848,
+      "peak_shear_force_n": 4.421,
+      "max_slip_vel_m_s": 0.0,
+      "max_z_obj_mm": 1.254,
+      "modes_observed": [
+        0,
+        2,
+        4
+      ],
+      "mode_counts": {
+        "0": 1,
+        "4": 1,
+        "2": 38
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "eb3d855f48d2c7930bb31eb9998d4ae3179be6d6820a0a412849e5774e78f88f",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3533004",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_nonstationary_004",
+    "seed": 3533004,
+    "task": "compliant_prelift",
+    "stratum": "nonstationary",
+    "index": 4,
+    "episode_length": 40,
+    "provenance_hash": "420e7e0b1f9b74dacc979975e528cd34f9122b4e9b7c0ce5b62e5adf594c473e",
+    "npz_sha256": "36d0439798860a5b363649ac3380c373bf8b3e3f361f0a050b80073ac47935f2",
+    "privileged_json_sha256": "5feaea8c2f981adc24f2330463166305b2c14f3eeb7e72dcf79766e0478aaa79",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 11.241,
+      "peak_finger_normal_force_n": 2.839,
+      "peak_shear_force_n": 3.444,
+      "max_slip_vel_m_s": 0.005,
+      "max_z_obj_mm": 0.004,
+      "modes_observed": [
+        0,
+        2,
+        3,
+        4
+      ],
+      "mode_counts": {
+        "0": 1,
+        "4": 1,
+        "2": 12,
+        "3": 26
+      },
+      "interaction_passed": true,
+      "regime_a_causal": true
+    }
+  },
+  {
+    "sample_id": "66c1f2d893dee48f639ecfb5658a8ccc1b9fbc1cdd9978c35f059bd76c895f0d",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3533005",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_nonstationary_005",
+    "seed": 3533005,
+    "task": "compliant_prelift",
+    "stratum": "nonstationary",
+    "index": 5,
+    "episode_length": 40,
+    "provenance_hash": "b546d4b60d67caea660de8c860d4f56874094fe56fd4d7f74e8348adbf983ee8",
+    "npz_sha256": "f976ef90c3ce3f8b30faa8809242fe881c06002252dbe7ee8464d9397c844668",
+    "privileged_json_sha256": "74ce4f8735a30ed7afb426c10c1d040150e7c8ba55ee90ccef8d36ec82bff12f",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 11.249,
+      "peak_finger_normal_force_n": 2.836,
+      "peak_shear_force_n": 4.433,
+      "max_slip_vel_m_s": 0.0,
+      "max_z_obj_mm": 1.254,
+      "modes_observed": [
+        0,
+        2,
+        4
+      ],
+      "mode_counts": {
+        "0": 1,
+        "4": 1,
+        "2": 38
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "502808f4f5bacba31c25970073ca3d988e2b852eeaadf50f34c5cd99ffaef2d3",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3533006",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_nonstationary_006",
+    "seed": 3533006,
+    "task": "compliant_prelift",
+    "stratum": "nonstationary",
+    "index": 6,
+    "episode_length": 40,
+    "provenance_hash": "550ca73a1058b126d50b6d27c2c0dbde131fe660e50ac88e4c141aa1657cb979",
+    "npz_sha256": "b3331d8ce1bdfd16a8a0969dde2a2ac4aa193e14f82e393462e3d32636560bd3",
+    "privileged_json_sha256": "e1dc302e6644a9ac85ef015ae297c2ec0af70d8dda5af0ab5c10b8bc765be366",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 11.263,
+      "peak_finger_normal_force_n": 2.834,
+      "peak_shear_force_n": 3.452,
+      "max_slip_vel_m_s": 0.005,
+      "max_z_obj_mm": 0.004,
+      "modes_observed": [
+        0,
+        2,
+        3,
+        4
+      ],
+      "mode_counts": {
+        "0": 1,
+        "4": 1,
+        "2": 12,
+        "3": 26
+      },
+      "interaction_passed": true,
+      "regime_a_causal": true
+    }
+  },
+  {
+    "sample_id": "60ffd0577a7fd6f4650ddc2a6eaf8ffba0da704d48c8bac9bfaf4593dfd6d648",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3533007",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_nonstationary_007",
+    "seed": 3533007,
+    "task": "compliant_prelift",
+    "stratum": "nonstationary",
+    "index": 7,
+    "episode_length": 40,
+    "provenance_hash": "0994c7ce8d58d233944601d0ba2b5e6ffc43e9eb5a6cace4163ba85148f04e13",
+    "npz_sha256": "1081b358801f1a43d6e5fb88070b1aaa3d30b175abc41108f86a4a395676a6e9",
+    "privileged_json_sha256": "681035eed8440fddbb17ccb2295f09cae964f3a4471775a8f455c964c1cd9798",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 11.266,
+      "peak_finger_normal_force_n": 2.831,
+      "peak_shear_force_n": 4.427,
+      "max_slip_vel_m_s": 0.0,
+      "max_z_obj_mm": 1.254,
+      "modes_observed": [
+        0,
+        2,
+        4
+      ],
+      "mode_counts": {
+        "0": 1,
+        "4": 1,
+        "2": 38
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "5188d194a3fa9230e251d738c188075663279855b6f7880f13b6ef8752ce56f0",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3533008",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_nonstationary_008",
+    "seed": 3533008,
+    "task": "compliant_prelift",
+    "stratum": "nonstationary",
+    "index": 8,
+    "episode_length": 40,
+    "provenance_hash": "d0719a19bdce596455885f0c76ff1bb8e4e48f43b38dcebe233bb75dc834db6b",
+    "npz_sha256": "9b3cb622c7e36b49222ff1bf6e79eb9b399c5accfc33cd2af9742bcad868cc84",
+    "privileged_json_sha256": "94648819a4de5c70f2e13038eda34cc476a818fb50a93a94c68ab829900ab3c5",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 11.253,
+      "peak_finger_normal_force_n": 2.834,
+      "peak_shear_force_n": 3.463,
+      "max_slip_vel_m_s": 0.005,
+      "max_z_obj_mm": 0.004,
+      "modes_observed": [
+        0,
+        2,
+        3,
+        4
+      ],
+      "mode_counts": {
+        "0": 1,
+        "4": 1,
+        "2": 12,
+        "3": 26
+      },
+      "interaction_passed": true,
+      "regime_a_causal": true
+    }
+  },
+  {
+    "sample_id": "59fe645b8cc07bbc1707dd993ef235bfe2f9cb60d0cf4dcb95488223342ea6f4",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3533009",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_nonstationary_009",
+    "seed": 3533009,
+    "task": "compliant_prelift",
+    "stratum": "nonstationary",
+    "index": 9,
+    "episode_length": 40,
+    "provenance_hash": "68ffb7f3ce0291a58f7834adeb697fa243c8acf1e80993c7202dd6732cadabad",
+    "npz_sha256": "e236e63139e938bd991899a011cf8f1dd369c7885b65c1d607b365c185cd1cf1",
+    "privileged_json_sha256": "8e1de1871644bda184e231bc29073288bde3df4d81f6a2774eaaef324ae20ce2",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 11.262,
+      "peak_finger_normal_force_n": 2.843,
+      "peak_shear_force_n": 4.402,
+      "max_slip_vel_m_s": 0.0,
+      "max_z_obj_mm": 1.254,
+      "modes_observed": [
+        0,
+        2,
+        4
+      ],
+      "mode_counts": {
+        "0": 1,
+        "4": 1,
+        "2": 38
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "99e7255ee498c5a0b864294bd3392506dae2316cc59f27709a96f4fe29093c7a",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3533010",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_nonstationary_010",
+    "seed": 3533010,
+    "task": "compliant_prelift",
+    "stratum": "nonstationary",
+    "index": 10,
+    "episode_length": 40,
+    "provenance_hash": "9dd451249fc373b302256cd6dedf5897ead531a31143421cf02de310e2989a6f",
+    "npz_sha256": "0bf80c1ff03070d485818d81dcc58d8d9c98bfbd1a80fd02bea8d33a4ba1aca6",
+    "privileged_json_sha256": "a1ef7027532837af2e6ae5e8120b54fdceed3c1a8a6785f8b9b15c880658819c",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 11.243,
+      "peak_finger_normal_force_n": 2.828,
+      "peak_shear_force_n": 3.441,
+      "max_slip_vel_m_s": 0.005,
+      "max_z_obj_mm": 0.004,
+      "modes_observed": [
+        0,
+        2,
+        3,
+        4
+      ],
+      "mode_counts": {
+        "0": 1,
+        "4": 1,
+        "2": 12,
+        "3": 26
+      },
+      "interaction_passed": true,
+      "regime_a_causal": true
+    }
+  },
+  {
+    "sample_id": "8ed1703fa1ccdfc456d787298299184ae71f95cc14d68caa0c1cbbf902979f86",
+    "canonical_episode_id": "syn_compliant_prelift_stage3_production_teacher_v1_seed3533011",
+    "slot_alias": "prod35_final_holdout_compliant_prelift_nonstationary_011",
+    "seed": 3533011,
+    "task": "compliant_prelift",
+    "stratum": "nonstationary",
+    "index": 11,
+    "episode_length": 40,
+    "provenance_hash": "86a8de119bb01b20d284d022fbca58273b448c1dc505a1bbe0f7ff255c44474a",
+    "npz_sha256": "1f4728dfb612b5b1e932a56c63019a5d32d7ce92cb54005516016b2b42f75dca",
+    "privileged_json_sha256": "c3b2f23e67a197a9d32b2aa134e734f59a80da931e0a2500eeae9100ab5d7ac4",
+    "interaction_metrics": {
+      "contact_attained": true,
+      "forces_bounded": true,
+      "shear_attained": true,
+      "contact_modes_attained": true,
+      "event_specific_passed": true,
+      "peak_total_normal_force_n": 11.26,
+      "peak_finger_normal_force_n": 2.844,
+      "peak_shear_force_n": 4.431,
+      "max_slip_vel_m_s": 0.0,
+      "max_z_obj_mm": 1.254,
+      "modes_observed": [
+        0,
+        2,
+        4
+      ],
+      "mode_counts": {
+        "0": 1,
+        "4": 1,
+        "2": 38
+      },
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "ce81b58782247273aff952733a74257f0b9373d6c698d6900590b8685dfeec96",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3541000",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_nominal_000",
+    "seed": 3541000,
+    "task": "peg_in_hole",
+    "stratum": "nominal",
+    "index": 0,
+    "episode_length": 30,
+    "provenance_hash": "0d4b1504d4a849c4e6fcbcfbb7ecb415ab593a64bb32bbbb616ffbeed86cbf84",
+    "npz_sha256": "1574e2e3a3a9f484489b48185936779128a20df6fb2be9e8ca4a279c906659b8",
+    "privileged_json_sha256": "82de2740756557ce1266b29446dfe362927d23f868b05f96cd17b8f8e1708749",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 0.281,
+      "max_torque_nm": 0.0,
+      "min_z_mm": -14.0,
+      "max_insertion_mm": 14.0,
+      "modes_observed": [
+        0,
+        1,
+        2
+      ],
+      "mode_counts": {
+        "0": 15,
+        "1": 1,
+        "2": 14
+      },
+      "strata_observed": [
+        0,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "784e032edd64264b5662d6cc6afb7719d7252220b2c72313522c1a52742b23cd",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3541001",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_nominal_001",
+    "seed": 3541001,
+    "task": "peg_in_hole",
+    "stratum": "nominal",
+    "index": 1,
+    "episode_length": 30,
+    "provenance_hash": "00549b3e366963acf6734a9e4a8d7332c9969d443d059ee3526b13e53b590c1c",
+    "npz_sha256": "f3f733301510ebaf4618a47524c205dc4ded9717e0d4792f06aa7cebb7dcffaa",
+    "privileged_json_sha256": "7e4e4bd888b2351cb0602d5192fb4652194922573e4e2015d6d651803020f154",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 0.162,
+      "max_torque_nm": 0.0,
+      "min_z_mm": -13.592,
+      "max_insertion_mm": 13.592,
+      "modes_observed": [
+        0,
+        1,
+        2
+      ],
+      "mode_counts": {
+        "0": 15,
+        "1": 1,
+        "2": 14
+      },
+      "strata_observed": [
+        0,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "76ab38dffe9ec6574beecfbad3b5e9c2cf6537fb23cd73e06bf927e9c02e11bf",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3541002",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_nominal_002",
+    "seed": 3541002,
+    "task": "peg_in_hole",
+    "stratum": "nominal",
+    "index": 2,
+    "episode_length": 30,
+    "provenance_hash": "5dd995fcb28037666193f493abb89ea68b2b52ad1d1a395b81367fbd4a32f575",
+    "npz_sha256": "b49a826d231056e40bcb24bf79eb8d269ab998e4367229653270297374be6ad0",
+    "privileged_json_sha256": "9e4f8ac34432a25a5686ae354d34a0fc489d615c456413a3d0dd2ceb9a0f231c",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 0.287,
+      "max_torque_nm": 0.0,
+      "min_z_mm": -14.099,
+      "max_insertion_mm": 14.099,
+      "modes_observed": [
+        0,
+        1,
+        2
+      ],
+      "mode_counts": {
+        "0": 15,
+        "1": 1,
+        "2": 14
+      },
+      "strata_observed": [
+        0,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "16affc2e7df6f5213635095b16e97f8a2076e80a1f16cfd78405c2cf4b248eaf",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3541003",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_nominal_003",
+    "seed": 3541003,
+    "task": "peg_in_hole",
+    "stratum": "nominal",
+    "index": 3,
+    "episode_length": 30,
+    "provenance_hash": "bb05fbbcaee1b77cc24a9b03af5d10d494f7317ae825e577cac4196f93f14c74",
+    "npz_sha256": "9603e688b0b982b768ca8f52476bf904233fa88ea9395ffaa7a2dfaf8de7ddf7",
+    "privileged_json_sha256": "0834b333f7ebb7e72c2f31cd91fe4646768f0406850cf9b1bb1c449a99b6c491",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 0.166,
+      "max_torque_nm": 0.0,
+      "min_z_mm": -12.638,
+      "max_insertion_mm": 12.638,
+      "modes_observed": [
+        0,
+        1,
+        2
+      ],
+      "mode_counts": {
+        "0": 16,
+        "1": 1,
+        "2": 13
+      },
+      "strata_observed": [
+        0,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "cf2115c28c8d52d832a9045af0432ee00168823b869b8372b8833fd014eb4683",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3541004",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_nominal_004",
+    "seed": 3541004,
+    "task": "peg_in_hole",
+    "stratum": "nominal",
+    "index": 4,
+    "episode_length": 30,
+    "provenance_hash": "d46644310ea20fb2d50ba5c9df8c1d5a7842aced5d6098bc307d25a00c104b66",
+    "npz_sha256": "f15b894891095f5dfead30445d70fc314291837f5276b76efc063b2375ef993d",
+    "privileged_json_sha256": "03f67b9cdbe6499f5202482eb614cb1172a92aa1d3aeded9c3ea94acaf6033e5",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 0.161,
+      "max_torque_nm": 0.0,
+      "min_z_mm": -14.097,
+      "max_insertion_mm": 14.097,
+      "modes_observed": [
+        0,
+        1,
+        2
+      ],
+      "mode_counts": {
+        "0": 15,
+        "1": 1,
+        "2": 14
+      },
+      "strata_observed": [
+        0,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "451347ba8bf20a3520029b81a296c27d6205499fbdf5b8abe4d9a20bd138febf",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3541005",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_nominal_005",
+    "seed": 3541005,
+    "task": "peg_in_hole",
+    "stratum": "nominal",
+    "index": 5,
+    "episode_length": 30,
+    "provenance_hash": "a9ed6a7b8434b92814efebcd128d0f11fd28ee70af273019670bec797c135d12",
+    "npz_sha256": "c128b00318dc9ca70631405ac6dfabb022a57de6a4fb6669586bf51a109b3873",
+    "privileged_json_sha256": "187ed5eb3db9e13ac0173a820a1824daf6f4de9bb56df39ec1d3a46dc6063c35",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 0.213,
+      "max_torque_nm": 0.0,
+      "min_z_mm": -12.902,
+      "max_insertion_mm": 12.902,
+      "modes_observed": [
+        0,
+        1,
+        2
+      ],
+      "mode_counts": {
+        "0": 16,
+        "1": 1,
+        "2": 13
+      },
+      "strata_observed": [
+        0,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "d60521b49bec114b872092e71de91f9dde12c5c704ee11d9e94e6e85ed924cba",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3541006",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_nominal_006",
+    "seed": 3541006,
+    "task": "peg_in_hole",
+    "stratum": "nominal",
+    "index": 6,
+    "episode_length": 30,
+    "provenance_hash": "1bfbd5e0e028c9ca4779826851dd8f2f9a08c1fa1ad0c2963e911c5ff3424257",
+    "npz_sha256": "4ca4ab61caf78e453b68660cfa6af7a012733ed6eda3209ff34b2ae55a4e239d",
+    "privileged_json_sha256": "f310c4f834bb911caccf48b22bc04a5c793c8e0a53a552961fb738822ff8bfdb",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 0.28,
+      "max_torque_nm": 0.0,
+      "min_z_mm": -12.511,
+      "max_insertion_mm": 12.511,
+      "modes_observed": [
+        0,
+        1,
+        2
+      ],
+      "mode_counts": {
+        "0": 16,
+        "1": 1,
+        "2": 13
+      },
+      "strata_observed": [
+        0,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "17d29c1be710b43915f6413cda12ea47d7cd4eddc4a5af8f9fd204df17fc0803",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3541007",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_nominal_007",
+    "seed": 3541007,
+    "task": "peg_in_hole",
+    "stratum": "nominal",
+    "index": 7,
+    "episode_length": 30,
+    "provenance_hash": "c93a33c4d9c97d64bc48f8da70f7c0c857d0f18b584e1edda0d4e05da8af11f3",
+    "npz_sha256": "c5c752ee78429ef970e860d2431178b9dbcf0e6089c191cc3772b1c1f2809218",
+    "privileged_json_sha256": "20b0dab48a9796da5a7e8eff3da086ac3476194471a3a9110223ba5a495053ce",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 0.258,
+      "max_torque_nm": 0.0,
+      "min_z_mm": -13.488,
+      "max_insertion_mm": 13.488,
+      "modes_observed": [
+        0,
+        1,
+        2
+      ],
+      "mode_counts": {
+        "0": 15,
+        "1": 1,
+        "2": 14
+      },
+      "strata_observed": [
+        0,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "23ac000fb82f43ad1baf0b1ebc7de1c097fb8d3ede59070bbae91201ca309d44",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3541008",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_nominal_008",
+    "seed": 3541008,
+    "task": "peg_in_hole",
+    "stratum": "nominal",
+    "index": 8,
+    "episode_length": 30,
+    "provenance_hash": "8c555402dc04d9e173f89d324f97d48dae6897ad5584e5bdc93d99749ebf6256",
+    "npz_sha256": "98ef9298d632d2e6ad47162dc19688100373a7159a613d9e6bba0449cdd44d6d",
+    "privileged_json_sha256": "ae6c066cb0b7645099744af85ad77da77d3ea7264ec843324e24f28b91acbaed",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 0.39,
+      "max_torque_nm": 0.018,
+      "min_z_mm": -12.883,
+      "max_insertion_mm": 12.883,
+      "modes_observed": [
+        0,
+        1,
+        2
+      ],
+      "mode_counts": {
+        "0": 16,
+        "1": 1,
+        "2": 13
+      },
+      "strata_observed": [
+        0,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "71670a46e2362fd12dba9b69224f6d0309a9cbbc8307e87b5bf983d69dda850c",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3541009",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_nominal_009",
+    "seed": 3541009,
+    "task": "peg_in_hole",
+    "stratum": "nominal",
+    "index": 9,
+    "episode_length": 30,
+    "provenance_hash": "8fd94db391a5aa73531931c42f544ee329e7e091f1e6d2bf4d694aea17de0aed",
+    "npz_sha256": "9f13cfb1bdc8e9f3fcb5c09cb7ced9813885068fffd2f07750d0832aa82ae1b3",
+    "privileged_json_sha256": "dfeeeb01a86342be5b16ff23f2390288142ddc799f6f7f96a18f82347a93460b",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 0.188,
+      "max_torque_nm": 0.0,
+      "min_z_mm": -14.405,
+      "max_insertion_mm": 14.405,
+      "modes_observed": [
+        0,
+        1,
+        2
+      ],
+      "mode_counts": {
+        "0": 14,
+        "1": 1,
+        "2": 15
+      },
+      "strata_observed": [
+        0,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "284faffdc49dfeb29f86e71af7a136350d2964239409f1b9317e3787d4fa9fde",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3541010",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_nominal_010",
+    "seed": 3541010,
+    "task": "peg_in_hole",
+    "stratum": "nominal",
+    "index": 10,
+    "episode_length": 30,
+    "provenance_hash": "4c305424ec0ed62e6e5a3ee93491d7852caee8c93ca9c7b9f6621182206c9dbd",
+    "npz_sha256": "a96803f3f85376109885acc8ce46fa9bd766a25d9db1e159ff07e8948facdb83",
+    "privileged_json_sha256": "3a7f7d69d7a78facc481582fe349736569ae5e3062281a8edb3b442e855f98fd",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 0.204,
+      "max_torque_nm": 0.0,
+      "min_z_mm": -12.874,
+      "max_insertion_mm": 12.874,
+      "modes_observed": [
+        0,
+        1,
+        2
+      ],
+      "mode_counts": {
+        "0": 16,
+        "1": 1,
+        "2": 13
+      },
+      "strata_observed": [
+        0,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "1a815d180306381f6e88add5c2596b1ccbced59df5c2f89e44ff40b2c9348029",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3541011",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_nominal_011",
+    "seed": 3541011,
+    "task": "peg_in_hole",
+    "stratum": "nominal",
+    "index": 11,
+    "episode_length": 30,
+    "provenance_hash": "878e925087cdfcce2003748b5aa084137b42b10d68d45886f25083e1005b34c6",
+    "npz_sha256": "c8957940870a9d904157c3d5917f076a1b3462d89795e473489b149a893dbb24",
+    "privileged_json_sha256": "b289948b2ae624f2e9d12085bc982146011c87393350d1e3b16ab4c8530df2ae",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 0.173,
+      "max_torque_nm": 0.0,
+      "min_z_mm": -14.181,
+      "max_insertion_mm": 14.181,
+      "modes_observed": [
+        0,
+        1,
+        2
+      ],
+      "mode_counts": {
+        "0": 15,
+        "1": 1,
+        "2": 14
+      },
+      "strata_observed": [
+        0,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "a05d9d6ca2627a7ed233ac55de91f05e3e01a6efbcb69bc0b0e2d588636c5b95",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3541012",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_nominal_012",
+    "seed": 3541012,
+    "task": "peg_in_hole",
+    "stratum": "nominal",
+    "index": 12,
+    "episode_length": 30,
+    "provenance_hash": "9d61505e394dff9319672b2e7d9d60fcb8b9c78ab1ede0e73ceaada0b1c63123",
+    "npz_sha256": "ee14ace1d91e6eb4e9b875f7f5026fb95d39e815dc78dca8b8c8b7a5ce29d40f",
+    "privileged_json_sha256": "0833fdc3fa0971f40f53b831c3e1ea8880f48eade53b28ab2d9f013e6743e8d8",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 0.158,
+      "max_torque_nm": 0.0,
+      "min_z_mm": -14.278,
+      "max_insertion_mm": 14.278,
+      "modes_observed": [
+        0,
+        1,
+        2
+      ],
+      "mode_counts": {
+        "0": 14,
+        "1": 1,
+        "2": 15
+      },
+      "strata_observed": [
+        0,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "da088baf7bee241a19c55ee6cdb63a36596a8fdddd3ee9198d0e22c357061e85",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3541013",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_nominal_013",
+    "seed": 3541013,
+    "task": "peg_in_hole",
+    "stratum": "nominal",
+    "index": 13,
+    "episode_length": 30,
+    "provenance_hash": "74cf59d966d3a8b0a8e0889f79bbec71053045890e3747630eb9fdc0c09094b8",
+    "npz_sha256": "fabbe6670936ed3b75c6bd4aab6bca91883e5f5689f8656c6100e61ab2f9275e",
+    "privileged_json_sha256": "2ac2908c9380c12dd218234a32dfbcffd38cc82af6dc60054fb69eab52d3c9c1",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 0.387,
+      "max_torque_nm": 0.015,
+      "min_z_mm": -13.965,
+      "max_insertion_mm": 13.965,
+      "modes_observed": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "mode_counts": {
+        "0": 15,
+        "1": 1,
+        "2": 13,
+        "3": 1
+      },
+      "strata_observed": [
+        0,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "8d4acd10ab240be038ef16983a61ef40a9b8a7c7f688679c11975b8fa1699ebc",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3541014",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_nominal_014",
+    "seed": 3541014,
+    "task": "peg_in_hole",
+    "stratum": "nominal",
+    "index": 14,
+    "episode_length": 30,
+    "provenance_hash": "5a9711fb766af86206b74a7c5e8bec0102aca418b67eb262f07dd0c2518b53c8",
+    "npz_sha256": "4816de26274eae031936e40dd23d667f53669462f07995abe79a17dd33994f2f",
+    "privileged_json_sha256": "2ed251e87318cad224e716172ecd2554f588e4e2e6b061f9219a8015264ac44d",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 0.4,
+      "max_torque_nm": 0.016,
+      "min_z_mm": -14.079,
+      "max_insertion_mm": 14.079,
+      "modes_observed": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "mode_counts": {
+        "0": 15,
+        "1": 1,
+        "2": 13,
+        "3": 1
+      },
+      "strata_observed": [
+        0,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "d1bf99eeb34c9c7e17fc42b0aa14809adb3bcfeb03c968d34c328ac055ab6af2",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3541015",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_nominal_015",
+    "seed": 3541015,
+    "task": "peg_in_hole",
+    "stratum": "nominal",
+    "index": 15,
+    "episode_length": 30,
+    "provenance_hash": "da50102ab645101354ff304d26f64e53c0bebd0ac96342315f30465eee984e7c",
+    "npz_sha256": "156da2a7290596b6579cb87ca08c19c50dd2248f95babce05bacd7221b8a1eee",
+    "privileged_json_sha256": "c27a418c0822dd1c472151a1b1bb7453c41964a0cb75fd2ba3007fa52cc121e0",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 0.159,
+      "max_torque_nm": 0.0,
+      "min_z_mm": -13.394,
+      "max_insertion_mm": 13.394,
+      "modes_observed": [
+        0,
+        1,
+        2
+      ],
+      "mode_counts": {
+        "0": 15,
+        "1": 1,
+        "2": 14
+      },
+      "strata_observed": [
+        0,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "60768ef1b8719cb7c3c33acbf57d8d36fa3e93daf2bfa7ecd185c6db53f35a71",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3541016",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_nominal_016",
+    "seed": 3541016,
+    "task": "peg_in_hole",
+    "stratum": "nominal",
+    "index": 16,
+    "episode_length": 30,
+    "provenance_hash": "fcf58e03a6f83060fc82728d3769de46a7d006fb2b023d5da8b3a21bd5fcf732",
+    "npz_sha256": "1d4565f62c423a053587ef6b62b28662414f029cc8afda0f498f0327ebfe89e5",
+    "privileged_json_sha256": "7bf705a801c0ee908683f59e7efe678ba76466b73a2586868903fc8f26e36a7f",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 0.254,
+      "max_torque_nm": 0.0,
+      "min_z_mm": -13.105,
+      "max_insertion_mm": 13.105,
+      "modes_observed": [
+        0,
+        1,
+        2
+      ],
+      "mode_counts": {
+        "0": 16,
+        "1": 1,
+        "2": 13
+      },
+      "strata_observed": [
+        0,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "c0512d920f022f979453d2dd897d4b620a4bd5f73141202b8b5f7c5df36e24da",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3541017",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_nominal_017",
+    "seed": 3541017,
+    "task": "peg_in_hole",
+    "stratum": "nominal",
+    "index": 17,
+    "episode_length": 30,
+    "provenance_hash": "a7e39949ac6caec12854d714d58f00c6fd9b84f444d4970d6c0eff0bcf6abacd",
+    "npz_sha256": "0f799504d88d62f446ba87a65308b9136951971987768dad7a44ddedd877979a",
+    "privileged_json_sha256": "178756b035c7ffcba1e5e6cd5a521964634e3fde16cf99f0a8fb944774aa493f",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 0.256,
+      "max_torque_nm": 0.0,
+      "min_z_mm": -13.333,
+      "max_insertion_mm": 13.333,
+      "modes_observed": [
+        0,
+        1,
+        2
+      ],
+      "mode_counts": {
+        "0": 15,
+        "1": 1,
+        "2": 14
+      },
+      "strata_observed": [
+        0,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "01652737de3408050d45a4933f4bac947230751fccf23ced5aaa2e45503397f8",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3541018",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_nominal_018",
+    "seed": 3541018,
+    "task": "peg_in_hole",
+    "stratum": "nominal",
+    "index": 18,
+    "episode_length": 30,
+    "provenance_hash": "88ff10d2c3e7a959fd7a5153fbc997e7f0501423e40f99a5698dd1e3905adc2b",
+    "npz_sha256": "25741a45dfcf4f0f682fcbd5e29bfc878005a0e666b9a5c8aba67f1305a15d9a",
+    "privileged_json_sha256": "6374d863b749aa1ea0f6642267ba50400cca4d050707970fc71401b2795448c3",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 0.414,
+      "max_torque_nm": 0.017,
+      "min_z_mm": -14.396,
+      "max_insertion_mm": 14.396,
+      "modes_observed": [
+        0,
+        1,
+        2
+      ],
+      "mode_counts": {
+        "0": 14,
+        "1": 1,
+        "2": 15
+      },
+      "strata_observed": [
+        0,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "81c4c50f76e7f1b6023edd3fd312382111eedcf3c79220903b6d9ace023943b8",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3541019",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_nominal_019",
+    "seed": 3541019,
+    "task": "peg_in_hole",
+    "stratum": "nominal",
+    "index": 19,
+    "episode_length": 30,
+    "provenance_hash": "10d6767c90f594c575cd2fc1b332db7826fb800e7c2f8c5f09ff0847c82fbf45",
+    "npz_sha256": "707e913c1064b032400f03a373d96310b9760317dc3a6882e8206b29f8c2e879",
+    "privileged_json_sha256": "c2efc3299b6bc629840252f88489c828be2d332f2c9f65f3ec1415c4cb05a667",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 0.234,
+      "max_torque_nm": 0.0,
+      "min_z_mm": -13.054,
+      "max_insertion_mm": 13.054,
+      "modes_observed": [
+        0,
+        1,
+        2
+      ],
+      "mode_counts": {
+        "0": 16,
+        "1": 1,
+        "2": 13
+      },
+      "strata_observed": [
+        0,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "dee0509dfe5b64826b954ce04e064f8be2f1dd1620203446b53efc28a0976919",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3541020",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_nominal_020",
+    "seed": 3541020,
+    "task": "peg_in_hole",
+    "stratum": "nominal",
+    "index": 20,
+    "episode_length": 30,
+    "provenance_hash": "2f81fd8832fa50ae1c45b9a061ba7b9cf8e14924eefb453023d0ca323abc10c4",
+    "npz_sha256": "005e8bcceb7b08f768d2c8ff12658718a1e79e38b46656efa06f36758c40e4fb",
+    "privileged_json_sha256": "33bc8541bd2e7cd8ab4cea6073d8078e421ff680a045418c0bbf789ec6a0f741",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 0.191,
+      "max_torque_nm": 0.0,
+      "min_z_mm": -13.621,
+      "max_insertion_mm": 13.621,
+      "modes_observed": [
+        0,
+        1,
+        2
+      ],
+      "mode_counts": {
+        "0": 15,
+        "1": 1,
+        "2": 14
+      },
+      "strata_observed": [
+        0,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "7f7c710b6557b0e9ade5123593f8cdb3ace781b613b0d864e6613d9265f7f2da",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3541021",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_nominal_021",
+    "seed": 3541021,
+    "task": "peg_in_hole",
+    "stratum": "nominal",
+    "index": 21,
+    "episode_length": 30,
+    "provenance_hash": "29276c7c209806acd569ef42599f87f004817b17fe3404842b03fbdda2a0fdfc",
+    "npz_sha256": "a119a11bbd12f29c819609fa1e643cdef2d07955d54dfb01f83885aee2f2e387",
+    "privileged_json_sha256": "a9e5201acc542b07499ce240d4a402f69ae915cbe1e35e78773e26ada61f010a",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 0.204,
+      "max_torque_nm": 0.0,
+      "min_z_mm": -13.533,
+      "max_insertion_mm": 13.533,
+      "modes_observed": [
+        0,
+        1,
+        2
+      ],
+      "mode_counts": {
+        "0": 15,
+        "1": 1,
+        "2": 14
+      },
+      "strata_observed": [
+        0,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "426cac4dc820e552b500c3028d523716190deeaaaab48e298a8e7f8007cfd8f5",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3541022",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_nominal_022",
+    "seed": 3541022,
+    "task": "peg_in_hole",
+    "stratum": "nominal",
+    "index": 22,
+    "episode_length": 30,
+    "provenance_hash": "72fce5a72f2b181d74aec7572f3cc93f69fb6c4318ca6d36ac2d7ff172d21090",
+    "npz_sha256": "ff3fe7bf1a088911eb226595eb299dc6df012f422cbb0c6bb96b48523947b088",
+    "privileged_json_sha256": "70efa60c3b9b088da0918a1baf2d5dafa3521d48ab25ffca225d9d2605f6d6b6",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 0.223,
+      "max_torque_nm": 0.0,
+      "min_z_mm": -14.03,
+      "max_insertion_mm": 14.03,
+      "modes_observed": [
+        0,
+        1,
+        2
+      ],
+      "mode_counts": {
+        "0": 15,
+        "1": 1,
+        "2": 14
+      },
+      "strata_observed": [
+        0,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "1790ae4034f870e7a0ccca1aaaf469aea64ff58b9e2567ef5c6352caac5ad462",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3541023",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_nominal_023",
+    "seed": 3541023,
+    "task": "peg_in_hole",
+    "stratum": "nominal",
+    "index": 23,
+    "episode_length": 30,
+    "provenance_hash": "36fd9313eddb9172a7b27f99a50897e71acd4237d7b3efcdca4b4f4284fa6bc2",
+    "npz_sha256": "b12d1356ced65e0ad70c231873ec2673a96415e1812a108b76343da1eba76750",
+    "privileged_json_sha256": "10a104a2b3214fdc76ffb900e19cd43b8ea67f1b5eac313cd92eae3d346d9427",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 0.299,
+      "max_torque_nm": 0.0,
+      "min_z_mm": -13.653,
+      "max_insertion_mm": 13.653,
+      "modes_observed": [
+        0,
+        1,
+        2
+      ],
+      "mode_counts": {
+        "0": 15,
+        "1": 1,
+        "2": 14
+      },
+      "strata_observed": [
+        0,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "51dfcfed872f25fb3cabf55b27d8fabfdc72a8ff33ddb96348826150441b05b0",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3541024",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_nominal_024",
+    "seed": 3541024,
+    "task": "peg_in_hole",
+    "stratum": "nominal",
+    "index": 24,
+    "episode_length": 30,
+    "provenance_hash": "395653d763243b4ac1693d4e78ba0cc71ea9849fa979336b587af0854499f2cf",
+    "npz_sha256": "2782641f783c491897f86edeb8fda3b821cee1e6b105a4591dd03758b396e290",
+    "privileged_json_sha256": "1c6fb8d8795d758b4b5c8e626fcc9b47669505972eff57e706126781ce7f237f",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 0.454,
+      "max_torque_nm": 0.018,
+      "min_z_mm": -14.268,
+      "max_insertion_mm": 14.268,
+      "modes_observed": [
+        0,
+        1,
+        2
+      ],
+      "mode_counts": {
+        "0": 14,
+        "1": 1,
+        "2": 15
+      },
+      "strata_observed": [
+        0,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "d79866af2681cae76acd59225fcdce66ac7d5ae3bc3ca35ee0c7e849af6672e6",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3541025",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_nominal_025",
+    "seed": 3541025,
+    "task": "peg_in_hole",
+    "stratum": "nominal",
+    "index": 25,
+    "episode_length": 30,
+    "provenance_hash": "e2f0b8768edf5ec456788450ad37f7975e34cc889d578caa48c937692ff7c307",
+    "npz_sha256": "07955fa8acebab07c680e6c868a84b642ac37e3758cf98c9adc2fcab0ba190f6",
+    "privileged_json_sha256": "79dc4228a08e81593c95911637e83344409e31047add9a521dbd69d89c97f7f8",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 0.225,
+      "max_torque_nm": 0.0,
+      "min_z_mm": -12.687,
+      "max_insertion_mm": 12.687,
+      "modes_observed": [
+        0,
+        1,
+        2
+      ],
+      "mode_counts": {
+        "0": 16,
+        "1": 1,
+        "2": 13
+      },
+      "strata_observed": [
+        0,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "d22d6dab1e3d4e51476e3721fe3afc4faeeb63155df937e7eb9746e7e4f22475",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3541026",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_nominal_026",
+    "seed": 3541026,
+    "task": "peg_in_hole",
+    "stratum": "nominal",
+    "index": 26,
+    "episode_length": 30,
+    "provenance_hash": "6980c08f764d54ed5e890d6a82db26119a637c5ffd3dd19c8bb4cbb6549c91d5",
+    "npz_sha256": "367f7f9f160491bf49f161b2a5021e2466740a49fdbc41a4f66a55df27fbe6ea",
+    "privileged_json_sha256": "81c43c02cead9c9a2ea3a382d48bb6be9c1b1802bdc1b53f4ead73cd7a141d09",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 0.296,
+      "max_torque_nm": 0.0,
+      "min_z_mm": -13.637,
+      "max_insertion_mm": 13.637,
+      "modes_observed": [
+        0,
+        1,
+        2
+      ],
+      "mode_counts": {
+        "0": 15,
+        "1": 1,
+        "2": 14
+      },
+      "strata_observed": [
+        0,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "1bbd763d4106f412aa8ce615e10d4b3d8f09a93bda859d92fd0de2f9153bc262",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3541027",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_nominal_027",
+    "seed": 3541027,
+    "task": "peg_in_hole",
+    "stratum": "nominal",
+    "index": 27,
+    "episode_length": 30,
+    "provenance_hash": "a7dc23061dccfa474d4a2f03a9f6c4eea5b7f25b0269b0f058472d1388407cd6",
+    "npz_sha256": "446a805b93a1f5036caa46c44f62ce10f381fad41066e63446fd638aecad86c4",
+    "privileged_json_sha256": "b949ecfef3400f44294b7cf18166014db5d2c20ac3cac1c67a3320d275f127c7",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 0.187,
+      "max_torque_nm": 0.0,
+      "min_z_mm": -14.011,
+      "max_insertion_mm": 14.011,
+      "modes_observed": [
+        0,
+        1,
+        2
+      ],
+      "mode_counts": {
+        "0": 15,
+        "1": 1,
+        "2": 14
+      },
+      "strata_observed": [
+        0,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "ea049740775ad3957a67c4b075f45dac02848ec249ac84d5cb2c3bb934624b06",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3541028",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_nominal_028",
+    "seed": 3541028,
+    "task": "peg_in_hole",
+    "stratum": "nominal",
+    "index": 28,
+    "episode_length": 30,
+    "provenance_hash": "483d397ca26beb7bac83fc4a97b8275574b5c1031a68f9adf93c12e81461278b",
+    "npz_sha256": "167cefb0f343fdcb3ae2d2e9ae0fe166e17434b11cf8efabfe0d3a1e1111607a",
+    "privileged_json_sha256": "e284c2c8216f59481551ff734463c9ba34a4b5a71be125229b858c92052b6c5a",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 0.212,
+      "max_torque_nm": 0.0,
+      "min_z_mm": -13.154,
+      "max_insertion_mm": 13.154,
+      "modes_observed": [
+        0,
+        1,
+        2
+      ],
+      "mode_counts": {
+        "0": 16,
+        "1": 1,
+        "2": 13
+      },
+      "strata_observed": [
+        0,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "f714c69178d5cf504e0b6b0a10e04ec6d73ba394fff8923c4bb5c5d3a602e30b",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3541029",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_nominal_029",
+    "seed": 3541029,
+    "task": "peg_in_hole",
+    "stratum": "nominal",
+    "index": 29,
+    "episode_length": 30,
+    "provenance_hash": "2a00fe0183fd2c1715887c41b6d75960f920ec561b529ab859916ae21f7ad202",
+    "npz_sha256": "74a649cb1b7ad3a81e8431dada6e8392fd27eeff7faefb0f8c3d820cb795572e",
+    "privileged_json_sha256": "010a16735cf903fc4ea9191588ceed3e3f70b18f465b7fa1abda502d2dd196c3",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 0.234,
+      "max_torque_nm": 0.0,
+      "min_z_mm": -12.941,
+      "max_insertion_mm": 12.941,
+      "modes_observed": [
+        0,
+        1,
+        2
+      ],
+      "mode_counts": {
+        "0": 16,
+        "1": 1,
+        "2": 13
+      },
+      "strata_observed": [
+        0,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "01731ebe0f4997e18b9b408b6d37474df5bb3f308e0b3526e357c7e15cbfb191",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3544000",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_impact_000",
+    "seed": 3544000,
+    "task": "peg_in_hole",
+    "stratum": "impact",
+    "index": 0,
+    "episode_length": 30,
+    "provenance_hash": "ddcfd5253e1d2c7e687c9e1e54e24931ec3b34ec00ce8cd9478e7760dcc35495",
+    "npz_sha256": "ddaff0ecedc6b61ec97c39496d76410a986581db0f4da760a3fc57cf8758b783",
+    "privileged_json_sha256": "6a5df237091094ada2eb53dc8edd6b253102ead67d107a3ca8bac5876204f379",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 9.966567225825768,
+      "max_torque_nm": 0.43696193112505033,
+      "min_z_mm": -12.616,
+      "max_insertion_mm": 12.616,
+      "modes_observed": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "mode_counts": {
+        "0": 18,
+        "3": 1,
+        "1": 1,
+        "2": 10
+      },
+      "strata_observed": [
+        0,
+        1,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true,
+      "passed": true,
+      "impact_dynamics_passed": true,
+      "force_limit_passed": true,
+      "torque_limit_passed": true,
+      "rim_event_steps": [
+        16,
+        17
+      ],
+      "event_impulse_n_s": 0.09966567225825769,
+      "event_peak_rising_rate_n_s": 996.6567225825768,
+      "unrelated_peak_outside_event": false
+    }
+  },
+  {
+    "sample_id": "f016beb04e10e03d370fd7803202aa44fc872a6d59e51a5832ba818558444db7",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3544001",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_impact_001",
+    "seed": 3544001,
+    "task": "peg_in_hole",
+    "stratum": "impact",
+    "index": 1,
+    "episode_length": 30,
+    "provenance_hash": "7fc768acb4f687d338b94bcc7c7d1cbc54c714e37cb1c56b2a30c0bdf53d85a5",
+    "npz_sha256": "d986dbc1fc7362498f4d836691b79a5e42ee0cf82724a1d58567d1f72761c5ac",
+    "privileged_json_sha256": "0ac1a0f689f8106140f8084ba1a630e575abab2a277893d87e337841eb004fe9",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 17.71695326645927,
+      "max_torque_nm": 0.703261889780034,
+      "min_z_mm": -13.66,
+      "max_insertion_mm": 13.66,
+      "modes_observed": [
+        0,
+        1,
+        2,
+        4
+      ],
+      "mode_counts": {
+        "0": 17,
+        "4": 1,
+        "1": 1,
+        "2": 11
+      },
+      "strata_observed": [
+        0,
+        1,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true,
+      "passed": true,
+      "impact_dynamics_passed": true,
+      "force_limit_passed": true,
+      "torque_limit_passed": true,
+      "rim_event_steps": [
+        15,
+        16
+      ],
+      "event_impulse_n_s": 0.1771695326645927,
+      "event_peak_rising_rate_n_s": 1771.695326645927,
+      "unrelated_peak_outside_event": false
+    }
+  },
+  {
+    "sample_id": "83327084111f8fcf8ffebdb5dedd7ecd455bb66dfb22b9c7ee13e0d342e20b21",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3544002",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_impact_002",
+    "seed": 3544002,
+    "task": "peg_in_hole",
+    "stratum": "impact",
+    "index": 2,
+    "episode_length": 30,
+    "provenance_hash": "4e46feb538f8ff46b53752e45e350072f3016d4e019bf2e1134b1d262136d6d6",
+    "npz_sha256": "58272b4fc785a4286ce4411914a798194651d53f651312008f02eb87cd6d2958",
+    "privileged_json_sha256": "56f389a104e5b4efe0d35d87c55c62b4ac596ae35a892ff32b40f332ddc3d010",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 21.71596310732107,
+      "max_torque_nm": 0.8490388316173458,
+      "min_z_mm": -14.123,
+      "max_insertion_mm": 14.123,
+      "modes_observed": [
+        0,
+        1,
+        2,
+        4
+      ],
+      "mode_counts": {
+        "0": 17,
+        "4": 1,
+        "1": 1,
+        "2": 11
+      },
+      "strata_observed": [
+        0,
+        1,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true,
+      "passed": true,
+      "impact_dynamics_passed": true,
+      "force_limit_passed": true,
+      "torque_limit_passed": true,
+      "rim_event_steps": [
+        15,
+        16
+      ],
+      "event_impulse_n_s": 0.2171596310732107,
+      "event_peak_rising_rate_n_s": 2171.5963107321068,
+      "unrelated_peak_outside_event": false
+    }
+  },
+  {
+    "sample_id": "43f9925910bf92f9d7648c34b7dd6e766b3360a77f8b040e514aa01f496a3a27",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3544003",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_impact_003",
+    "seed": 3544003,
+    "task": "peg_in_hole",
+    "stratum": "impact",
+    "index": 3,
+    "episode_length": 30,
+    "provenance_hash": "defa82cdc95cb49028adcb150910b6cb1f5b4cb3492717547bb806027ea28f98",
+    "npz_sha256": "bb45870701d016a664034b3d96ba42c03b8f83f9c7c877a58c5c263eaef49c57",
+    "privileged_json_sha256": "5bf7a66e9ef8688277a794b55532315144580018b69b122c18bf128c8d117e38",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 8.50200634064432,
+      "max_torque_nm": 0.4023113027657469,
+      "min_z_mm": -14.466,
+      "max_insertion_mm": 14.466,
+      "modes_observed": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "mode_counts": {
+        "0": 16,
+        "3": 1,
+        "1": 1,
+        "2": 12
+      },
+      "strata_observed": [
+        0,
+        1,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true,
+      "passed": true,
+      "impact_dynamics_passed": true,
+      "force_limit_passed": true,
+      "torque_limit_passed": true,
+      "rim_event_steps": [
+        14,
+        15
+      ],
+      "event_impulse_n_s": 0.08502006340644319,
+      "event_peak_rising_rate_n_s": 850.2006340644319,
+      "unrelated_peak_outside_event": false
+    }
+  },
+  {
+    "sample_id": "2e438e82733aa9d87fe6cc014634cb2b6bd3cde35d2902394ba5a28225ffa9d9",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3544004",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_impact_004",
+    "seed": 3544004,
+    "task": "peg_in_hole",
+    "stratum": "impact",
+    "index": 4,
+    "episode_length": 30,
+    "provenance_hash": "22dbd4782128d00499a51e7ef7c82f922135e57df52a1676f17c245c6978a131",
+    "npz_sha256": "1c5c2b3454fc42b69ff39005e1f75366fde38ff72fb371d764ad21efad765ebe",
+    "privileged_json_sha256": "4ccda088d99a0acce1cdd0ab61280cd0a875c2d9f65b2db0380639e1b6b2efef",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 7.801787562017126,
+      "max_torque_nm": 0.3312236908644642,
+      "min_z_mm": -13.931,
+      "max_insertion_mm": 13.931,
+      "modes_observed": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "mode_counts": {
+        "0": 17,
+        "3": 1,
+        "1": 1,
+        "2": 11
+      },
+      "strata_observed": [
+        0,
+        1,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true,
+      "passed": true,
+      "impact_dynamics_passed": true,
+      "force_limit_passed": true,
+      "torque_limit_passed": true,
+      "rim_event_steps": [
+        15,
+        16
+      ],
+      "event_impulse_n_s": 0.07801787562017126,
+      "event_peak_rising_rate_n_s": 780.1787562017126,
+      "unrelated_peak_outside_event": false
+    }
+  },
+  {
+    "sample_id": "104986772b71ddd7f03fd9301810c88069e48222136305999fa5c6a9fe9287bf",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3544005",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_impact_005",
+    "seed": 3544005,
+    "task": "peg_in_hole",
+    "stratum": "impact",
+    "index": 5,
+    "episode_length": 30,
+    "provenance_hash": "89ccc779f9fb4270117cd280259d35d20f9ba526c0f775f2250221bca2c6a830",
+    "npz_sha256": "01519d069392578e421b3d63d65919e9c00e65817c005579c2e614df3b408407",
+    "privileged_json_sha256": "8996de6f929a2b2b42c3237f6f28ab6a4bc5ad0511934199e5cec1bc0839f100",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 7.719221684265079,
+      "max_torque_nm": 0.31350727783443116,
+      "min_z_mm": -13.77,
+      "max_insertion_mm": 13.77,
+      "modes_observed": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "mode_counts": {
+        "0": 17,
+        "3": 1,
+        "1": 1,
+        "2": 11
+      },
+      "strata_observed": [
+        0,
+        1,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true,
+      "passed": true,
+      "impact_dynamics_passed": true,
+      "force_limit_passed": true,
+      "torque_limit_passed": true,
+      "rim_event_steps": [
+        15,
+        16
+      ],
+      "event_impulse_n_s": 0.07719221684265079,
+      "event_peak_rising_rate_n_s": 771.9221684265079,
+      "unrelated_peak_outside_event": false
+    }
+  },
+  {
+    "sample_id": "8564ea4bba4c51860cab0316ed9136809cc6254f93eb927997d63fa56af953cf",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3544006",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_impact_006",
+    "seed": 3544006,
+    "task": "peg_in_hole",
+    "stratum": "impact",
+    "index": 6,
+    "episode_length": 30,
+    "provenance_hash": "b654a501cfbe37417b8f8791a96b74c9fde72fd3716703f304f8e14e2f2b66f8",
+    "npz_sha256": "6d8180aa213c91213451ddc7afb9f2537e4a277c527d6ff9adc92b7895ef142d",
+    "privileged_json_sha256": "4786fc5547141b758ebf570dd8f3f5cafb7a74e99c6d0d58928eb8a9f978eea3",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 3.5502350663951687,
+      "max_torque_nm": 0.16207894671601966,
+      "min_z_mm": -13.49,
+      "max_insertion_mm": 13.49,
+      "modes_observed": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "mode_counts": {
+        "0": 16,
+        "3": 1,
+        "1": 1,
+        "2": 12
+      },
+      "strata_observed": [
+        0,
+        1,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true,
+      "passed": true,
+      "impact_dynamics_passed": true,
+      "force_limit_passed": true,
+      "torque_limit_passed": true,
+      "rim_event_steps": [
+        15,
+        16
+      ],
+      "event_impulse_n_s": 0.03550235066395169,
+      "event_peak_rising_rate_n_s": 355.0235066395169,
+      "unrelated_peak_outside_event": false
+    }
+  },
+  {
+    "sample_id": "e5bdcb80e81f1d0c21af9fd8f15c3331157cf9585dd25bff9c136459659888dc",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3544007",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_impact_007",
+    "seed": 3544007,
+    "task": "peg_in_hole",
+    "stratum": "impact",
+    "index": 7,
+    "episode_length": 30,
+    "provenance_hash": "b657569e846004573e9a6a4340051488cfece2ff8491fb98b27f974a4ba4168b",
+    "npz_sha256": "7fe54ae4a9dd846529fd950ff472a965ddd988b092096624c7a2122dc8af5a40",
+    "privileged_json_sha256": "f2dc13d00301c7b600e8c0ab8c144b941a092acb8ccdcd6adb0f0c702e6cd1c3",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 2.548525998581576,
+      "max_torque_nm": 0.10232887446258473,
+      "min_z_mm": -12.734,
+      "max_insertion_mm": 12.734,
+      "modes_observed": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "mode_counts": {
+        "0": 17,
+        "3": 1,
+        "1": 1,
+        "2": 11
+      },
+      "strata_observed": [
+        0,
+        1,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true,
+      "passed": true,
+      "impact_dynamics_passed": true,
+      "force_limit_passed": true,
+      "torque_limit_passed": true,
+      "rim_event_steps": [
+        16,
+        17
+      ],
+      "event_impulse_n_s": 0.02548525998581576,
+      "event_peak_rising_rate_n_s": 254.8525998581576,
+      "unrelated_peak_outside_event": false
+    }
+  },
+  {
+    "sample_id": "832488976a393b3e3e427f7f3ed5a379d6cae74744edd02105cb3427dbfdcf93",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3544008",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_impact_008",
+    "seed": 3544008,
+    "task": "peg_in_hole",
+    "stratum": "impact",
+    "index": 8,
+    "episode_length": 30,
+    "provenance_hash": "3a07a9e2c5373a07bcbbb90c93c502ef5c5c221626000f13599def6624df1d20",
+    "npz_sha256": "d703de75842fcbd86c31faf835159e88c354a5009b639d8ecbde8ae9219cc0f5",
+    "privileged_json_sha256": "56297f445a8903b4bb6209692bc7cd1365dc9ea1f5ec82f7a3150d0e23fe5dfa",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 13.356395246392367,
+      "max_torque_nm": 0.5261313317134245,
+      "min_z_mm": -14.447,
+      "max_insertion_mm": 14.447,
+      "modes_observed": [
+        0,
+        1,
+        2,
+        4
+      ],
+      "mode_counts": {
+        "0": 16,
+        "4": 1,
+        "1": 1,
+        "2": 12
+      },
+      "strata_observed": [
+        0,
+        1,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true,
+      "passed": true,
+      "impact_dynamics_passed": true,
+      "force_limit_passed": true,
+      "torque_limit_passed": true,
+      "rim_event_steps": [
+        14,
+        15
+      ],
+      "event_impulse_n_s": 0.13356395246392366,
+      "event_peak_rising_rate_n_s": 1335.6395246392367,
+      "unrelated_peak_outside_event": false
+    }
+  },
+  {
+    "sample_id": "23dce11bbe53b39d95033df3d89e46fe13ce8967d05fcded1697c244862babab",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3544009",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_impact_009",
+    "seed": 3544009,
+    "task": "peg_in_hole",
+    "stratum": "impact",
+    "index": 9,
+    "episode_length": 30,
+    "provenance_hash": "a851f6384207b3122a230caeaaea6578d2b5133176e84409a19a369c7a09d102",
+    "npz_sha256": "d6d2c78fdb7e9241faa8ed9fab5eb1ce6c5d0f9238223305fec11b38bc4bece7",
+    "privileged_json_sha256": "9a534c7147b59cf878d41810fb4b09e280b1da9fff0ff3ceae8f21af9cd6453f",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 9.420675152245824,
+      "max_torque_nm": 0.4340826167709602,
+      "min_z_mm": -13.323,
+      "max_insertion_mm": 13.323,
+      "modes_observed": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "mode_counts": {
+        "0": 17,
+        "3": 1,
+        "1": 1,
+        "2": 11
+      },
+      "strata_observed": [
+        0,
+        1,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true,
+      "passed": true,
+      "impact_dynamics_passed": true,
+      "force_limit_passed": true,
+      "torque_limit_passed": true,
+      "rim_event_steps": [
+        15,
+        16,
+        17
+      ],
+      "event_impulse_n_s": 0.09420675152245825,
+      "event_peak_rising_rate_n_s": 942.0675152245824,
+      "unrelated_peak_outside_event": false
+    }
+  },
+  {
+    "sample_id": "5cb625f14c29bbb59666d17c56224a342c9fc2f2865da8e9f96ceb14a8bc6558",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3544010",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_impact_010",
+    "seed": 3544010,
+    "task": "peg_in_hole",
+    "stratum": "impact",
+    "index": 10,
+    "episode_length": 30,
+    "provenance_hash": "d806e070468cadae4824999425cd51c9422160da1f784a12a7a432de15d25fee",
+    "npz_sha256": "7dc7fa25e63d16c2f27234e047be7ba74244f3a242bd21e5465b746cd0cfe950",
+    "privileged_json_sha256": "c1a94eca2a83f756e5ccbcfcb768fa043a682095b1acd2129bbab7f3897eca5b",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 21.035835113961017,
+      "max_torque_nm": 0.8407929044589779,
+      "min_z_mm": -14.208,
+      "max_insertion_mm": 14.208,
+      "modes_observed": [
+        0,
+        1,
+        2,
+        4
+      ],
+      "mode_counts": {
+        "0": 17,
+        "4": 1,
+        "1": 1,
+        "2": 11
+      },
+      "strata_observed": [
+        0,
+        1,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true,
+      "passed": true,
+      "impact_dynamics_passed": true,
+      "force_limit_passed": true,
+      "torque_limit_passed": true,
+      "rim_event_steps": [
+        15,
+        16
+      ],
+      "event_impulse_n_s": 0.21035835113961018,
+      "event_peak_rising_rate_n_s": 2103.5835113961016,
+      "unrelated_peak_outside_event": false
+    }
+  },
+  {
+    "sample_id": "d1301e0e78a048249be9d338d6ae4d3f78efe9550b1f619ffaaffcbe1db48bb3",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3544011",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_impact_011",
+    "seed": 3544011,
+    "task": "peg_in_hole",
+    "stratum": "impact",
+    "index": 11,
+    "episode_length": 30,
+    "provenance_hash": "5fc636aae98357092b47db9ed0a3fa6e10b30c9a7c0757716003d819c6069d06",
+    "npz_sha256": "a41973be2b2402c9d05c9224a44ec0fb34fc0a72e56f7ab744556a09ae92e683",
+    "privileged_json_sha256": "d8628f2924e578e1d0c5d5c554cc07023d444d9f1102c4029325111122719c0a",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 10.99790036543198,
+      "max_torque_nm": 0.43496864079508757,
+      "min_z_mm": -12.865,
+      "max_insertion_mm": 12.865,
+      "modes_observed": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "mode_counts": {
+        "0": 18,
+        "3": 1,
+        "1": 1,
+        "2": 10
+      },
+      "strata_observed": [
+        0,
+        1,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true,
+      "passed": true,
+      "impact_dynamics_passed": true,
+      "force_limit_passed": true,
+      "torque_limit_passed": true,
+      "rim_event_steps": [
+        16,
+        17
+      ],
+      "event_impulse_n_s": 0.1099790036543198,
+      "event_peak_rising_rate_n_s": 1099.7900365431979,
+      "unrelated_peak_outside_event": false
+    }
+  },
+  {
+    "sample_id": "93812672f8f9abeb5ebf957151d761ff926d5ea15e1948f71bed88be99306032",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3544012",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_impact_012",
+    "seed": 3544012,
+    "task": "peg_in_hole",
+    "stratum": "impact",
+    "index": 12,
+    "episode_length": 30,
+    "provenance_hash": "b300fe206440376986ae1b0f6b723f45c7cd837160c0940e271169538165f0a7",
+    "npz_sha256": "95347a560cf89e29af5796ea1a273dabaf09f46132227822cd231aeed6d57105",
+    "privileged_json_sha256": "441b80b29e22c3ab6822a4af3aa329ea7c9ec0f7d674fc377702afbd7a4f8b6b",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 8.078664614486991,
+      "max_torque_nm": 0.31795292356409116,
+      "min_z_mm": -14.411,
+      "max_insertion_mm": 14.411,
+      "modes_observed": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "mode_counts": {
+        "0": 16,
+        "3": 1,
+        "1": 1,
+        "2": 12
+      },
+      "strata_observed": [
+        0,
+        1,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true,
+      "passed": true,
+      "impact_dynamics_passed": true,
+      "force_limit_passed": true,
+      "torque_limit_passed": true,
+      "rim_event_steps": [
+        14,
+        15
+      ],
+      "event_impulse_n_s": 0.08078664614486991,
+      "event_peak_rising_rate_n_s": 807.866461448699,
+      "unrelated_peak_outside_event": false
+    }
+  },
+  {
+    "sample_id": "9a2ce56456fef4d17b905cfa4346323650a659781a63ca88b0c4d088ff53e6fe",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3544013",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_impact_013",
+    "seed": 3544013,
+    "task": "peg_in_hole",
+    "stratum": "impact",
+    "index": 13,
+    "episode_length": 30,
+    "provenance_hash": "619e38ac0681e708abd139c438b1545eddba26f716a9516ad9964ce92c438c22",
+    "npz_sha256": "9b460570beddfd2649e38fcb272274b0d37d83ecb74b1b16aba857d5df97eb6d",
+    "privileged_json_sha256": "99d1286d4189a1c976aab7761fa3ff1cd5ded643d1f25fff4312146d4f406285",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 6.716046955458504,
+      "max_torque_nm": 0.2934551020406176,
+      "min_z_mm": -13.789,
+      "max_insertion_mm": 13.789,
+      "modes_observed": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "mode_counts": {
+        "0": 17,
+        "3": 1,
+        "1": 1,
+        "2": 11
+      },
+      "strata_observed": [
+        0,
+        1,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true,
+      "passed": true,
+      "impact_dynamics_passed": true,
+      "force_limit_passed": true,
+      "torque_limit_passed": true,
+      "rim_event_steps": [
+        15,
+        16
+      ],
+      "event_impulse_n_s": 0.06716046955458504,
+      "event_peak_rising_rate_n_s": 671.6046955458504,
+      "unrelated_peak_outside_event": false
+    }
+  },
+  {
+    "sample_id": "6761e2274d6c8e7708a1e61c3b5e419691465cc26659a734ee929579fdad8141",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3544014",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_impact_014",
+    "seed": 3544014,
+    "task": "peg_in_hole",
+    "stratum": "impact",
+    "index": 14,
+    "episode_length": 30,
+    "provenance_hash": "4c824dd83fca9fde04ff16e9bbfbd4443750352fd603a4d0578e23de5a780c11",
+    "npz_sha256": "9399863f21733607cbeb967a2c141f939c145fc8c033107b34ff3ed9d7099006",
+    "privileged_json_sha256": "a8cd94ccce0c20672d57bd3644f578a74f701e4b4dfda5e38ea9fa4a66a35090",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 7.695818970053302,
+      "max_torque_nm": 0.3098393497292877,
+      "min_z_mm": -14.159,
+      "max_insertion_mm": 14.159,
+      "modes_observed": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "mode_counts": {
+        "0": 17,
+        "3": 1,
+        "1": 1,
+        "2": 11
+      },
+      "strata_observed": [
+        0,
+        1,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true,
+      "passed": true,
+      "impact_dynamics_passed": true,
+      "force_limit_passed": true,
+      "torque_limit_passed": true,
+      "rim_event_steps": [
+        15,
+        16
+      ],
+      "event_impulse_n_s": 0.07695818970053302,
+      "event_peak_rising_rate_n_s": 769.5818970053301,
+      "unrelated_peak_outside_event": false
+    }
+  },
+  {
+    "sample_id": "33d6398d3e9e64111b270b9df60eb9f36b2ea5a5caf91621f5011b51b409e9e6",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3544015",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_impact_015",
+    "seed": 3544015,
+    "task": "peg_in_hole",
+    "stratum": "impact",
+    "index": 15,
+    "episode_length": 30,
+    "provenance_hash": "ebc1e29162b469c349c1a68172d2c6b989704d25780e3eb30ecc4a3919a1904a",
+    "npz_sha256": "a9b8f3ff9646170d213981610d9b7aeb6604622e5eb507195dba53f33da7e75e",
+    "privileged_json_sha256": "18542ac3ae43bedec15a369beb9ae46d60c6535a69ed7258a39087ea24efaef0",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 10.06444494400255,
+      "max_torque_nm": 0.40339176140610333,
+      "min_z_mm": -12.696,
+      "max_insertion_mm": 12.696,
+      "modes_observed": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "mode_counts": {
+        "0": 18,
+        "3": 1,
+        "1": 1,
+        "2": 10
+      },
+      "strata_observed": [
+        0,
+        1,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true,
+      "passed": true,
+      "impact_dynamics_passed": true,
+      "force_limit_passed": true,
+      "torque_limit_passed": true,
+      "rim_event_steps": [
+        16,
+        17
+      ],
+      "event_impulse_n_s": 0.10064444944002551,
+      "event_peak_rising_rate_n_s": 1006.444494400255,
+      "unrelated_peak_outside_event": false
+    }
+  },
+  {
+    "sample_id": "14532432d27cc7335a1dd69d045a8feb9e9e9cde0c8ad96a8f9a763124f8de4e",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3544016",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_impact_016",
+    "seed": 3544016,
+    "task": "peg_in_hole",
+    "stratum": "impact",
+    "index": 16,
+    "episode_length": 30,
+    "provenance_hash": "38677ee47cf89e3552138fb18d6cf35d8f637bf5f16de662913837a06e7009e0",
+    "npz_sha256": "eaa5c4c4678a72f86cc5923283775f7b66208f2de7bc0090cf3d59e4085c3057",
+    "privileged_json_sha256": "e8b9bfe6366b5d2191a72e7163620d40ce7d50bd4070c7fe1cc36998f610217e",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 4.895396571773174,
+      "max_torque_nm": 0.19605509216872632,
+      "min_z_mm": -14.325,
+      "max_insertion_mm": 14.325,
+      "modes_observed": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "mode_counts": {
+        "0": 15,
+        "3": 1,
+        "1": 1,
+        "2": 13
+      },
+      "strata_observed": [
+        0,
+        1,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true,
+      "passed": true,
+      "impact_dynamics_passed": true,
+      "force_limit_passed": true,
+      "torque_limit_passed": true,
+      "rim_event_steps": [
+        14,
+        15,
+        16
+      ],
+      "event_impulse_n_s": 0.051119986132926974,
+      "event_peak_rising_rate_n_s": 489.53965717731745,
+      "unrelated_peak_outside_event": false
+    }
+  },
+  {
+    "sample_id": "cd7492864402108a5844e882a90e753a2855fd99da410851579ab74b6d6e2bde",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3544017",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_impact_017",
+    "seed": 3544017,
+    "task": "peg_in_hole",
+    "stratum": "impact",
+    "index": 17,
+    "episode_length": 30,
+    "provenance_hash": "5e79130e9a33a092731578f74ee0a85b89dd0682bcddcb347d744707f3c81abe",
+    "npz_sha256": "239250c15aa3c6c99ec7047217b9b0edd1c0de10ea952bfd7e3870005bb51a27",
+    "privileged_json_sha256": "13718cd1f78d39c111ffcf183f5d53daf135510bb15c9c5613c83b7ab7ed1aca",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 21.03625392114428,
+      "max_torque_nm": 0.8377412349611956,
+      "min_z_mm": -13.683,
+      "max_insertion_mm": 13.683,
+      "modes_observed": [
+        0,
+        1,
+        2,
+        4
+      ],
+      "mode_counts": {
+        "0": 17,
+        "4": 1,
+        "1": 1,
+        "2": 11
+      },
+      "strata_observed": [
+        0,
+        1,
+        2
+      ],
+      "wedging_stratum_attained": false,
+      "wedging_aligned_steps": [],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 0.0,
+      "interaction_passed": true,
+      "passed": true,
+      "impact_dynamics_passed": true,
+      "force_limit_passed": true,
+      "torque_limit_passed": true,
+      "rim_event_steps": [
+        15,
+        16
+      ],
+      "event_impulse_n_s": 0.2103625392114428,
+      "event_peak_rising_rate_n_s": 2103.625392114428,
+      "unrelated_peak_outside_event": false
+    }
+  },
+  {
+    "sample_id": "decadf9e2ca5c586bb0a1f786b6645804b2be13e887a19807313f2dd74a56ba1",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3545000",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_wedging_000",
+    "seed": 3545000,
+    "task": "peg_in_hole",
+    "stratum": "wedging",
+    "index": 0,
+    "episode_length": 30,
+    "provenance_hash": "7c420b99ebb16945ad5958e5cc51bf62bdb96e5f012f6e7b750ae7c59accde60",
+    "npz_sha256": "2a94d9603eaafed723c55e2e371154ad298c99dd83da653bde2b387a78baeab6",
+    "privileged_json_sha256": "80ac163b9656d1d37cab7854c2cdf2b333f43528c473f63a070159785791aac6",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 2.093,
+      "max_torque_nm": 0.132,
+      "min_z_mm": -5.159,
+      "max_insertion_mm": 5.159,
+      "modes_observed": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "mode_counts": {
+        "0": 14,
+        "1": 1,
+        "2": 14,
+        "3": 1
+      },
+      "strata_observed": [
+        0,
+        2,
+        3
+      ],
+      "wedging_stratum_attained": true,
+      "wedging_aligned_steps": [
+        28,
+        29
+      ],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 5.0599,
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "9c5c9b38a05a4cb81ad759d56664f52de7a1079f873388c976cf420fb038b5d4",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3545001",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_wedging_001",
+    "seed": 3545001,
+    "task": "peg_in_hole",
+    "stratum": "wedging",
+    "index": 1,
+    "episode_length": 30,
+    "provenance_hash": "e43c3ea5d7cf505b4ad96222109cee90b70458a9791500b6ff0823486312b7b0",
+    "npz_sha256": "8aaf7005a0f8cf7d52d5ecbed390b6e9a493ce147ae9575544b4285a4b56c2f1",
+    "privileged_json_sha256": "c3d6f2b702ec2825d410cea9bf08fbb51b2fb696195f26435525c62c25997641",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 1.275,
+      "max_torque_nm": 0.079,
+      "min_z_mm": -5.604,
+      "max_insertion_mm": 5.604,
+      "modes_observed": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "mode_counts": {
+        "0": 15,
+        "1": 1,
+        "2": 13,
+        "3": 1
+      },
+      "strata_observed": [
+        0,
+        2,
+        3
+      ],
+      "wedging_stratum_attained": true,
+      "wedging_aligned_steps": [
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29
+      ],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 5.0097,
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "b899aa788a5258b0412161c601f3f525870188140023a88130feabe50543b3fb",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3545002",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_wedging_002",
+    "seed": 3545002,
+    "task": "peg_in_hole",
+    "stratum": "wedging",
+    "index": 2,
+    "episode_length": 30,
+    "provenance_hash": "b61b9a5efbe6c8c86fa6ff8c1cb70839974f4584bb053ee0a2667678caf93986",
+    "npz_sha256": "d8b636253005c2a574ed44e5f75c09287f724c3ecef92b0981f5e81420940f3e",
+    "privileged_json_sha256": "79ff3647135d4668108bab1eb0324b2e397214f6c242df0901dff1a7e11a9b44",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 2.268,
+      "max_torque_nm": 0.139,
+      "min_z_mm": -7.819,
+      "max_insertion_mm": 7.819,
+      "modes_observed": [
+        0,
+        1,
+        2
+      ],
+      "mode_counts": {
+        "0": 14,
+        "1": 1,
+        "2": 15
+      },
+      "strata_observed": [
+        0,
+        2,
+        3
+      ],
+      "wedging_stratum_attained": true,
+      "wedging_aligned_steps": [
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29
+      ],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 7.1261,
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "60c831874cbb66d7c8cf35479556b745786fa0d3efb8417059304bb791835cd3",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3545003",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_wedging_003",
+    "seed": 3545003,
+    "task": "peg_in_hole",
+    "stratum": "wedging",
+    "index": 3,
+    "episode_length": 30,
+    "provenance_hash": "e1c5e9265be79b450c3408cd87840af4924cd4783392b2989f437c23cb2b30eb",
+    "npz_sha256": "45b6dcac3d30992825034c090d9b8b88050bdb3d0cac8764ea8477af35802c3a",
+    "privileged_json_sha256": "3ed4c402668be4ec1729dcb4405bc2cd37f76241f85befd58600dcf70adc4bf9",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 4.703,
+      "max_torque_nm": 0.299,
+      "min_z_mm": -5.414,
+      "max_insertion_mm": 5.414,
+      "modes_observed": [
+        0,
+        1,
+        2
+      ],
+      "mode_counts": {
+        "0": 17,
+        "1": 2,
+        "2": 11
+      },
+      "strata_observed": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "wedging_stratum_attained": true,
+      "wedging_aligned_steps": [
+        25,
+        26,
+        27,
+        28,
+        29
+      ],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 5.0184,
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "882d0250d507b36c2ca6841a9b45b1aa2c3c9347a37ad7f49cf02ec1c46500cf",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3545004",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_wedging_004",
+    "seed": 3545004,
+    "task": "peg_in_hole",
+    "stratum": "wedging",
+    "index": 4,
+    "episode_length": 30,
+    "provenance_hash": "44a753f8d7e4630496de5d4d6863ce7b6ba61654b391e0e7ea0f4e93dcf577b9",
+    "npz_sha256": "f08bfd51ae5b9d12be1a8d10899c929a67226db5a53d835d74528295238b83e7",
+    "privileged_json_sha256": "1b0420e8c83cff5d35624c06a87c53f871c978d0e622e86597c9f2a335d2478a",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 2.426,
+      "max_torque_nm": 0.153,
+      "min_z_mm": -5.077,
+      "max_insertion_mm": 5.077,
+      "modes_observed": [
+        0,
+        1,
+        2
+      ],
+      "mode_counts": {
+        "0": 16,
+        "1": 2,
+        "2": 12
+      },
+      "strata_observed": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "wedging_stratum_attained": true,
+      "wedging_aligned_steps": [
+        29
+      ],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 5.0773,
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "59801ed6dec51ae3f2b5850212db92388c8ac92309ca295ed7236fc429561ac0",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3545005",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_wedging_005",
+    "seed": 3545005,
+    "task": "peg_in_hole",
+    "stratum": "wedging",
+    "index": 5,
+    "episode_length": 30,
+    "provenance_hash": "b6ab240e1482de63576b4bca0b7e59c571021d783a0daa1b38e09908de0329b8",
+    "npz_sha256": "7e6704995776fd4d9965517a8a53495e60f2ed96513bae8afce77fe135d84946",
+    "privileged_json_sha256": "44edee08c45ee4cb08126a1e775bdae4013a2008ea760ae8204983eade35ce68",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 2.211,
+      "max_torque_nm": 0.139,
+      "min_z_mm": -5.917,
+      "max_insertion_mm": 5.917,
+      "modes_observed": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "mode_counts": {
+        "0": 15,
+        "1": 1,
+        "3": 1,
+        "2": 13
+      },
+      "strata_observed": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "wedging_stratum_attained": true,
+      "wedging_aligned_steps": [
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29
+      ],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 5.0258,
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "cf059f0d2cf555d9cc33352cf215a4cc0c3790ee99688fd55df67a4d5ef9eb10",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3545006",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_wedging_006",
+    "seed": 3545006,
+    "task": "peg_in_hole",
+    "stratum": "wedging",
+    "index": 6,
+    "episode_length": 30,
+    "provenance_hash": "465d327bd881183e05a719d2d499fd18969aff29697435de5e0da2d8af0aeaeb",
+    "npz_sha256": "90cd5f4271ca608aa2cdefc83cc37a91f6641fcd5c9d1c3be93dab3479c1f52b",
+    "privileged_json_sha256": "bd1e8b0b06d3db7265f187cc4884e58bf726c5251a16286ea321100c9a0830de",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 1.459,
+      "max_torque_nm": 0.09,
+      "min_z_mm": -5.613,
+      "max_insertion_mm": 5.613,
+      "modes_observed": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "mode_counts": {
+        "0": 14,
+        "1": 1,
+        "2": 14,
+        "3": 1
+      },
+      "strata_observed": [
+        0,
+        2,
+        3
+      ],
+      "wedging_stratum_attained": true,
+      "wedging_aligned_steps": [
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29
+      ],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 5.0187,
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "a7a9fd83b15c822cd00eecf0e13a89ddec997fcc1321a9161a17ff2db0e46066",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3545007",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_wedging_007",
+    "seed": 3545007,
+    "task": "peg_in_hole",
+    "stratum": "wedging",
+    "index": 7,
+    "episode_length": 30,
+    "provenance_hash": "4c26c383f0c76e775cf79dce9e4f4f915a3c622ae1c3e2a834b6b1767aa6b636",
+    "npz_sha256": "92cf88eafe28212e6efb238653af180e486003d1e923fd389e37dd64ab94690b",
+    "privileged_json_sha256": "172930adda0d9754e864939557069263b3c0a0b4fd6c36f228406004304a8ad4",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 2.471,
+      "max_torque_nm": 0.154,
+      "min_z_mm": -9.436,
+      "max_insertion_mm": 9.436,
+      "modes_observed": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "mode_counts": {
+        "0": 14,
+        "1": 1,
+        "2": 14,
+        "3": 1
+      },
+      "strata_observed": [
+        0,
+        2,
+        3
+      ],
+      "wedging_stratum_attained": true,
+      "wedging_aligned_steps": [
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29
+      ],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 8.8421,
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "23489b8f61612ebcf26fd5dab3acdd35049153c229e792802da1b558a6e50f4c",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3545008",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_wedging_008",
+    "seed": 3545008,
+    "task": "peg_in_hole",
+    "stratum": "wedging",
+    "index": 8,
+    "episode_length": 30,
+    "provenance_hash": "31fbf560b3f2db01d6b4bc3ad522b6f0323fad669ca2a9e23a65c53cb980b51b",
+    "npz_sha256": "0959b37643e3873111577e44ef5977a497f108ecf2ba5c2e9f56c5924f0a627b",
+    "privileged_json_sha256": "7e643562b2ba429bade2c9788c71f82b0c6a55593ae6a8ac3b8f8289800b68d6",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 5.748,
+      "max_torque_nm": 0.365,
+      "min_z_mm": -5.096,
+      "max_insertion_mm": 5.096,
+      "modes_observed": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "mode_counts": {
+        "0": 17,
+        "3": 1,
+        "1": 1,
+        "2": 11
+      },
+      "strata_observed": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "wedging_stratum_attained": true,
+      "wedging_aligned_steps": [
+        29
+      ],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 5.0965,
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "3e8331f0c385b58426d694e0267ce48923657a06da849168b8b7abf910050a27",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3545009",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_wedging_009",
+    "seed": 3545009,
+    "task": "peg_in_hole",
+    "stratum": "wedging",
+    "index": 9,
+    "episode_length": 30,
+    "provenance_hash": "cbcbdecd65bfc0753091c46888c38a05b58ad1abbd01f4d9335cc731ec1a4da4",
+    "npz_sha256": "85191912b3e5c2c308d6126e3d8e007f7d9ef17606bc01b164fe3b1d102f1fb4",
+    "privileged_json_sha256": "b42e914ff0e56f7aa9a1dadf17caaebca681500410f9ac2b4d2a2f59c10e174a",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 1.164,
+      "max_torque_nm": 0.071,
+      "min_z_mm": -5.339,
+      "max_insertion_mm": 5.339,
+      "modes_observed": [
+        0,
+        1,
+        2
+      ],
+      "mode_counts": {
+        "0": 16,
+        "1": 2,
+        "2": 12
+      },
+      "strata_observed": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "wedging_stratum_attained": true,
+      "wedging_aligned_steps": [
+        26,
+        27,
+        28,
+        29
+      ],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 5.0422,
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "c140ec23779bf542ab13c8e1e4d88ac321062a3067c9c89bed7550aefc3d5cc4",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3545010",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_wedging_010",
+    "seed": 3545010,
+    "task": "peg_in_hole",
+    "stratum": "wedging",
+    "index": 10,
+    "episode_length": 30,
+    "provenance_hash": "d8c1112572f9b7fb7eaf1641139359fcc3551525e773494738a81e7c848163ee",
+    "npz_sha256": "525129c581f5f1bb4641b04982715ca4222ad8756d495027263311c855305e43",
+    "privileged_json_sha256": "5d78c9e90d259e62e64083f3e3818ddef9e69e86737c455dd6d0a17499b70b40",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 1.858,
+      "max_torque_nm": 0.117,
+      "min_z_mm": -5.679,
+      "max_insertion_mm": 5.679,
+      "modes_observed": [
+        0,
+        1,
+        2
+      ],
+      "mode_counts": {
+        "0": 15,
+        "1": 2,
+        "2": 13
+      },
+      "strata_observed": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "wedging_stratum_attained": true,
+      "wedging_aligned_steps": [
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29
+      ],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 5.0845,
+      "interaction_passed": true
+    }
+  },
+  {
+    "sample_id": "15c0f1c30a8add7e4ad20a54e431e2c09c721db630bc4fc553fff6a01dc65f30",
+    "canonical_episode_id": "syn_peg_in_hole_stage3_production_teacher_v1_seed3545011",
+    "slot_alias": "prod35_final_holdout_peg_in_hole_wedging_011",
+    "seed": 3545011,
+    "task": "peg_in_hole",
+    "stratum": "wedging",
+    "index": 11,
+    "episode_length": 30,
+    "provenance_hash": "4618dc53e3afcc2674e09dd979d00efa9f0c864e6dfc6dd0d5bd64e83b5d61a7",
+    "npz_sha256": "d7597ff6c40b3815c41e901617035eac1cee99c088f0199dd86a1758557c3e1a",
+    "privileged_json_sha256": "a364919958756933948b08b6943fbbfb1065034dd3b4f2338aaf436472de2171",
+    "interaction_metrics": {
+      "insertion_attained": true,
+      "contact_attained": true,
+      "forces_bounded": true,
+      "contact_modes_attained": true,
+      "stratum_specific_passed": true,
+      "max_contact_force_n": 1.749,
+      "max_torque_nm": 0.11,
+      "min_z_mm": -5.277,
+      "max_insertion_mm": 5.277,
+      "modes_observed": [
+        0,
+        1,
+        2
+      ],
+      "mode_counts": {
+        "0": 16,
+        "1": 3,
+        "2": 11
+      },
+      "strata_observed": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "wedging_stratum_attained": true,
+      "wedging_aligned_steps": [
+        27,
+        28,
+        29
+      ],
+      "valid_jamming_steps": [],
+      "invalid_jamming_steps": [],
+      "wedging_aligned_depth_mm": 5.0787,
+      "interaction_passed": true
+    }
+  }
+]

@@ -22,6 +22,7 @@ class TaskInterfaceSpec:
     action_dim: int
     wrench_dim: int
     canonical_episode_length: int
+    allowed_episode_lengths: Tuple[int, ...] = ()
     dt_s: float = 0.01
 
 
@@ -31,6 +32,8 @@ class HCTTArchitectureConfig:
 
     model_family: str = "History-Conditioned Temporal Transformer (HCTT)"
     model_identifier: str = "HOROS-WM-vNext-alpha"
+    objective_profile: str = "locked_4term_with_distillation"
+    objective_authorized_for_training: bool = False
     d_model: int = 256
     num_layers: int = 6
     num_heads: int = 8
@@ -60,6 +63,18 @@ class HCTTArchitectureConfig:
 
 LOCKED_HCTT_CONFIG = HCTTArchitectureConfig()
 
+# Separate, unactivated teacher-free experimental objective proposed in Stage 3.5.
+# Preserves locked 4-term spec intact; requires formal sign-off before Stage 4 activation.
+EXPERIMENTAL_3TERM_OBJECTIVE_CONFIG = HCTTArchitectureConfig(
+    model_identifier="HOROS-WM-vNext-alpha-exp3term",
+    objective_profile="experimental_teacher_free_3term_no_distill",
+    objective_authorized_for_training=False,
+    weight_sim_dynamics=1.0,
+    weight_mode_focal=0.5,
+    weight_sys_id=0.25,
+    weight_distill=0.0,
+)
+
 TASK_INTERFACES: Dict[str, TaskInterfaceSpec] = {
     "compliant_prelift": TaskInterfaceSpec(
         name="compliant_prelift",
@@ -68,6 +83,7 @@ TASK_INTERFACES: Dict[str, TaskInterfaceSpec] = {
         action_dim=5,
         wrench_dim=6,
         canonical_episode_length=20,
+        allowed_episode_lengths=(20, 40),
         dt_s=0.01,
     ),
     "peg_in_hole": TaskInterfaceSpec(
@@ -77,6 +93,7 @@ TASK_INTERFACES: Dict[str, TaskInterfaceSpec] = {
         action_dim=6,
         wrench_dim=6,
         canonical_episode_length=30,
+        allowed_episode_lengths=(30,),
         dt_s=0.01,
     ),
 }

@@ -9,6 +9,7 @@ authorization-locked training runner.
 from .contracts import (
     BENCHMARK_ACCEPTANCE_TARGETS,
     ContractViolationError,
+    EXPERIMENTAL_3TERM_OBJECTIVE_CONFIG,
     FORBIDDEN_MODEL_INPUT_KEYS,
     HCTTArchitectureConfig,
     LOCKED_HCTT_CONFIG,
@@ -44,7 +45,9 @@ from .runner import (
 )
 from .splits import (
     PROTECTED_HISTORICAL_SEED_RANGES,
+    STAGE35_PROTECTED_EXTRA_RANGES,
     build_episode_split_manifest,
+    build_stage35_final_split_manifest,
     verify_split_manifest_disjointness,
 )
 from .target_loader import AuditEpisodeTargets, AuditTargetLoader
@@ -55,6 +58,7 @@ __all__ = [
     "BENCHMARK_ACCEPTANCE_TARGETS",
     "ContractViolationError",
     "EXECUTION_AUTHORIZED",
+    "EXPERIMENTAL_3TERM_OBJECTIVE_CONFIG",
     "EpisodeArrayRecord",
     "FORBIDDEN_MODEL_INPUT_KEYS",
     "HCTTArchitectureConfig",
@@ -68,6 +72,7 @@ __all__ = [
     "OPERATIONAL_MODE_NAMES",
     "PROTECTED_HISTORICAL_SEED_RANGES",
     "RotaryPositionEmbedding",
+    "STAGE35_PROTECTED_EXTRA_RANGES",
     "SUPPORTED_OPERATIONAL_MODE_IDS",
     "TASK_INTERFACES",
     "TRAINING_PERMITTED",
@@ -77,6 +82,7 @@ __all__ = [
     "assert_no_privileged_keys_in_inputs",
     "build_causal_history_future_mask",
     "build_episode_split_manifest",
+    "build_stage35_final_split_manifest",
     "collate_hctt_batch",
     "extract_observable_contact_signals",
     "get_task_interface",

@@ -96,9 +96,10 @@ def load_clean_training_episode(npz_path: Path) -> EpisodeArrayRecord:
         next_wrenches = np.asarray(data["next_wrenches"], dtype=np.float32)
 
     T = states.shape[0]
-    if T != spec.canonical_episode_length:
+    allowed_lengths = spec.allowed_episode_lengths or (spec.canonical_episode_length,)
+    if T not in allowed_lengths:
         raise ContractViolationError(
-            f"Episode {sample_id} ({task}) expected canonical length {spec.canonical_episode_length}, got {T}"
+            f"Episode {sample_id} ({task}) expected episode length in {allowed_lengths}, got {T}"
         )
     if states.shape != (T, spec.state_dim) or next_states.shape != (T, spec.state_dim):
         raise ContractViolationError(
@@ -143,11 +144,11 @@ def load_clean_training_episode(npz_path: Path) -> EpisodeArrayRecord:
 
 
 class HCTTTemporalDataset:
-    """Temporal sliding-window dataset over Stage 3.3 model-visible NPZ archives."""
+    """Temporal sliding-window dataset over model-visible NPZ archives."""
 
     def __init__(
         self,
-        training_dir: Path | str,
+        training_dir: Path | str | Sequence[Path | str],
         task_filter: Optional[str] = None,
         allowed_sample_ids: Optional[Iterable[str]] = None,
         history_horizon: int = LOCKED_HCTT_CONFIG.history_horizon,
@@ -156,8 +157,17 @@ class HCTTTemporalDataset:
         min_history_steps: int = 1,
         min_future_steps: int = 1,
     ):
-        self.training_dir = Path(training_dir)
-        _refuse_colocated_audit_files(self.training_dir)
+        if isinstance(training_dir, (str, Path)):
+            dirs = [Path(training_dir)]
+        else:
+            dirs = [Path(p) for p in training_dir]
+        if not dirs:
+            raise ContractViolationError("At least one training directory must be supplied.")
+        for d in dirs:
+            _refuse_colocated_audit_files(d)
+
+        self.training_dirs: List[Path] = dirs
+        self.training_dir: Path = dirs[0]
 
         if task_filter is not None:
             get_task_interface(task_filter)
@@ -181,28 +191,29 @@ class HCTTTemporalDataset:
         self._build_window_index()
 
     def _load_episodes(self) -> None:
-        npz_paths = sorted(self.training_dir.glob("*.npz"))
         seen_ids: Set[str] = set()
-        for path in npz_paths:
-            rec = load_clean_training_episode(path)
-            if rec.sample_id in seen_ids:
-                raise ContractViolationError(f"Duplicate sample_id '{rec.sample_id}' in {self.training_dir}")
-            seen_ids.add(rec.sample_id)
+        for t_dir in self.training_dirs:
+            npz_paths = sorted(t_dir.glob("*.npz"))
+            for path in npz_paths:
+                rec = load_clean_training_episode(path)
+                if rec.sample_id in seen_ids:
+                    raise ContractViolationError(f"Duplicate sample_id '{rec.sample_id}' across {self.training_dirs}")
+                seen_ids.add(rec.sample_id)
 
-            if self.task_filter is not None and rec.task != self.task_filter:
-                continue
-            if self.allowed_sample_ids is not None and rec.sample_id not in self.allowed_sample_ids:
-                continue
+                if self.task_filter is not None and rec.task != self.task_filter:
+                    continue
+                if self.allowed_sample_ids is not None and rec.sample_id not in self.allowed_sample_ids:
+                    continue
 
-            ep_idx = len(self.episodes)
-            self.episodes.append(rec)
-            self.sample_id_to_episode_idx[rec.sample_id] = ep_idx
+                ep_idx = len(self.episodes)
+                self.episodes.append(rec)
+                self.sample_id_to_episode_idx[rec.sample_id] = ep_idx
 
         if self.allowed_sample_ids is not None:
             missing = self.allowed_sample_ids - set(self.sample_id_to_episode_idx.keys())
             if missing and self.task_filter is None:
                 raise ContractViolationError(
-                    f"Split requested {len(missing)} sample_ids absent from {self.training_dir}: {sorted(missing)[:5]}"
+                    f"Split requested {len(missing)} sample_ids absent from {self.training_dirs}: {sorted(missing)[:5]}"
                 )
 
     def _build_window_index(self) -> None:
@@ -320,13 +331,53 @@ class HCTTTemporalDataset:
 
         return batches
 
+    def iter_strict_batches_for_horizon(
+        self,
+        horizon: int,
+        batch_size: int = 32,
+        task: Optional[str] = None,
+        shuffle: bool = False,
+        seed: int = 42,
+    ) -> List[Dict[str, Any]]:
+        """Path 1 strictly filtered batches: valid_hist_len == history_horizon AND valid_future_len >= horizon."""
+        if batch_size < 1:
+            raise ValueError(f"batch_size must be >= 1, got {batch_size}")
+        if horizon < 1 or horizon > self.future_horizon:
+            raise ValueError(f"horizon must lie in [1, {self.future_horizon}], got {horizon}")
+
+        target_tasks = [task] if task is not None else sorted(set(w.task for w in self.windows))
+        rng = np.random.RandomState(seed) if shuffle else None
+        batches: List[Dict[str, Any]] = []
+
+        for t_name in target_tasks:
+            indices = [
+                i for i, w in enumerate(self.windows)
+                if w.task == t_name and w.valid_hist_len == self.history_horizon and w.valid_future_len >= horizon
+            ]
+            if not indices:
+                continue
+            if rng is not None:
+                rng.shuffle(indices)
+
+            for start in range(0, len(indices), batch_size):
+                chunk_idx = indices[start : start + batch_size]
+                items = [self[i] for i in chunk_idx]
+                batch = collate_hctt_batch(items)
+                if not bool(torch.all(batch["hist_mask"]).item()):
+                    raise ContractViolationError("Strict-window contract violated: partial history detected.")
+                if not bool(torch.all(batch["future_mask"][:, :horizon]).item()):
+                    raise ContractViolationError(f"Strict-window contract violated at horizon H={horizon}.")
+                batches.append(batch)
+
+        return batches
+
     def feasibility_summary(self) -> Dict[str, Any]:
-        """Documents exact window & horizon coverage per task under current dataset."""
+        """Documents exact window & horizon coverage per task and episode length."""
         summary: Dict[str, Any] = {}
         for task_name in sorted(set(ep.task for ep in self.episodes)):
             ep_list = [ep for ep in self.episodes if ep.task == task_name]
             win_list = [w for w in self.windows if w.task == task_name]
-            T = ep_list[0].episode_length if ep_list else 0
+            lengths = sorted(set(ep.episode_length for ep in ep_list))
 
             horizon_valid_counts: Dict[int, Dict[str, int]] = {}
             for h in LOCKED_HCTT_CONFIG.prediction_horizons:
@@ -341,7 +392,8 @@ class HCTTTemporalDataset:
 
             summary[task_name] = {
                 "num_episodes": len(ep_list),
-                "episode_length": T,
+                "episode_lengths": lengths,
+                "episode_length": lengths[0] if len(lengths) == 1 else lengths,
                 "total_windows": len(win_list),
                 "horizons": horizon_valid_counts,
             }

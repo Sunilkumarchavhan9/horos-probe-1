@@ -182,4 +182,7 @@ class HCTTMultiObjectiveLoss(nn.Module):
             "l_sys_id": l_sysid,
             "l_distill": l_distill,
             "distillation_active": distill_active,
+            "objective_profile": self.config.objective_profile,
+            "objective_authorized_for_training": self.config.objective_authorized_for_training,
+            "weight_distill": float(self.config.weight_distill),
         }

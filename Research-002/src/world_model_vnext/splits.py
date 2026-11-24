@@ -175,6 +175,147 @@ def verify_split_manifest_disjointness(manifest: Dict[str, Any]) -> bool:
         if all_seeds & pool_seeds:
             raise ContractViolationError(f"Split manifest overlaps protected seed pool '{pool_name}'")
 
-    if total != int(manifest["total_episodes"]):
+    expected_total = (
+        int(manifest["total_episodes"])
+        if "total_episodes" in manifest
+        else int(manifest["total_episodes_accounted"])
+    )
+    if total != expected_total:
         raise ContractViolationError(f"Split total {total} != manifest total {manifest['total_episodes']}")
     return True
+
+
+STAGE35_PROTECTED_EXTRA_RANGES: Dict[str, Set[int]] = {
+    **PROTECTED_HISTORICAL_SEED_RANGES,
+    "stage33_production_all": (
+        set(range(3311000, 3311250))
+        | set(range(3312000, 3312150))
+        | set(range(3313000, 3313100))
+        | set(range(3321000, 3321250))
+        | set(range(3324000, 3324150))
+        | set(range(3325000, 3325100))
+    ),
+    "p5_t4r4_heldout_and_sweep": set(range(4900000, 4960000)),
+}
+
+
+def build_stage35_final_split_manifest(
+    stage33_root: Path | str,
+    stage34_split_manifest_path: Path | str,
+    stage35_prelift_long_root: Path | str,
+    stage35_final_holdout_root: Path | str,
+    split_seed: int = 3502026,
+) -> Dict[str, Any]:
+    """Builds the leak-free Stage 3.5/4 master episode split manifest.
+
+    Invariants enforced:
+    1. Quarantines Stage 3.4's already-evaluated 100-episode test split
+       ('exploratory_baseline_quarantined') — NEVER placed in train, val, calib, or final_test.
+    2. Splits the 500 new T=40 Prelift episodes into 350 train / 75 val / 75 calib.
+    3. Keeps non-quarantined Stage 3.3 Peg-in-Hole T=30 episodes (350 train / 50 val / 50 calib).
+    4. Reserves the 120 fresh Stage 3.5 holdout episodes (60 Prelift T=40 + 60 Peg-in-Hole T=30)
+       exclusively for 'final_test' (status: SEALED_UNTIL_AUTHORIZED_STAGE4_EVAL).
+    5. Tracks non-quarantined legacy T=20 Prelift (450 episodes) in 'legacy_short_horizon_preserved'.
+    6. Zero overlap across all buckets, reserve 300 seeds, pilot seeds, and P5-T4R4 4950001-4950600.
+    """
+    s33_root = Path(stage33_root)
+    s34_manifest = json.loads(Path(stage34_split_manifest_path).read_text(encoding="utf-8"))
+    verify_split_manifest_disjointness(s34_manifest)
+
+    s33_entries = {str(e["sample_id"]): e for e in json.loads((s33_root / "accepted_manifest.json").read_text(encoding="utf-8"))}
+    pre_long_entries = json.loads((Path(stage35_prelift_long_root) / "accepted_manifest.json").read_text(encoding="utf-8"))
+    holdout_entries = json.loads((Path(stage35_final_holdout_root) / "accepted_manifest.json").read_text(encoding="utf-8"))
+
+    # Verify new Stage 3.5 seeds have zero collision against ALL historical + Stage 3.3 + reserve + P5-T4R4 pools
+    new_seeds = {int(e["seed"]) for e in pre_long_entries} | {int(e["seed"]) for e in holdout_entries}
+    for pool_name, pool_seeds in STAGE35_PROTECTED_EXTRA_RANGES.items():
+        overlap = new_seeds & pool_seeds
+        if overlap:
+            raise ContractViolationError(
+                f"Stage 3.5 seed allocation collides with '{pool_name}': {sorted(overlap)[:5]}"
+            )
+    if len({int(e["seed"]) for e in pre_long_entries} & {int(e["seed"]) for e in holdout_entries}) > 0:
+        raise ContractViolationError("Overlap between stage35 prelift_long and final_holdout seeds.")
+
+    # Partition 500 Prelift T=40 (250 nom, 150 probe, 100 nonstat[50A+50B]) into 350 train / 75 val / 75 calib (70% / 15% / 15%)
+    buckets: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
+    for e in pre_long_entries:
+        stratum = str(e["stratum"])
+        sub = "_A" if (stratum == "nonstationary" and int(e["index"]) % 2 == 0) else ("_B" if stratum == "nonstationary" else "")
+        buckets[f"{stratum}{sub}"].append(e)
+
+    rng = np.random.RandomState(split_seed)
+    pre_long_splits: Dict[str, List[Dict[str, Any]]] = {"train": [], "val": [], "calib": []}
+    for b_key in sorted(buckets.keys()):
+        b_list = sorted(buckets[b_key], key=lambda x: int(x["seed"]))
+        perm = rng.permutation(len(b_list))
+        shuffled = [b_list[i] for i in perm]
+        n = len(shuffled)
+        n_val = int(round(n * 0.15))
+        n_calib = int(round(n * 0.15))
+        n_train = n - n_val - n_calib
+        pre_long_splits["train"].extend(shuffled[:n_train])
+        pre_long_splits["val"].extend(shuffled[n_train : n_train + n_val])
+        pre_long_splits["calib"].extend(shuffled[n_train + n_val :])
+
+    # Collect clean non-quarantined Stage 3.3 Peg-in-Hole entries from Stage 3.4 splits
+    quarantined_entries = [s33_entries[sid] for sid in s34_manifest["splits"]["test"]["sample_ids"]]
+    peg_train = [s33_entries[sid] for sid in s34_manifest["splits"]["train"]["sample_ids"] if s33_entries[sid]["task"] == "peg_in_hole"]
+    peg_val = [s33_entries[sid] for sid in s34_manifest["splits"]["val"]["sample_ids"] if s33_entries[sid]["task"] == "peg_in_hole"]
+    peg_calib = [s33_entries[sid] for sid in s34_manifest["splits"]["calib"]["sample_ids"] if s33_entries[sid]["task"] == "peg_in_hole"]
+    legacy_prelift_20 = [
+        s33_entries[sid]
+        for s_name in ("train", "val", "calib")
+        for sid in s34_manifest["splits"][s_name]["sample_ids"]
+        if s33_entries[sid]["task"] == "compliant_prelift"
+    ]
+
+    all_buckets: Dict[str, List[Dict[str, Any]]] = {
+        "train": pre_long_splits["train"] + peg_train,
+        "val": pre_long_splits["val"] + peg_val,
+        "calib": pre_long_splits["calib"] + peg_calib,
+        "final_test": holdout_entries,
+        "exploratory_baseline_quarantined": quarantined_entries,
+        "legacy_short_horizon_preserved": legacy_prelift_20,
+    }
+
+    split_records: Dict[str, Any] = {}
+    sid_sets: Dict[str, Set[str]] = {}
+    seed_sets: Dict[str, Set[int]] = {}
+    for name, items in all_buckets.items():
+        ordered = sorted(items, key=lambda x: (x["task"], int(x["seed"])))
+        sids = [str(x["sample_id"]) for x in ordered]
+        seeds = [int(x["seed"]) for x in ordered]
+        if len(set(sids)) != len(sids) or len(set(seeds)) != len(seeds):
+            raise ContractViolationError(f"Duplicate entries inside partition '{name}'")
+        sid_sets[name] = set(sids)
+        seed_sets[name] = set(seeds)
+        split_records[name] = {
+            "num_episodes": len(ordered),
+            "sample_ids": sids,
+            "seeds": seeds,
+            "task_stratum_counts": dict(sorted(Counter(f"{x['task']}::{x['stratum']}" for x in ordered).items())),
+            "sealed": name == "final_test",
+            "quarantined_exploratory": name == "exploratory_baseline_quarantined",
+        }
+
+    names = list(all_buckets.keys())
+    for i in range(len(names)):
+        for j in range(i + 1, len(names)):
+            a, b = names[i], names[j]
+            if sid_sets[a] & sid_sets[b] or seed_sets[a] & seed_sets[b]:
+                raise ContractViolationError(f"Partition leak detected between '{a}' and '{b}'!")
+
+    return {
+        "manifest_version": "stage35_final_split_manifest_v1.0",
+        "protocol": "HOROS-P1-R002-STAGE3.5-FINAL-SPLIT-MANIFEST",
+        "split_seed": split_seed,
+        "split_granularity": "episode_level_strict",
+        "total_episodes_accounted": sum(len(v) for v in all_buckets.values()),
+        "reserve_pool_consumed": 0,
+        "reserve_pool_locked_count": 300,
+        "p5_t4r4_heldout_overlap_count": len(new_seeds & set(range(4950001, 4950601))),
+        "cross_partition_overlap_verified_zero": True,
+        "final_test_status": "SEALED_UNTIL_AUTHORIZED_STAGE4_EVAL",
+        "splits": split_records,
+    }

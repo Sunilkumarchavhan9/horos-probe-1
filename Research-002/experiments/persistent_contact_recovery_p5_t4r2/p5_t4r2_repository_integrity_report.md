@@ -1,13 +1,13 @@
 # P5-T4R2 repository integrity
 
-Hashes cover this experiment directory after the held-out evaluation. Historical P5-T3, P5-T4, and corrective files were not modified. Commit 512d6d1 remains the parent evidence. This report, caches, and the local audit scripts are not in the list.
+SHA-256 of the experiment files after the frozen evaluation and the later record-only additions. Historical P5-T3, P5-T4, and corrective files were not modified. Commit 512d6d1 remains the corrective parent. This report is not hashed into itself.
 
 - `_paths.py` 576 bytes `a8eedc13fb0d98e4be3a5e3c3628372538c5d8e1e92c61ab6c6ae52bc2f2e9dc`
-- `contact_event_lifecycle.py` 2037 bytes `8f0bbdb0e406d29d19096bf5521932d3ac10e8ee473a4e111998b1a26d83d01e`
+- `contact_event_lifecycle.py` 2674 bytes `602ce2b08f7c43d1d201a232eb0e900e6330b1d21f35a0a03b76d3ced0227216`
 - `contact_geometry_validator.py` 836 bytes `46eb9ac664cebdf47f2815b0eb8852ed7194e9d58088dc9ef06520b3ca4851af`
 - `contact_reestablishment_planner.py` 1303 bytes `8650eae071cb6da41aa79b62b998fc038c7d271122d8c82f6f7dc18c3e1ed934`
-- `contact_state_machine.py` 2462 bytes `d49d27ee1be166e1af0d47587eb1c619618dd835bdb6dae524e3c96385e2addf`
-- `dynamic_contact_feasibility.py` 1639 bytes `87756b5379152dbe2c46f0bad8ab63be61ce021f4819ac7051cd66e9b1d7ba77`
+- `contact_state_machine.py` 2611 bytes `7e3482c02871a46da303819fd4082f7995cb892521cb01588bedf370890637bd`
+- `dynamic_contact_feasibility.py` 1838 bytes `9d8d06e2b4f88b2f1ba72fa597123dfc81eceb7281ee82054724cf24ecd1deab`
 - `dynamic_force_allocator.py` 1509 bytes `7c01c025fbb7d7e7e0165e87b7de6fddee0bf9a142c10ca12e26718ba3e870b8`
 - `p5_t4r2_contact_lifecycle_analysis.json` 194 bytes `b9ddd5c0e1a5eb22a08e2138399a6183380be23cc08a664862125b1fb5bdca30`
 - `p5_t4r2_contact_lifecycle_audit.md` 1141 bytes `58b6d9be7fa6826ee367e66599835df93693e2ba55c80b62dab694e7795117f1`
@@ -19,6 +19,7 @@ Hashes cover this experiment directory after the held-out evaluation. Historical
 - `p5_t4r2_frozen_configuration.json` 723 bytes `cbf0791104039e68a9cfc1b4ecd807681b4570d6e169df6e2a4a130fb334a17a`
 - `p5_t4r2_heldout_manifest.json` 58766 bytes `acfe892a8aca2ff1b278a777d0e710764d222034666d1776a85bcf2194168d00`
 - `p5_t4r2_initial_repository_audit.md` 1074 bytes `25877d89238a024ee8ac84ddf89a5f7c8342eb986610a25686e059d552a15647`
+- `p5_t4r2_metric_supplement.json` 4000 bytes `ef5808fbed69751e6003ee09f7fd0b363c1d377d17f037e0885d5a28993fd69a`
 - `p5_t4r2_raw_records.json` 7476931 bytes `d5b235986e59ca8ede37a701297276d7177dbe52bee75db1d2f6e93bf118ca33`
 - `p5_t4r2_recontact_analysis.json` 187 bytes `f25be8d79139cb2b3e88ae6a63930152a357c78a25013b59cd8f984eeb919bf9`
 - `p5_t4r2_recontact_planner.py` 1263 bytes `90272f327dc51b5b72cd8bec2c9b7dfc5587d0909295ac0bffd0a69be9c9f2be`
@@ -26,12 +27,12 @@ Hashes cover this experiment directory after the held-out evaluation. Historical
 - `p5_t4r2_research_specification.md` 2584 bytes `0b5bac5783824b19904a31ad579d645219bf43bfd1ca456af23b192cf90e7970`
 - `p5_t4r2_scenario_generator.py` 3783 bytes `90cf6aa248ae724d105c3d60b47a82000d5628f29f31aaa27c1a4b4c65bd6a5d`
 - `p5_t4r2_scenarios.json` 1022401 bytes `bbfb09c074336a61865af82a24024df01759d276bbe01ad619ed628ab92a0c45`
-- `p5_t4r2_scientific_evaluation_report.md` 11557 bytes `ebab9018c7014c7a0bcd6a1492c0f11ce0a7929230af34a0547ac128906f79ee`
-- `p5_t4r2_sim_env.py` 4527 bytes `a8711260d4debc1cb23d4efb852ae488671793fbc030cec0598c0195fb89ca5f`
+- `p5_t4r2_scientific_evaluation_report.md` 13187 bytes `f0f0b5f9eceef300130f5d284677b51816bdd100c46cb0b2d135e762373c161a`
+- `p5_t4r2_sim_env.py` 5294 bytes `f8edf364fc6f4c070a718cee2606cb7936df2bc454ba2464d2545452a3b234cc`
 - `p5_t4r2_statistical_analysis.json` 1867 bytes `525b79be9d0124494d874c22d6c8fe91b3260935bf17f5ea741eeebc67080fda`
 - `persistent_contact_manager.py` 2970 bytes `eeee9d9e402a3eb56a181e05f5d3a2ad9cb180b96a39ce5134d5eb8ae68bcea3`
 - `run_p5_t4r2_experiments.py` 24562 bytes `b414267825770793d9acf3994759a2d9e1c82da213ffcec8f4ea8a9e86defc0b`
-- `test_contact_event_lifecycle.py` 1631 bytes `271352c69f602f434d2fbfaf91b981bbd36a6f7df9d71fd967b6a8a448f8c486`
+- `test_contact_event_lifecycle.py` 1846 bytes `a976041959fab42781ce79f805a90e8a63e0de1d22ce40c664b1c9cd683107e8`
 - `test_contact_geometry.py` 404 bytes `03152f2d75ad4a4c563bf5370333a438e10761b7c2408ef9b3a283db9bb98211`
 - `test_contact_reestablishment.py` 954 bytes `9959aa0d4080611a2c8dedd08b43ecbc1e1ae7a13c3ac29467c11f411a2c65e5`
 - `test_dynamic_recovery.py` 1041 bytes `19740c6e1734d38b59e182e1acb1f5a168171eaf3b3a117b1cde443c54e6f980`

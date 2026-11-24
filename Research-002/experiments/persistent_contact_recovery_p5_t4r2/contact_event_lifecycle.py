@@ -15,26 +15,42 @@ def build_events(scenario: Dict[str, object]) -> List[Dict[str, object]]:
     t0 = float(scenario["event_time"])
     if kind in ONE_SHOT_LOSSES or kind == OBSTRUCTION:
         for index in scenario["lost_ids"]:
-            events.append({
-                "event_id": f"{kind}:{int(index)}:{t0:.3f}",
-                "contact_id": int(index),
-                "event_type": kind if kind != OBSTRUCTION else OBSTRUCTION,
-                "scheduled_time": t0,
-                "trigger_time": None,
-                "consumed": False,
-                "persistent": kind == OBSTRUCTION,
-            })
+            events.append(_record(
+                f"{kind}:{int(index)}:{t0:.3f}", int(index),
+                OBSTRUCTION if kind == OBSTRUCTION else kind, t0, kind == OBSTRUCTION,
+            ))
     for extra in scenario.get("extra_events") or []:
-        events.append({
-            "event_id": str(extra["event_id"]),
-            "contact_id": int(extra["contact_id"]),
-            "event_type": str(extra["event_type"]),
-            "scheduled_time": float(extra["scheduled_time"]),
-            "trigger_time": None,
-            "consumed": False,
-            "persistent": bool(extra.get("persistent", False)),
-        })
+        events.append(_record(
+            str(extra["event_id"]), int(extra["contact_id"]), str(extra["event_type"]),
+            float(extra["scheduled_time"]), bool(extra.get("persistent", False)),
+        ))
+    _link_subsequent(events)
     return events
+
+
+def _record(event_id: str, contact_id: int, event_type: str, scheduled_time: float, persistent: bool) -> Dict[str, object]:
+    return {
+        "event_id": event_id,
+        "contact_id": contact_id,
+        "event_type": event_type,
+        "scheduled_time": scheduled_time,
+        "trigger_time": None,
+        "consumed": False,
+        "persistent": persistent,
+        "contact_valid": True,
+        "reestablishment_status": "not_attempted",
+        "subsequent_event_ids": [],
+    }
+
+
+def _link_subsequent(events: List[Dict[str, object]]) -> None:
+    by_contact: Dict[int, List[Dict[str, object]]] = {}
+    for event in events:
+        by_contact.setdefault(int(event["contact_id"]), []).append(event)
+    for group in by_contact.values():
+        group.sort(key=lambda event: float(event["scheduled_time"]))
+        for earlier, later in zip(group, group[1:]):
+            earlier["subsequent_event_ids"].append(later["event_id"])
 
 
 def due_losses(events: List[Dict[str, object]], time: float, semantics: str) -> List[Dict[str, object]]:

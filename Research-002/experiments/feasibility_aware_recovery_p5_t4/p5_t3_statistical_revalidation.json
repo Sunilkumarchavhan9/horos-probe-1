@@ -1,0 +1,334 @@
+{
+  "method": "two-sided exact McNemar via scipy.stats.binomtest on discordant pairs; paired difference CI is a paired bootstrap",
+  "alignment": "matched on seed",
+  "multiple_comparison": {
+    "family": "six Protocol A comparisons of Learned versus the six baselines",
+    "correction": "Bonferroni",
+    "alpha_family": 0.05,
+    "alpha_per_comparison": 0.008333333333333333
+  },
+  "primary_baseline_in_original_runner": {
+    "criterion_C3_uses": "EqualForcePerContact",
+    "selection_recorded_before_test": "The runner hardcodes C3 against EqualForcePerContact. PredictiveMarginBalancing is computed but is not the C3 primary. No separate locked analysis plan file was found that names the primary baseline before the raw records existed.",
+    "strongest_protocol_a_baseline_by_raw_success": {
+      "controller": "PredictiveMarginBalancing",
+      "success_rate": 0.9611111111111111
+    }
+  },
+  "protocol_A": {
+    "EqualForcePerContact": {
+      "b_learned_only": 51,
+      "c_baseline_only": 0,
+      "n_discordant": 51,
+      "paired_success_difference": null,
+      "exact_binomial_p_two_sided": 8.881784197001252e-16,
+      "discordant_learned_only_proportion_95ci": [
+        0.9302229692504614,
+        1.0
+      ],
+      "n": 900,
+      "success_learned": 0.9633333333333334,
+      "success_baseline": 0.9066666666666666,
+      "paired_difference": 0.056666666666666664,
+      "paired_difference_bootstrap_95ci": [
+        0.04219444444444446,
+        0.07222222222222222
+      ],
+      "bonferroni_significant_at_0.05_family": true
+    },
+    "FixedTotalForce": {
+      "b_learned_only": 47,
+      "c_baseline_only": 0,
+      "n_discordant": 47,
+      "paired_success_difference": null,
+      "exact_binomial_p_two_sided": 1.4210854715202004e-14,
+      "discordant_learned_only_proportion_95ci": [
+        0.9245142663089414,
+        1.0
+      ],
+      "n": 900,
+      "success_learned": 0.9633333333333334,
+      "success_baseline": 0.9111111111111111,
+      "paired_difference": 0.052222222222222225,
+      "paired_difference_bootstrap_95ci": [
+        0.03777777777777778,
+        0.06777777777777778
+      ],
+      "bonferroni_significant_at_0.05_family": true
+    },
+    "PredictiveMarginBalancing": {
+      "b_learned_only": 7,
+      "c_baseline_only": 5,
+      "n_discordant": 12,
+      "paired_success_difference": null,
+      "exact_binomial_p_two_sided": 0.7744140625,
+      "discordant_learned_only_proportion_95ci": [
+        0.2766696856821058,
+        0.8483477701915698
+      ],
+      "n": 900,
+      "success_learned": 0.9633333333333334,
+      "success_baseline": 0.9611111111111111,
+      "paired_difference": 0.0022222222222222222,
+      "paired_difference_bootstrap_95ci": [
+        -0.005555555555555556,
+        0.01
+      ],
+      "bonferroni_significant_at_0.05_family": false
+    },
+    "RuleBasedCooperative": {
+      "b_learned_only": 125,
+      "c_baseline_only": 1,
+      "n_discordant": 126,
+      "paired_success_difference": null,
+      "exact_binomial_p_two_sided": 2.9857556510886103e-36,
+      "discordant_learned_only_proportion_95ci": [
+        0.9565745319549602,
+        0.9997990852020795
+      ],
+      "n": 900,
+      "success_learned": 0.9633333333333334,
+      "success_baseline": 0.8255555555555556,
+      "paired_difference": 0.13777777777777778,
+      "paired_difference_bootstrap_95ci": [
+        0.11555555555555555,
+        0.16111111111111112
+      ],
+      "bonferroni_significant_at_0.05_family": true
+    },
+    "IndependentP5T1Adaptive": {
+      "b_learned_only": 140,
+      "c_baseline_only": 1,
+      "n_discordant": 141,
+      "paired_success_difference": null,
+      "exact_binomial_p_two_sided": 1.018800035502715e-40,
+      "discordant_learned_only_proportion_95ci": [
+        0.9611194863285075,
+        0.9998204571978639
+      ],
+      "n": 900,
+      "success_learned": 0.9633333333333334,
+      "success_baseline": 0.8088888888888889,
+      "paired_difference": 0.15444444444444444,
+      "paired_difference_bootstrap_95ci": [
+        0.13,
+        0.17777777777777778
+      ],
+      "bonferroni_significant_at_0.05_family": true
+    },
+    "P5T2LearnedExtension": {
+      "b_learned_only": 143,
+      "c_baseline_only": 5,
+      "n_discordant": 148,
+      "paired_success_difference": null,
+      "exact_binomial_p_two_sided": 3.2085276013428707e-36,
+      "discordant_learned_only_proportion_95ci": [
+        0.9229230115213366,
+        0.988941170759497
+      ],
+      "n": 900,
+      "success_learned": 0.9633333333333334,
+      "success_baseline": 0.81,
+      "paired_difference": 0.15333333333333332,
+      "paired_difference_bootstrap_95ci": [
+        0.1288888888888889,
+        0.17777777777777778
+      ],
+      "bonferroni_significant_at_0.05_family": true
+    }
+  },
+  "protocol_B": {
+    "EqualForcePerContact": {
+      "b_learned_only": 46,
+      "c_baseline_only": 24,
+      "n_discordant": 70,
+      "paired_success_difference": null,
+      "exact_binomial_p_two_sided": 0.011526409654363478,
+      "discordant_learned_only_proportion_95ci": [
+        0.5340040349627563,
+        0.7665184652917469
+      ],
+      "n": 900,
+      "success_learned": 0.9311111111111111,
+      "success_baseline": 0.9066666666666666,
+      "paired_difference": 0.024444444444444446,
+      "paired_difference_bootstrap_95ci": [
+        0.005555555555555556,
+        0.0422500000000001
+      ],
+      "bonferroni_significant_at_0.05_family": false
+    },
+    "FixedTotalForce": {
+      "b_learned_only": 42,
+      "c_baseline_only": 24,
+      "n_discordant": 66,
+      "paired_success_difference": null,
+      "exact_binomial_p_two_sided": 0.03558272445223169,
+      "discordant_learned_only_proportion_95ci": [
+        0.5087394315103152,
+        0.7513222169426668
+      ],
+      "n": 900,
+      "success_learned": 0.9311111111111111,
+      "success_baseline": 0.9111111111111111,
+      "paired_difference": 0.02,
+      "paired_difference_bootstrap_95ci": [
+        0.0022222222222222222,
+        0.03777777777777778
+      ],
+      "bonferroni_significant_at_0.05_family": false
+    },
+    "PredictiveMarginBalancing": {
+      "b_learned_only": 6,
+      "c_baseline_only": 33,
+      "n_discordant": 39,
+      "paired_success_difference": null,
+      "exact_binomial_p_two_sided": 1.429926123819314e-05,
+      "discordant_learned_only_proportion_95ci": [
+        0.05862426286078935,
+        0.3052799244367127
+      ],
+      "n": 900,
+      "success_learned": 0.9311111111111111,
+      "success_baseline": 0.9611111111111111,
+      "paired_difference": -0.03,
+      "paired_difference_bootstrap_95ci": [
+        -0.043333333333333335,
+        -0.016666666666666666
+      ],
+      "bonferroni_significant_at_0.05_family": false
+    },
+    "RuleBasedCooperative": {
+      "b_learned_only": 107,
+      "c_baseline_only": 12,
+      "n_discordant": 119,
+      "paired_success_difference": null,
+      "exact_binomial_p_two_sided": 3.207808350413538e-20,
+      "discordant_learned_only_proportion_95ci": [
+        0.830476804609474,
+        0.9467994455733676
+      ],
+      "n": 900,
+      "success_learned": 0.9311111111111111,
+      "success_baseline": 0.8255555555555556,
+      "paired_difference": 0.10555555555555556,
+      "paired_difference_bootstrap_95ci": [
+        0.08333333333333333,
+        0.12777777777777777
+      ],
+      "bonferroni_significant_at_0.05_family": true
+    },
+    "IndependentP5T1Adaptive": {
+      "b_learned_only": 140,
+      "c_baseline_only": 30,
+      "n_discordant": 170,
+      "paired_success_difference": null,
+      "exact_binomial_p_two_sided": 3.4403671393213482e-18,
+      "discordant_learned_only_proportion_95ci": [
+        0.7577624837673543,
+        0.8776553395671632
+      ],
+      "n": 900,
+      "success_learned": 0.9311111111111111,
+      "success_baseline": 0.8088888888888889,
+      "paired_difference": 0.12222222222222222,
+      "paired_difference_bootstrap_95ci": [
+        0.0955277777777778,
+        0.14888888888888888
+      ],
+      "bonferroni_significant_at_0.05_family": true
+    },
+    "P5T2LearnedExtension": {
+      "b_learned_only": 138,
+      "c_baseline_only": 29,
+      "n_discordant": 167,
+      "paired_success_difference": null,
+      "exact_binomial_p_two_sided": 3.311795273504196e-18,
+      "discordant_learned_only_proportion_95ci": [
+        0.7602220414639438,
+        0.880510257927099
+      ],
+      "n": 900,
+      "success_learned": 0.9311111111111111,
+      "success_baseline": 0.81,
+      "paired_difference": 0.12111111111111111,
+      "paired_difference_bootstrap_95ci": [
+        0.09333333333333334,
+        0.14777777777777779
+      ],
+      "bonferroni_significant_at_0.05_family": true
+    }
+  },
+  "report_transcription": {
+    "EqualForcePerContact": {
+      "report_b": 51,
+      "report_c": 0,
+      "recomputed_b": 51,
+      "recomputed_c": 0,
+      "counts_match_report": true,
+      "summary_json_has_this_pair": true
+    },
+    "FixedTotalForce": {
+      "report_b": 47,
+      "report_c": 0,
+      "recomputed_b": 47,
+      "recomputed_c": 0,
+      "counts_match_report": true,
+      "summary_json_has_this_pair": false
+    },
+    "PredictiveMarginBalancing": {
+      "report_b": 8,
+      "report_c": 6,
+      "recomputed_b": 7,
+      "recomputed_c": 5,
+      "counts_match_report": false,
+      "summary_json_has_this_pair": true
+    },
+    "RuleBasedCooperative": {
+      "report_b": 124,
+      "report_c": 0,
+      "recomputed_b": 125,
+      "recomputed_c": 1,
+      "counts_match_report": false,
+      "summary_json_has_this_pair": true
+    },
+    "IndependentP5T1Adaptive": {
+      "report_b": 139,
+      "report_c": 0,
+      "recomputed_b": 140,
+      "recomputed_c": 1,
+      "counts_match_report": false,
+      "summary_json_has_this_pair": true
+    },
+    "P5T2LearnedExtension": {
+      "report_b": 138,
+      "report_c": 0,
+      "recomputed_b": 143,
+      "recomputed_c": 5,
+      "counts_match_report": false,
+      "summary_json_has_this_pair": false
+    }
+  },
+  "summary_json_versus_recomputed_protocol_A": {
+    "Learned_vs_EqualForcePerContact": {
+      "summary_b": 51,
+      "summary_c": 0,
+      "summary_p": 8.881784197001252e-16
+    },
+    "Learned_vs_RuleBasedCooperative": {
+      "summary_b": 125,
+      "summary_c": 1,
+      "summary_p": 2.9857556510886103e-36
+    },
+    "Learned_vs_IndependentP5T1Adaptive": {
+      "summary_b": 140,
+      "summary_c": 1,
+      "summary_p": 1.018800035502715e-40
+    },
+    "Learned_vs_PredictiveMarginBalancing": {
+      "summary_b": 7,
+      "summary_c": 5,
+      "summary_p": 0.7744140625
+    }
+  }
+}

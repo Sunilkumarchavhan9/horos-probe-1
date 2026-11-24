@@ -1,0 +1,58 @@
+{
+  "object_radius_m": 0.04,
+  "object_mass_kg": 0.5,
+  "normals_object_frame": {
+    "contact_1": [
+      0.4999999999999998,
+      -0.8660254037844387
+    ],
+    "contact_2": [
+      0.5000000000000004,
+      0.8660254037844385
+    ]
+  },
+  "tangents_object_frame": {
+    "contact_1": [
+      -0.8660254037844387,
+      -0.4999999999999998
+    ],
+    "contact_2": [
+      0.8660254037844385,
+      -0.5000000000000004
+    ]
+  },
+  "grasp_matrix_active_columns_fn1_ft1_fn2_ft2": [
+    [
+      0.4999999999999998,
+      0.8660254037844387,
+      0.5000000000000004,
+      -0.8660254037844385
+    ],
+    [
+      -0.8660254037844387,
+      0.4999999999999998,
+      0.8660254037844385,
+      0.5000000000000004
+    ],
+    [
+      0.0,
+      -0.039999999999999994,
+      0.0,
+      -0.04000000000000001
+    ]
+  ],
+  "code_force_convention": "f = fn * n - ft * t",
+  "report_algebra_assumes_both_positive_Ft_reduce_Fx": true,
+  "code_sign_matches_report_for_both_contacts": false,
+  "capacity_statement_matches_after_choosing_opposing_sign": true,
+  "mu_crit_symmetric_equal_force": 0.5773502691896258,
+  "mu_1": 0.53,
+  "mu_2": 0.56,
+  "both_mu_below_mu_crit": true,
+  "homogeneous_opposing_margin_(sqrt3/2)*(mu1+mu2)-1": -0.05603230987496188,
+  "minimum_Fx_over_equal_fn_in_[3,25]_with_code_signs_N": 0.16809692962488643,
+  "equilibrium_fx_condition_met_for_any_equal_positive_fn": false,
+  "linear_damping_in_p5t3_sim_N_s_per_m": 10.0,
+  "undamped_acceleration_claim_6mps2": "not entailed once cone-limited friction is included; net Fx scales as about 0.056*Fn for these two coefficients",
+  "drop_time_90ms_claim": "depends on the undamped zero-friction bound Fx>=3N, which the cone-limited contact model does not produce"
+}

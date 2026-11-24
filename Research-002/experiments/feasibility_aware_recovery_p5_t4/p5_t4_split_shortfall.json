@@ -1,0 +1,76 @@
+{
+  "train": {
+    "3": {
+      "feasible": 0,
+      "infeasible": 0,
+      "extra": 0
+    },
+    "4": {
+      "feasible": 0,
+      "infeasible": 0,
+      "extra": 0
+    },
+    "5": {
+      "feasible": 0,
+      "infeasible": 0,
+      "extra": 0
+    }
+  },
+  "validation": {
+    "3": {
+      "feasible": 0,
+      "infeasible": 0,
+      "extra": 0
+    },
+    "4": {
+      "feasible": 0,
+      "infeasible": 0,
+      "extra": 0
+    },
+    "5": {
+      "feasible": 0,
+      "infeasible": 0,
+      "extra": 0
+    }
+  },
+  "held_out": {
+    "3": {
+      "feasible": 0,
+      "infeasible": 0,
+      "extra": 0
+    },
+    "4": {
+      "feasible": 0,
+      "infeasible": 0,
+      "extra": 0
+    },
+    "5": {
+      "feasible": 0,
+      "infeasible": 0,
+      "extra": 0
+    }
+  },
+  "stress": {
+    "3": {
+      "feasible": 0,
+      "infeasible": 0,
+      "extra": 0
+    },
+    "4": {
+      "feasible": 0,
+      "infeasible": 0,
+      "extra": 0
+    },
+    "5": {
+      "feasible": 0,
+      "infeasible": 0,
+      "extra": 0
+    }
+  },
+  "counts": {
+    "train": 180,
+    "validation": 120,
+    "held_out": 900,
+    "stress": 90
+  }
+}

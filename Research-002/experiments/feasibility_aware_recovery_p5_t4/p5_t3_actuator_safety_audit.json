@@ -1,0 +1,466 @@
+{
+  "constraints_in_environment_source": {
+    "normal_force_clip_N": [
+      3.0,
+      25.0
+    ],
+    "slew_limit_N_per_s": 50.0,
+    "enforced_inside": "n_contact_sim_env.py step(), before the plant",
+    "lost_contact_force_set_to": 0.0
+  },
+  "important_limitation": "The environment clips commands. Episode summaries therefore cannot prove that the controller never requested an illegal command, and they contain no force derivative.",
+  "protocols": {
+    "Protocol_A_EqualActuatorLimits": {
+      "EqualForcePerContact": {
+        "source": "episode summary field peak_fn_max only",
+        "maximum_recorded_peak_normal_force_N": 8.0,
+        "per_topology": {
+          "N_3": {
+            "episodes": 300,
+            "max_recorded_peak_normal_force_N": 8.0,
+            "mean_recorded_peak_normal_force_N": 8.0,
+            "episodes_with_recorded_peak_above_25N": 0,
+            "episodes_with_recorded_peak_below_3N": 0
+          },
+          "N_4": {
+            "episodes": 300,
+            "max_recorded_peak_normal_force_N": 8.0,
+            "mean_recorded_peak_normal_force_N": 8.0,
+            "episodes_with_recorded_peak_above_25N": 0,
+            "episodes_with_recorded_peak_below_3N": 0
+          },
+          "N_5": {
+            "episodes": 300,
+            "max_recorded_peak_normal_force_N": 8.0,
+            "mean_recorded_peak_normal_force_N": 8.0,
+            "episodes_with_recorded_peak_above_25N": 0,
+            "episodes_with_recorded_peak_below_3N": 0
+          }
+        },
+        "force_derivative_telemetry_present": false,
+        "maximum_absolute_force_derivative_N_per_s": null,
+        "force_bound_violations_from_summaries": 0,
+        "actuator_rate_violations": "UNRESOLVED",
+        "reason": "Raw records store one peak normal force per episode and no per-step command or slew trace."
+      },
+      "FixedTotalForce": {
+        "source": "episode summary field peak_fn_max only",
+        "maximum_recorded_peak_normal_force_N": 10.666666666666666,
+        "per_topology": {
+          "N_3": {
+            "episodes": 300,
+            "max_recorded_peak_normal_force_N": 9.200000000000017,
+            "mean_recorded_peak_normal_force_N": 8.076666666666668,
+            "episodes_with_recorded_peak_above_25N": 0,
+            "episodes_with_recorded_peak_below_3N": 0
+          },
+          "N_4": {
+            "episodes": 300,
+            "max_recorded_peak_normal_force_N": 10.666666666666666,
+            "mean_recorded_peak_normal_force_N": 8.163388888888887,
+            "episodes_with_recorded_peak_above_25N": 0,
+            "episodes_with_recorded_peak_below_3N": 0
+          },
+          "N_5": {
+            "episodes": 300,
+            "max_recorded_peak_normal_force_N": 10.0,
+            "mean_recorded_peak_normal_force_N": 8.133333333333333,
+            "episodes_with_recorded_peak_above_25N": 0,
+            "episodes_with_recorded_peak_below_3N": 0
+          }
+        },
+        "force_derivative_telemetry_present": false,
+        "maximum_absolute_force_derivative_N_per_s": null,
+        "force_bound_violations_from_summaries": 0,
+        "actuator_rate_violations": "UNRESOLVED",
+        "reason": "Raw records store one peak normal force per episode and no per-step command or slew trace."
+      },
+      "IndependentP5T1Adaptive": {
+        "source": "episode summary field peak_fn_max only",
+        "maximum_recorded_peak_normal_force_N": 12.0,
+        "per_topology": {
+          "N_3": {
+            "episodes": 300,
+            "max_recorded_peak_normal_force_N": 12.0,
+            "mean_recorded_peak_normal_force_N": 9.333333333333334,
+            "episodes_with_recorded_peak_above_25N": 0,
+            "episodes_with_recorded_peak_below_3N": 0
+          },
+          "N_4": {
+            "episodes": 300,
+            "max_recorded_peak_normal_force_N": 12.0,
+            "mean_recorded_peak_normal_force_N": 9.333333333333334,
+            "episodes_with_recorded_peak_above_25N": 0,
+            "episodes_with_recorded_peak_below_3N": 0
+          },
+          "N_5": {
+            "episodes": 300,
+            "max_recorded_peak_normal_force_N": 12.0,
+            "mean_recorded_peak_normal_force_N": 9.333333333333334,
+            "episodes_with_recorded_peak_above_25N": 0,
+            "episodes_with_recorded_peak_below_3N": 0
+          }
+        },
+        "force_derivative_telemetry_present": false,
+        "maximum_absolute_force_derivative_N_per_s": null,
+        "force_bound_violations_from_summaries": 0,
+        "actuator_rate_violations": "UNRESOLVED",
+        "reason": "Raw records store one peak normal force per episode and no per-step command or slew trace."
+      },
+      "LearnedUncertaintyAwareNContact": {
+        "source": "episode summary field peak_fn_max only",
+        "maximum_recorded_peak_normal_force_N": 17.663335735053003,
+        "per_topology": {
+          "N_3": {
+            "episodes": 300,
+            "max_recorded_peak_normal_force_N": 11.522235030463682,
+            "mean_recorded_peak_normal_force_N": 9.054390523980501,
+            "episodes_with_recorded_peak_above_25N": 0,
+            "episodes_with_recorded_peak_below_3N": 0
+          },
+          "N_4": {
+            "episodes": 300,
+            "max_recorded_peak_normal_force_N": 17.663335735053003,
+            "mean_recorded_peak_normal_force_N": 9.718159332590739,
+            "episodes_with_recorded_peak_above_25N": 0,
+            "episodes_with_recorded_peak_below_3N": 0
+          },
+          "N_5": {
+            "episodes": 300,
+            "max_recorded_peak_normal_force_N": 15.819086621807946,
+            "mean_recorded_peak_normal_force_N": 9.151916900759252,
+            "episodes_with_recorded_peak_above_25N": 0,
+            "episodes_with_recorded_peak_below_3N": 0
+          }
+        },
+        "force_derivative_telemetry_present": false,
+        "maximum_absolute_force_derivative_N_per_s": null,
+        "force_bound_violations_from_summaries": 0,
+        "actuator_rate_violations": "UNRESOLVED",
+        "reason": "Raw records store one peak normal force per episode and no per-step command or slew trace."
+      },
+      "P5T2LearnedExtension": {
+        "source": "episode summary field peak_fn_max only",
+        "maximum_recorded_peak_normal_force_N": 20.6523596458284,
+        "per_topology": {
+          "N_3": {
+            "episodes": 300,
+            "max_recorded_peak_normal_force_N": 16.518833822338085,
+            "mean_recorded_peak_normal_force_N": 13.783769736595923,
+            "episodes_with_recorded_peak_above_25N": 0,
+            "episodes_with_recorded_peak_below_3N": 0
+          },
+          "N_4": {
+            "episodes": 300,
+            "max_recorded_peak_normal_force_N": 19.305905604116354,
+            "mean_recorded_peak_normal_force_N": 11.112765655521478,
+            "episodes_with_recorded_peak_above_25N": 0,
+            "episodes_with_recorded_peak_below_3N": 0
+          },
+          "N_5": {
+            "episodes": 300,
+            "max_recorded_peak_normal_force_N": 20.6523596458284,
+            "mean_recorded_peak_normal_force_N": 10.90229766078857,
+            "episodes_with_recorded_peak_above_25N": 0,
+            "episodes_with_recorded_peak_below_3N": 0
+          }
+        },
+        "force_derivative_telemetry_present": false,
+        "maximum_absolute_force_derivative_N_per_s": null,
+        "force_bound_violations_from_summaries": 0,
+        "actuator_rate_violations": "UNRESOLVED",
+        "reason": "Raw records store one peak normal force per episode and no per-step command or slew trace."
+      },
+      "PredictiveMarginBalancing": {
+        "source": "episode summary field peak_fn_max only",
+        "maximum_recorded_peak_normal_force_N": 16.809519132354758,
+        "per_topology": {
+          "N_3": {
+            "episodes": 300,
+            "max_recorded_peak_normal_force_N": 16.0,
+            "mean_recorded_peak_normal_force_N": 11.12802113998906,
+            "episodes_with_recorded_peak_above_25N": 0,
+            "episodes_with_recorded_peak_below_3N": 0
+          },
+          "N_4": {
+            "episodes": 300,
+            "max_recorded_peak_normal_force_N": 15.943414933651912,
+            "mean_recorded_peak_normal_force_N": 9.660429693552574,
+            "episodes_with_recorded_peak_above_25N": 0,
+            "episodes_with_recorded_peak_below_3N": 0
+          },
+          "N_5": {
+            "episodes": 300,
+            "max_recorded_peak_normal_force_N": 16.809519132354758,
+            "mean_recorded_peak_normal_force_N": 9.50393236903027,
+            "episodes_with_recorded_peak_above_25N": 0,
+            "episodes_with_recorded_peak_below_3N": 0
+          }
+        },
+        "force_derivative_telemetry_present": false,
+        "maximum_absolute_force_derivative_N_per_s": null,
+        "force_bound_violations_from_summaries": 0,
+        "actuator_rate_violations": "UNRESOLVED",
+        "reason": "Raw records store one peak normal force per episode and no per-step command or slew trace."
+      },
+      "RuleBasedCooperative": {
+        "source": "episode summary field peak_fn_max only",
+        "maximum_recorded_peak_normal_force_N": 22.691364471932417,
+        "per_topology": {
+          "N_3": {
+            "episodes": 300,
+            "max_recorded_peak_normal_force_N": 10.62530818443879,
+            "mean_recorded_peak_normal_force_N": 9.857194536329455,
+            "episodes_with_recorded_peak_above_25N": 0,
+            "episodes_with_recorded_peak_below_3N": 0
+          },
+          "N_4": {
+            "episodes": 300,
+            "max_recorded_peak_normal_force_N": 10.973638298448577,
+            "mean_recorded_peak_normal_force_N": 9.611472689977058,
+            "episodes_with_recorded_peak_above_25N": 0,
+            "episodes_with_recorded_peak_below_3N": 0
+          },
+          "N_5": {
+            "episodes": 300,
+            "max_recorded_peak_normal_force_N": 22.691364471932417,
+            "mean_recorded_peak_normal_force_N": 9.96592113815129,
+            "episodes_with_recorded_peak_above_25N": 0,
+            "episodes_with_recorded_peak_below_3N": 0
+          }
+        },
+        "force_derivative_telemetry_present": false,
+        "maximum_absolute_force_derivative_N_per_s": null,
+        "force_bound_violations_from_summaries": 0,
+        "actuator_rate_violations": "UNRESOLVED",
+        "reason": "Raw records store one peak normal force per episode and no per-step command or slew trace."
+      }
+    },
+    "Protocol_B_EqualTotalForceBudgets": {
+      "EqualForcePerContact": {
+        "source": "episode summary field peak_fn_max only",
+        "maximum_recorded_peak_normal_force_N": 8.0,
+        "per_topology": {
+          "N_3": {
+            "episodes": 300,
+            "max_recorded_peak_normal_force_N": 8.0,
+            "mean_recorded_peak_normal_force_N": 8.0,
+            "episodes_with_recorded_peak_above_25N": 0,
+            "episodes_with_recorded_peak_below_3N": 0
+          },
+          "N_4": {
+            "episodes": 300,
+            "max_recorded_peak_normal_force_N": 8.0,
+            "mean_recorded_peak_normal_force_N": 8.0,
+            "episodes_with_recorded_peak_above_25N": 0,
+            "episodes_with_recorded_peak_below_3N": 0
+          },
+          "N_5": {
+            "episodes": 300,
+            "max_recorded_peak_normal_force_N": 8.0,
+            "mean_recorded_peak_normal_force_N": 8.0,
+            "episodes_with_recorded_peak_above_25N": 0,
+            "episodes_with_recorded_peak_below_3N": 0
+          }
+        },
+        "force_derivative_telemetry_present": false,
+        "maximum_absolute_force_derivative_N_per_s": null,
+        "force_bound_violations_from_summaries": 0,
+        "actuator_rate_violations": "UNRESOLVED",
+        "reason": "Raw records store one peak normal force per episode and no per-step command or slew trace."
+      },
+      "FixedTotalForce": {
+        "source": "episode summary field peak_fn_max only",
+        "maximum_recorded_peak_normal_force_N": 10.666666666666666,
+        "per_topology": {
+          "N_3": {
+            "episodes": 300,
+            "max_recorded_peak_normal_force_N": 9.200000000000017,
+            "mean_recorded_peak_normal_force_N": 8.076666666666668,
+            "episodes_with_recorded_peak_above_25N": 0,
+            "episodes_with_recorded_peak_below_3N": 0
+          },
+          "N_4": {
+            "episodes": 300,
+            "max_recorded_peak_normal_force_N": 10.666666666666666,
+            "mean_recorded_peak_normal_force_N": 8.163388888888887,
+            "episodes_with_recorded_peak_above_25N": 0,
+            "episodes_with_recorded_peak_below_3N": 0
+          },
+          "N_5": {
+            "episodes": 300,
+            "max_recorded_peak_normal_force_N": 10.0,
+            "mean_recorded_peak_normal_force_N": 8.133333333333333,
+            "episodes_with_recorded_peak_above_25N": 0,
+            "episodes_with_recorded_peak_below_3N": 0
+          }
+        },
+        "force_derivative_telemetry_present": false,
+        "maximum_absolute_force_derivative_N_per_s": null,
+        "force_bound_violations_from_summaries": 0,
+        "actuator_rate_violations": "UNRESOLVED",
+        "reason": "Raw records store one peak normal force per episode and no per-step command or slew trace."
+      },
+      "IndependentP5T1Adaptive": {
+        "source": "episode summary field peak_fn_max only",
+        "maximum_recorded_peak_normal_force_N": 12.0,
+        "per_topology": {
+          "N_3": {
+            "episodes": 300,
+            "max_recorded_peak_normal_force_N": 12.0,
+            "mean_recorded_peak_normal_force_N": 9.333333333333334,
+            "episodes_with_recorded_peak_above_25N": 0,
+            "episodes_with_recorded_peak_below_3N": 0
+          },
+          "N_4": {
+            "episodes": 300,
+            "max_recorded_peak_normal_force_N": 12.0,
+            "mean_recorded_peak_normal_force_N": 9.333333333333334,
+            "episodes_with_recorded_peak_above_25N": 0,
+            "episodes_with_recorded_peak_below_3N": 0
+          },
+          "N_5": {
+            "episodes": 300,
+            "max_recorded_peak_normal_force_N": 12.0,
+            "mean_recorded_peak_normal_force_N": 9.333333333333334,
+            "episodes_with_recorded_peak_above_25N": 0,
+            "episodes_with_recorded_peak_below_3N": 0
+          }
+        },
+        "force_derivative_telemetry_present": false,
+        "maximum_absolute_force_derivative_N_per_s": null,
+        "force_bound_violations_from_summaries": 0,
+        "actuator_rate_violations": "UNRESOLVED",
+        "reason": "Raw records store one peak normal force per episode and no per-step command or slew trace."
+      },
+      "LearnedUncertaintyAwareNContact": {
+        "source": "episode summary field peak_fn_max only",
+        "maximum_recorded_peak_normal_force_N": 14.56569175877813,
+        "per_topology": {
+          "N_3": {
+            "episodes": 300,
+            "max_recorded_peak_normal_force_N": 9.782971579937623,
+            "mean_recorded_peak_normal_force_N": 8.843164265679816,
+            "episodes_with_recorded_peak_above_25N": 0,
+            "episodes_with_recorded_peak_below_3N": 0
+          },
+          "N_4": {
+            "episodes": 300,
+            "max_recorded_peak_normal_force_N": 14.56569175877813,
+            "mean_recorded_peak_normal_force_N": 9.026048537410956,
+            "episodes_with_recorded_peak_above_25N": 0,
+            "episodes_with_recorded_peak_below_3N": 0
+          },
+          "N_5": {
+            "episodes": 300,
+            "max_recorded_peak_normal_force_N": 12.523821666014664,
+            "mean_recorded_peak_normal_force_N": 8.865769385302796,
+            "episodes_with_recorded_peak_above_25N": 0,
+            "episodes_with_recorded_peak_below_3N": 0
+          }
+        },
+        "force_derivative_telemetry_present": false,
+        "maximum_absolute_force_derivative_N_per_s": null,
+        "force_bound_violations_from_summaries": 0,
+        "actuator_rate_violations": "UNRESOLVED",
+        "reason": "Raw records store one peak normal force per episode and no per-step command or slew trace."
+      },
+      "P5T2LearnedExtension": {
+        "source": "episode summary field peak_fn_max only",
+        "maximum_recorded_peak_normal_force_N": 20.6523596458284,
+        "per_topology": {
+          "N_3": {
+            "episodes": 300,
+            "max_recorded_peak_normal_force_N": 16.518833822338085,
+            "mean_recorded_peak_normal_force_N": 13.783769736595923,
+            "episodes_with_recorded_peak_above_25N": 0,
+            "episodes_with_recorded_peak_below_3N": 0
+          },
+          "N_4": {
+            "episodes": 300,
+            "max_recorded_peak_normal_force_N": 19.305905604116354,
+            "mean_recorded_peak_normal_force_N": 11.112765655521478,
+            "episodes_with_recorded_peak_above_25N": 0,
+            "episodes_with_recorded_peak_below_3N": 0
+          },
+          "N_5": {
+            "episodes": 300,
+            "max_recorded_peak_normal_force_N": 20.6523596458284,
+            "mean_recorded_peak_normal_force_N": 10.90229766078857,
+            "episodes_with_recorded_peak_above_25N": 0,
+            "episodes_with_recorded_peak_below_3N": 0
+          }
+        },
+        "force_derivative_telemetry_present": false,
+        "maximum_absolute_force_derivative_N_per_s": null,
+        "force_bound_violations_from_summaries": 0,
+        "actuator_rate_violations": "UNRESOLVED",
+        "reason": "Raw records store one peak normal force per episode and no per-step command or slew trace."
+      },
+      "PredictiveMarginBalancing": {
+        "source": "episode summary field peak_fn_max only",
+        "maximum_recorded_peak_normal_force_N": 16.809519132354758,
+        "per_topology": {
+          "N_3": {
+            "episodes": 300,
+            "max_recorded_peak_normal_force_N": 16.0,
+            "mean_recorded_peak_normal_force_N": 11.12802113998906,
+            "episodes_with_recorded_peak_above_25N": 0,
+            "episodes_with_recorded_peak_below_3N": 0
+          },
+          "N_4": {
+            "episodes": 300,
+            "max_recorded_peak_normal_force_N": 15.943414933651912,
+            "mean_recorded_peak_normal_force_N": 9.660429693552574,
+            "episodes_with_recorded_peak_above_25N": 0,
+            "episodes_with_recorded_peak_below_3N": 0
+          },
+          "N_5": {
+            "episodes": 300,
+            "max_recorded_peak_normal_force_N": 16.809519132354758,
+            "mean_recorded_peak_normal_force_N": 9.50393236903027,
+            "episodes_with_recorded_peak_above_25N": 0,
+            "episodes_with_recorded_peak_below_3N": 0
+          }
+        },
+        "force_derivative_telemetry_present": false,
+        "maximum_absolute_force_derivative_N_per_s": null,
+        "force_bound_violations_from_summaries": 0,
+        "actuator_rate_violations": "UNRESOLVED",
+        "reason": "Raw records store one peak normal force per episode and no per-step command or slew trace."
+      },
+      "RuleBasedCooperative": {
+        "source": "episode summary field peak_fn_max only",
+        "maximum_recorded_peak_normal_force_N": 22.691364471932417,
+        "per_topology": {
+          "N_3": {
+            "episodes": 300,
+            "max_recorded_peak_normal_force_N": 10.62530818443879,
+            "mean_recorded_peak_normal_force_N": 9.857194536329455,
+            "episodes_with_recorded_peak_above_25N": 0,
+            "episodes_with_recorded_peak_below_3N": 0
+          },
+          "N_4": {
+            "episodes": 300,
+            "max_recorded_peak_normal_force_N": 10.973638298448577,
+            "mean_recorded_peak_normal_force_N": 9.611472689977058,
+            "episodes_with_recorded_peak_above_25N": 0,
+            "episodes_with_recorded_peak_below_3N": 0
+          },
+          "N_5": {
+            "episodes": 300,
+            "max_recorded_peak_normal_force_N": 22.691364471932417,
+            "mean_recorded_peak_normal_force_N": 9.96592113815129,
+            "episodes_with_recorded_peak_above_25N": 0,
+            "episodes_with_recorded_peak_below_3N": 0
+          }
+        },
+        "force_derivative_telemetry_present": false,
+        "maximum_absolute_force_derivative_N_per_s": null,
+        "force_bound_violations_from_summaries": 0,
+        "actuator_rate_violations": "UNRESOLVED",
+        "reason": "Raw records store one peak normal force per episode and no per-step command or slew trace."
+      }
+    }
+  }
+}

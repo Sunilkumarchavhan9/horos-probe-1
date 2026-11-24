@@ -1,0 +1,60 @@
+{
+  "matrix": {
+    "oracle_True__pred_FEASIBLE": 352,
+    "oracle_True__pred_INFEASIBLE": 4,
+    "oracle_True__pred_UNCERTAIN": 5,
+    "oracle_True__pred_DEGRADED_RECOVERY": 114,
+    "oracle_True__pred_None": 2,
+    "oracle_False__pred_FEASIBLE": 0,
+    "oracle_False__pred_INFEASIBLE": 422,
+    "oracle_False__pred_UNCERTAIN": 1,
+    "oracle_False__pred_DEGRADED_RECOVERY": 0,
+    "oracle_False__pred_None": 0
+  },
+  "infeasible_recall": 0.9976359338061466,
+  "false_feasible_rate": 0.0,
+  "false_infeasible_rate": 0.008385744234800839,
+  "brier": 0.005446130289532294,
+  "ece": {
+    "ece": 0.006263919821826281,
+    "bins": [
+      {
+        "bin_low": 0.0,
+        "bin_high": 0.125,
+        "count": 424,
+        "confidence": 0.0,
+        "frequency": 0.0047169811320754715
+      },
+      {
+        "bin_low": 0.125,
+        "bin_high": 0.25,
+        "count": 2,
+        "confidence": 0.125,
+        "frequency": 1.0
+      },
+      {
+        "bin_low": 0.5,
+        "bin_high": 0.625,
+        "count": 2,
+        "confidence": 0.5,
+        "frequency": 1.0
+      },
+      {
+        "bin_low": 0.625,
+        "bin_high": 0.75,
+        "count": 4,
+        "confidence": 0.625,
+        "frequency": 0.75
+      },
+      {
+        "bin_low": 0.875,
+        "bin_high": 1.0,
+        "count": 466,
+        "confidence": 0.9991952789699571,
+        "frequency": 1.0
+      }
+    ]
+  },
+  "n_feasible": 477,
+  "n_infeasible": 423
+}

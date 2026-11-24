@@ -1,0 +1,134 @@
+{
+  "source_commit": "512d6d1",
+  "source_file": "p5_t4_revision_evaluation_summary.json",
+  "protocol_a": {
+    "corrective_feasible_recovery": 0.3763440860215054,
+    "p5t3_feasible_recovery": 0.38064516129032255,
+    "paired_difference": -0.004301075268817204,
+    "exact_p": 0.5,
+    "infeasible_recall": 0.9816091954022989,
+    "false_feasible_rate": 0.0022988505747126436,
+    "safe_termination": 0.9954022988505747,
+    "latency_p95_ms": 0.051213732513133395,
+    "by_topology": {
+      "3": {
+        "feasible_recovery": 0.12751677852348994,
+        "n_feasible": 149
+      },
+      "4": {
+        "feasible_recovery": 0.39751552795031053,
+        "n_feasible": 161
+      },
+      "5": {
+        "feasible_recovery": 0.5935483870967742,
+        "n_feasible": 155
+      }
+    },
+    "mean_total_fn": 33.704892953645164
+  },
+  "matches_reported_table": true,
+  "lifecycle_demo": {
+    "repeat": {
+      "semantics": "repeat",
+      "loss_calls": 40,
+      "loss_applications": 10,
+      "formations": 1,
+      "max_persist": 0,
+      "final_valid0": true,
+      "final_fn0": 0.0,
+      "trace_every_5": [
+        {
+          "t": 0.005,
+          "valid0": false,
+          "fn0": 0.0
+        },
+        {
+          "t": 0.03,
+          "valid0": false,
+          "fn0": 0.0
+        },
+        {
+          "t": 0.055,
+          "valid0": false,
+          "fn0": 0.0
+        },
+        {
+          "t": 0.08,
+          "valid0": false,
+          "fn0": 0.0
+        },
+        {
+          "t": 0.105,
+          "valid0": false,
+          "fn0": 0.0
+        },
+        {
+          "t": 0.13,
+          "valid0": true,
+          "fn0": 0.0
+        },
+        {
+          "t": 0.155,
+          "valid0": false,
+          "fn0": 0.0
+        },
+        {
+          "t": 0.18,
+          "valid0": true,
+          "fn0": 0.0
+        }
+      ]
+    },
+    "oneshot": {
+      "semantics": "oneshot",
+      "loss_calls": 1,
+      "loss_applications": 1,
+      "formations": 1,
+      "max_persist": 37,
+      "final_valid0": true,
+      "final_fn0": 9.5,
+      "trace_every_5": [
+        {
+          "t": 0.005,
+          "valid0": false,
+          "fn0": 0.0
+        },
+        {
+          "t": 0.03,
+          "valid0": true,
+          "fn0": 1.0
+        },
+        {
+          "t": 0.055,
+          "valid0": true,
+          "fn0": 2.25
+        },
+        {
+          "t": 0.08,
+          "valid0": true,
+          "fn0": 3.5
+        },
+        {
+          "t": 0.105,
+          "valid0": true,
+          "fn0": 4.75
+        },
+        {
+          "t": 0.13,
+          "valid0": true,
+          "fn0": 6.0
+        },
+        {
+          "t": 0.155,
+          "valid0": true,
+          "fn0": 7.25
+        },
+        {
+          "t": 0.18,
+          "valid0": true,
+          "fn0": 8.5
+        }
+      ]
+    }
+  }
+}

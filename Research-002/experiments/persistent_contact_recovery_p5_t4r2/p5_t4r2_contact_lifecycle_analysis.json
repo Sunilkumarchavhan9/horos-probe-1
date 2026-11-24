@@ -1,0 +1,5 @@
+{
+  "ablation_A_loss_calls_mean": 0.0,
+  "ablation_B_loss_calls_mean": 2.1866666666666665,
+  "note": "Archive plant rows do not expose loss_calls. Ablation B counts one-shot applications."
+}

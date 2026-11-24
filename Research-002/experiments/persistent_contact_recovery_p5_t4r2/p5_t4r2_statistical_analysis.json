@@ -1,0 +1,59 @@
+{
+  "paired_protocol_a": {
+    "P5T3RecoveryNoFeasibility": {
+      "n_feasible": 303,
+      "b_proposed_only": 5,
+      "c_baseline_only": 66,
+      "difference": -0.20132013201320131,
+      "difference_95ci": [
+        -0.25412541254125415,
+        -0.15181518151815182
+      ],
+      "exact_p_two_sided": 1.1901876782304671e-14
+    },
+    "P5T4FeasibilityAwareRecovery": {
+      "n_feasible": 303,
+      "b_proposed_only": 39,
+      "c_baseline_only": 16,
+      "difference": 0.07590759075907591,
+      "difference_95ci": [
+        0.0297029702970297,
+        0.12219471947194675
+      ],
+      "exact_p_two_sided": 0.0026672623828598026
+    },
+    "preload_25": {
+      "n_feasible": 303,
+      "b_proposed_only": 0,
+      "c_baseline_only": 72,
+      "difference": -0.2376237623762376,
+      "difference_95ci": [
+        -0.2871287128712871,
+        -0.19141914191419143
+      ],
+      "exact_p_two_sided": 4.235164736271502e-22
+    }
+  },
+  "primary_baseline": "preload_25",
+  "multiple_comparison": "Two primary Protocol A contrasts, versus the validation baseline and versus preload_25, use a Bonferroni threshold of 0.025. The validation baseline is preload_25, so those two contrasts are the same comparison.",
+  "ablation_protocol_a_feasible": {
+    "oneshot_original_minus_repeat": {
+      "n_feasible": 303,
+      "oneshot_recoveries": 112,
+      "repeat_recoveries": 114,
+      "oneshot_only": 0,
+      "repeat_only": 2,
+      "difference": -0.006600660066006601,
+      "exact_p_two_sided": 0.5
+    },
+    "physical_preload_minus_oneshot_original": {
+      "n_feasible": 303,
+      "physical_recoveries": 121,
+      "original_finger_recoveries": 112,
+      "physical_only": 11,
+      "original_only": 2,
+      "difference": 0.0297029702970297,
+      "exact_p_two_sided": 0.0224609375
+    }
+  }
+}

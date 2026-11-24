@@ -1,0 +1,654 @@
+{
+  "verdict": "FAIL",
+  "frozen": {
+    "selected_mode": "topology_14",
+    "selection": [
+      {
+        "mode": "topology_14",
+        "feasible_recovery": 0.1,
+        "mean_total_fn": 25.656284063592313
+      },
+      {
+        "mode": "topology_10",
+        "feasible_recovery": 0.03333333333333333,
+        "mean_total_fn": 21.043785156044905
+      }
+    ],
+    "primary_baseline": "preload_25",
+    "validation_baselines": [
+      {
+        "name": "preload_25",
+        "feasible_recovery": 0.4782608695652174
+      },
+      {
+        "name": "P5T3RecoveryNoFeasibility",
+        "feasible_recovery": 0.45652173913043476
+      },
+      {
+        "name": "P5T4FeasibilityAwareRecovery",
+        "feasible_recovery": 0.1956521739130435
+      }
+    ],
+    "held_out_count": 600
+  },
+  "summary": {
+    "P5T3RecoveryNoFeasibility": {
+      "Protocol_A": {
+        "episodes": 600,
+        "feasible_recovery": 0.36303630363036304,
+        "n_feasible": 303,
+        "n_infeasible": 297,
+        "overall_grasp_recovery": 0.18333333333333332,
+        "safe_termination_on_infeasible": 0.0,
+        "infeasible_recall": null,
+        "false_feasible_rate": 0.0,
+        "false_infeasible_rate": 0.0,
+        "by_topology_feasible": {
+          "3": {
+            "feasible_recovery": 0.10309278350515463,
+            "n_feasible": 97
+          },
+          "4": {
+            "feasible_recovery": 0.43137254901960786,
+            "n_feasible": 102
+          },
+          "5": {
+            "feasible_recovery": 0.5384615384615384,
+            "n_feasible": 104
+          }
+        },
+        "mean_total_fn": 46.45388352824084,
+        "peak_fn_max": 25.0,
+        "mean_impulse": 32.51771846976861,
+        "mean_work_normal_J": 0.022081843700448883,
+        "mean_work_tangent_J": 25.637560229048372,
+        "mean_damage": 80.20512492883816,
+        "formations": 0,
+        "verified_contacts": 0,
+        "recontact_attempts": 0,
+        "recontact_successes": 0,
+        "mean_max_persist": 0.0,
+        "applied_budget_violations": 0,
+        "applied_bound_violations": 0,
+        "applied_slew_violations": 0,
+        "consistency_violations": 0,
+        "invalid_force_violations": 0,
+        "latency_mean_ms": 0.021237686857126566,
+        "latency_p95_ms": 0.03551668225554748,
+        "latency_worst_ms": 0.6311000324785709
+      },
+      "Protocol_B": {
+        "episodes": 600,
+        "feasible_recovery": 0.36713286713286714,
+        "n_feasible": 286,
+        "n_infeasible": 314,
+        "overall_grasp_recovery": 0.175,
+        "safe_termination_on_infeasible": 0.006369426751592357,
+        "infeasible_recall": null,
+        "false_feasible_rate": 0.0,
+        "false_infeasible_rate": 0.0,
+        "by_topology_feasible": {
+          "3": {
+            "feasible_recovery": 0.11904761904761904,
+            "n_feasible": 84
+          },
+          "4": {
+            "feasible_recovery": 0.42424242424242425,
+            "n_feasible": 99
+          },
+          "5": {
+            "feasible_recovery": 0.5145631067961165,
+            "n_feasible": 103
+          }
+        },
+        "mean_total_fn": 20.223752987696333,
+        "peak_fn_max": 15.666810304973144,
+        "mean_impulse": 14.156627091387442,
+        "mean_work_normal_J": 0.003205400767984702,
+        "mean_work_tangent_J": 5.96420333550547,
+        "mean_damage": 5.38493742496179e-06,
+        "formations": 0,
+        "verified_contacts": 0,
+        "recontact_attempts": 0,
+        "recontact_successes": 0,
+        "mean_max_persist": 0.0,
+        "applied_budget_violations": 0,
+        "applied_bound_violations": 0,
+        "applied_slew_violations": 0,
+        "consistency_violations": 0,
+        "invalid_force_violations": 0,
+        "latency_mean_ms": 0.02655818110603529,
+        "latency_p95_ms": 0.0436672387877479,
+        "latency_worst_ms": 17.050700029358268
+      }
+    },
+    "P5T4FeasibilityAwareRecovery": {
+      "Protocol_A": {
+        "episodes": 600,
+        "feasible_recovery": 0.0858085808580858,
+        "n_feasible": 303,
+        "n_infeasible": 297,
+        "overall_grasp_recovery": 0.043333333333333335,
+        "safe_termination_on_infeasible": 0.016835016835016835,
+        "infeasible_recall": 0.006734006734006734,
+        "false_feasible_rate": 0.04713804713804714,
+        "false_infeasible_rate": 0.0,
+        "by_topology_feasible": {
+          "3": {
+            "feasible_recovery": 0.041237113402061855,
+            "n_feasible": 97
+          },
+          "4": {
+            "feasible_recovery": 0.058823529411764705,
+            "n_feasible": 102
+          },
+          "5": {
+            "feasible_recovery": 0.15384615384615385,
+            "n_feasible": 104
+          }
+        },
+        "mean_total_fn": 5.0488330424007914,
+        "peak_fn_max": 18.65581262162766,
+        "mean_impulse": 3.5341831296805566,
+        "mean_work_normal_J": 0.0022988398807259943,
+        "mean_work_tangent_J": 0.5620383047309006,
+        "mean_damage": 0.002991600396810034,
+        "formations": 775,
+        "verified_contacts": 82,
+        "recontact_attempts": 0,
+        "recontact_successes": 0,
+        "mean_max_persist": 72.89498806682577,
+        "applied_budget_violations": 0,
+        "applied_bound_violations": 0,
+        "applied_slew_violations": 0,
+        "consistency_violations": 0,
+        "invalid_force_violations": 0,
+        "latency_mean_ms": 3.326563528492226,
+        "latency_p95_ms": 6.138567001326006,
+        "latency_worst_ms": 40.820299996994436
+      },
+      "Protocol_B": {
+        "episodes": 600,
+        "feasible_recovery": 0.0979020979020979,
+        "n_feasible": 286,
+        "n_infeasible": 314,
+        "overall_grasp_recovery": 0.04666666666666667,
+        "safe_termination_on_infeasible": 0.03503184713375796,
+        "infeasible_recall": 0.012738853503184714,
+        "false_feasible_rate": 0.06369426751592357,
+        "false_infeasible_rate": 0.0,
+        "by_topology_feasible": {
+          "3": {
+            "feasible_recovery": 0.07142857142857142,
+            "n_feasible": 84
+          },
+          "4": {
+            "feasible_recovery": 0.06060606060606061,
+            "n_feasible": 99
+          },
+          "5": {
+            "feasible_recovery": 0.1553398058252427,
+            "n_feasible": 103
+          }
+        },
+        "mean_total_fn": 4.88897903180307,
+        "peak_fn_max": 15.821376176797266,
+        "mean_impulse": 3.422285322262152,
+        "mean_work_normal_J": 0.0021974586527460606,
+        "mean_work_tangent_J": 0.5007540227191059,
+        "mean_damage": 0.00011088334461562358,
+        "formations": 774,
+        "verified_contacts": 79,
+        "recontact_attempts": 0,
+        "recontact_successes": 0,
+        "mean_max_persist": 75.6563245823389,
+        "applied_budget_violations": 0,
+        "applied_bound_violations": 0,
+        "applied_slew_violations": 0,
+        "consistency_violations": 0,
+        "invalid_force_violations": 0,
+        "latency_mean_ms": 3.3361553668468593,
+        "latency_p95_ms": 6.150536252243908,
+        "latency_worst_ms": 41.73830000218004
+      }
+    },
+    "preload_25": {
+      "Protocol_A": {
+        "episodes": 600,
+        "feasible_recovery": 0.39933993399339934,
+        "n_feasible": 303,
+        "n_infeasible": 297,
+        "overall_grasp_recovery": 0.20166666666666666,
+        "safe_termination_on_infeasible": 0.9764309764309764,
+        "infeasible_recall": 0.9764309764309764,
+        "false_feasible_rate": 0.020202020202020204,
+        "false_infeasible_rate": 0.0165016501650165,
+        "by_topology_feasible": {
+          "3": {
+            "feasible_recovery": 0.17525773195876287,
+            "n_feasible": 97
+          },
+          "4": {
+            "feasible_recovery": 0.46078431372549017,
+            "n_feasible": 102
+          },
+          "5": {
+            "feasible_recovery": 0.5480769230769231,
+            "n_feasible": 104
+          }
+        },
+        "mean_total_fn": 37.155914972730926,
+        "peak_fn_max": 25.0,
+        "mean_impulse": 26.009140480911668,
+        "mean_work_normal_J": 0.01776993201395335,
+        "mean_work_tangent_J": 9.17215423036057,
+        "mean_damage": 59.71287904979972,
+        "formations": 151,
+        "verified_contacts": 151,
+        "recontact_attempts": 0,
+        "recontact_successes": 0,
+        "mean_max_persist": 37.74463007159905,
+        "applied_budget_violations": 0,
+        "applied_bound_violations": 0,
+        "applied_slew_violations": 0,
+        "consistency_violations": 0,
+        "invalid_force_violations": 0,
+        "latency_mean_ms": 0.14227088478288524,
+        "latency_p95_ms": 0.046350003394763896,
+        "latency_worst_ms": 26.025400031358004
+      },
+      "Protocol_B": {
+        "episodes": 600,
+        "feasible_recovery": 0.4020979020979021,
+        "n_feasible": 286,
+        "n_infeasible": 314,
+        "overall_grasp_recovery": 0.19166666666666668,
+        "safe_termination_on_infeasible": 0.9267515923566879,
+        "infeasible_recall": 0.9171974522292994,
+        "false_feasible_rate": 0.01592356687898089,
+        "false_infeasible_rate": 0.013986013986013986,
+        "by_topology_feasible": {
+          "3": {
+            "feasible_recovery": 0.17857142857142858,
+            "n_feasible": 84
+          },
+          "4": {
+            "feasible_recovery": 0.45454545454545453,
+            "n_feasible": 99
+          },
+          "5": {
+            "feasible_recovery": 0.5339805825242718,
+            "n_feasible": 103
+          }
+        },
+        "mean_total_fn": 17.088519091159004,
+        "peak_fn_max": 16.0,
+        "mean_impulse": 11.96196336381131,
+        "mean_work_normal_J": 0.003016822846148077,
+        "mean_work_tangent_J": 2.617084164277521,
+        "mean_damage": 0.0019730870226014325,
+        "formations": 139,
+        "verified_contacts": 139,
+        "recontact_attempts": 0,
+        "recontact_successes": 0,
+        "mean_max_persist": 34.69928400954654,
+        "applied_budget_violations": 0,
+        "applied_bound_violations": 0,
+        "applied_slew_violations": 0,
+        "consistency_violations": 0,
+        "invalid_force_violations": 0,
+        "latency_mean_ms": 0.14836162872268774,
+        "latency_p95_ms": 0.057401471422053874,
+        "latency_worst_ms": 27.27329998742789
+      }
+    },
+    "P5T4R2TopologyAware": {
+      "Protocol_A": {
+        "episodes": 600,
+        "feasible_recovery": 0.1617161716171617,
+        "n_feasible": 303,
+        "n_infeasible": 297,
+        "overall_grasp_recovery": 0.08166666666666667,
+        "safe_termination_on_infeasible": 0.5925925925925926,
+        "infeasible_recall": 0.569023569023569,
+        "false_feasible_rate": 0.037037037037037035,
+        "false_infeasible_rate": 0.006600660066006601,
+        "by_topology_feasible": {
+          "3": {
+            "feasible_recovery": 0.020618556701030927,
+            "n_feasible": 97
+          },
+          "4": {
+            "feasible_recovery": 0.13725490196078433,
+            "n_feasible": 102
+          },
+          "5": {
+            "feasible_recovery": 0.3173076923076923,
+            "n_feasible": 104
+          }
+        },
+        "mean_total_fn": 27.072258918052352,
+        "peak_fn_max": 25.0,
+        "mean_impulse": 18.950581242636662,
+        "mean_work_normal_J": 0.0131182930020788,
+        "mean_work_tangent_J": 8.528240610893288,
+        "mean_damage": 7.061196560925306,
+        "formations": 380,
+        "verified_contacts": 380,
+        "recontact_attempts": 0,
+        "recontact_successes": 0,
+        "mean_max_persist": 76.0453460620525,
+        "applied_budget_violations": 0,
+        "applied_bound_violations": 0,
+        "applied_slew_violations": 0,
+        "consistency_violations": 0,
+        "invalid_force_violations": 0,
+        "latency_mean_ms": 0.21003619652696043,
+        "latency_p95_ms": 0.12416076409863305,
+        "latency_worst_ms": 47.025399981066585
+      },
+      "Protocol_B": {
+        "episodes": 600,
+        "feasible_recovery": 0.12937062937062938,
+        "n_feasible": 286,
+        "n_infeasible": 314,
+        "overall_grasp_recovery": 0.06166666666666667,
+        "safe_termination_on_infeasible": 0.5477707006369427,
+        "infeasible_recall": 0.5095541401273885,
+        "false_feasible_rate": 0.050955414012738856,
+        "false_infeasible_rate": 0.0,
+        "by_topology_feasible": {
+          "3": {
+            "feasible_recovery": 0.05952380952380952,
+            "n_feasible": 84
+          },
+          "4": {
+            "feasible_recovery": 0.06060606060606061,
+            "n_feasible": 99
+          },
+          "5": {
+            "feasible_recovery": 0.2524271844660194,
+            "n_feasible": 103
+          }
+        },
+        "mean_total_fn": 18.764029826561814,
+        "peak_fn_max": 22.16456633252848,
+        "mean_impulse": 13.134820878593278,
+        "mean_work_normal_J": 0.008170875656093098,
+        "mean_work_tangent_J": 5.091263406904242,
+        "mean_damage": 0.4758557401457112,
+        "formations": 393,
+        "verified_contacts": 390,
+        "recontact_attempts": 0,
+        "recontact_successes": 0,
+        "mean_max_persist": 77.27684964200478,
+        "applied_budget_violations": 0,
+        "applied_bound_violations": 0,
+        "applied_slew_violations": 0,
+        "consistency_violations": 0,
+        "invalid_force_violations": 0,
+        "latency_mean_ms": 0.21314123485353775,
+        "latency_p95_ms": 0.1276067789876831,
+        "latency_worst_ms": 35.80449998844415
+      }
+    }
+  },
+  "ablation": {
+    "A_repeat_preload": {
+      "episodes": 600,
+      "feasible_recovery": 0.37623762376237624,
+      "n_feasible": 303,
+      "n_infeasible": 297,
+      "overall_grasp_recovery": 0.19166666666666668,
+      "safe_termination_on_infeasible": 0.9696969696969697,
+      "infeasible_recall": 0.9696969696969697,
+      "false_feasible_rate": 0.026936026936026935,
+      "false_infeasible_rate": 0.0165016501650165,
+      "by_topology_feasible": {
+        "3": {
+          "feasible_recovery": 0.13402061855670103,
+          "n_feasible": 97
+        },
+        "4": {
+          "feasible_recovery": 0.4411764705882353,
+          "n_feasible": 102
+        },
+        "5": {
+          "feasible_recovery": 0.5384615384615384,
+          "n_feasible": 104
+        }
+      },
+      "mean_total_fn": 34.210242864753646,
+      "peak_fn_max": 25.0,
+      "mean_impulse": 23.947170005327568,
+      "mean_work_normal_J": 0.01563174008271679,
+      "mean_work_tangent_J": 12.444462781952803,
+      "mean_damage": 54.91920043638784,
+      "formations": 0,
+      "verified_contacts": 0,
+      "recontact_attempts": 151,
+      "recontact_successes": 4043,
+      "mean_max_persist": 0.0,
+      "applied_budget_violations": 0,
+      "applied_bound_violations": 0,
+      "applied_slew_violations": 0,
+      "consistency_violations": 0,
+      "invalid_force_violations": 0,
+      "latency_mean_ms": 0.13451464393264834,
+      "latency_p95_ms": 0.04202347656246273,
+      "latency_worst_ms": 23.651600000448525
+    },
+    "B_oneshot_original_finger": {
+      "episodes": 600,
+      "feasible_recovery": 0.3696369636963696,
+      "n_feasible": 303,
+      "n_infeasible": 297,
+      "overall_grasp_recovery": 0.18666666666666668,
+      "safe_termination_on_infeasible": 0.9764309764309764,
+      "infeasible_recall": 0.9764309764309764,
+      "false_feasible_rate": 0.020202020202020204,
+      "false_infeasible_rate": 0.0165016501650165,
+      "by_topology_feasible": {
+        "3": {
+          "feasible_recovery": 0.13402061855670103,
+          "n_feasible": 97
+        },
+        "4": {
+          "feasible_recovery": 0.43137254901960786,
+          "n_feasible": 102
+        },
+        "5": {
+          "feasible_recovery": 0.5288461538461539,
+          "n_feasible": 104
+        }
+      },
+      "mean_total_fn": 33.860159020349975,
+      "peak_fn_max": 25.0,
+      "mean_impulse": 23.702111314245,
+      "mean_work_normal_J": 0.015531120402215392,
+      "mean_work_tangent_J": 12.496838234581022,
+      "mean_damage": 54.24166029979971,
+      "formations": 0,
+      "verified_contacts": 0,
+      "recontact_attempts": 153,
+      "recontact_successes": 136,
+      "mean_max_persist": 0.0,
+      "applied_budget_violations": 0,
+      "applied_bound_violations": 0,
+      "applied_slew_violations": 0,
+      "consistency_violations": 0,
+      "invalid_force_violations": 0,
+      "latency_mean_ms": 0.1364070346545694,
+      "latency_p95_ms": 0.042031976627185934,
+      "latency_worst_ms": 27.862099930644035
+    },
+    "D_physical_preload": {
+      "episodes": 600,
+      "feasible_recovery": 0.39933993399339934,
+      "n_feasible": 303,
+      "n_infeasible": 297,
+      "overall_grasp_recovery": 0.20166666666666666,
+      "safe_termination_on_infeasible": 0.9764309764309764,
+      "infeasible_recall": 0.9764309764309764,
+      "false_feasible_rate": 0.020202020202020204,
+      "false_infeasible_rate": 0.0165016501650165,
+      "by_topology_feasible": {
+        "3": {
+          "feasible_recovery": 0.17525773195876287,
+          "n_feasible": 97
+        },
+        "4": {
+          "feasible_recovery": 0.46078431372549017,
+          "n_feasible": 102
+        },
+        "5": {
+          "feasible_recovery": 0.5480769230769231,
+          "n_feasible": 104
+        }
+      },
+      "mean_total_fn": 37.155914972730926,
+      "peak_fn_max": 25.0,
+      "mean_impulse": 26.009140480911668,
+      "mean_work_normal_J": 0.01776993201395335,
+      "mean_work_tangent_J": 9.17215423036057,
+      "mean_damage": 59.71287904979972,
+      "formations": 151,
+      "verified_contacts": 151,
+      "recontact_attempts": 0,
+      "recontact_successes": 0,
+      "mean_max_persist": 37.74463007159905,
+      "applied_budget_violations": 0,
+      "applied_bound_violations": 0,
+      "applied_slew_violations": 0,
+      "consistency_violations": 0,
+      "invalid_force_violations": 0,
+      "latency_mean_ms": 0.14227088478288524,
+      "latency_p95_ms": 0.046350003394763896,
+      "latency_worst_ms": 26.025400031358004
+    },
+    "E_topology": {
+      "episodes": 600,
+      "feasible_recovery": 0.1617161716171617,
+      "n_feasible": 303,
+      "n_infeasible": 297,
+      "overall_grasp_recovery": 0.08166666666666667,
+      "safe_termination_on_infeasible": 0.5925925925925926,
+      "infeasible_recall": 0.569023569023569,
+      "false_feasible_rate": 0.037037037037037035,
+      "false_infeasible_rate": 0.006600660066006601,
+      "by_topology_feasible": {
+        "3": {
+          "feasible_recovery": 0.020618556701030927,
+          "n_feasible": 97
+        },
+        "4": {
+          "feasible_recovery": 0.13725490196078433,
+          "n_feasible": 102
+        },
+        "5": {
+          "feasible_recovery": 0.3173076923076923,
+          "n_feasible": 104
+        }
+      },
+      "mean_total_fn": 27.072258918052352,
+      "peak_fn_max": 25.0,
+      "mean_impulse": 18.950581242636662,
+      "mean_work_normal_J": 0.0131182930020788,
+      "mean_work_tangent_J": 8.528240610893288,
+      "mean_damage": 7.061196560925306,
+      "formations": 380,
+      "verified_contacts": 380,
+      "recontact_attempts": 0,
+      "recontact_successes": 0,
+      "mean_max_persist": 76.0453460620525,
+      "applied_budget_violations": 0,
+      "applied_bound_violations": 0,
+      "applied_slew_violations": 0,
+      "consistency_violations": 0,
+      "invalid_force_violations": 0,
+      "latency_mean_ms": 0.21003619652696043,
+      "latency_p95_ms": 0.12416076409863305,
+      "latency_worst_ms": 47.025399981066585
+    },
+    "stress": {
+      "episodes": 60,
+      "feasible_recovery": 0.10344827586206896,
+      "n_feasible": 29,
+      "n_infeasible": 31,
+      "overall_grasp_recovery": 0.05,
+      "safe_termination_on_infeasible": 0.7096774193548387,
+      "infeasible_recall": 0.6129032258064516,
+      "false_feasible_rate": 0.0,
+      "false_infeasible_rate": 0.0,
+      "by_topology_feasible": {
+        "3": {
+          "feasible_recovery": 0.0,
+          "n_feasible": 11
+        },
+        "4": {
+          "feasible_recovery": 0.125,
+          "n_feasible": 8
+        },
+        "5": {
+          "feasible_recovery": 0.2,
+          "n_feasible": 10
+        }
+      },
+      "mean_total_fn": 26.38449755226918,
+      "peak_fn_max": 25.0,
+      "mean_impulse": 18.46914828658844,
+      "mean_work_normal_J": 0.013339181772156056,
+      "mean_work_tangent_J": 5.659815094292054,
+      "mean_damage": 7.170308198947271,
+      "formations": 25,
+      "verified_contacts": 25,
+      "recontact_attempts": 0,
+      "recontact_successes": 0,
+      "mean_max_persist": 50.166666666666664,
+      "applied_budget_violations": 0,
+      "applied_bound_violations": 0,
+      "applied_slew_violations": 0,
+      "consistency_violations": 0,
+      "invalid_force_violations": 0,
+      "latency_mean_ms": 0.18004003598997814,
+      "latency_p95_ms": 0.10002256312873214,
+      "latency_worst_ms": 27.409199974499643
+    }
+  },
+  "paired_protocol_a": {
+    "P5T3RecoveryNoFeasibility": {
+      "n_feasible": 303,
+      "b_proposed_only": 5,
+      "c_baseline_only": 66,
+      "difference": -0.20132013201320131,
+      "difference_95ci": [
+        -0.25412541254125415,
+        -0.15181518151815182
+      ],
+      "exact_p_two_sided": 1.1901876782304671e-14
+    },
+    "P5T4FeasibilityAwareRecovery": {
+      "n_feasible": 303,
+      "b_proposed_only": 39,
+      "c_baseline_only": 16,
+      "difference": 0.07590759075907591,
+      "difference_95ci": [
+        0.0297029702970297,
+        0.12219471947194675
+      ],
+      "exact_p_two_sided": 0.0026672623828598026
+    },
+    "preload_25": {
+      "n_feasible": 303,
+      "b_proposed_only": 0,
+      "c_baseline_only": 72,
+      "difference": -0.2376237623762376,
+      "difference_95ci": [
+        -0.2871287128712871,
+        -0.19141914191419143
+      ],
+      "exact_p_two_sided": 4.235164736271502e-22
+    }
+  },
+  "replay_match": true
+}

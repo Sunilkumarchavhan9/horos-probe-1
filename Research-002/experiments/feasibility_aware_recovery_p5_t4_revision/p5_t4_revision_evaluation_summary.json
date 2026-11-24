@@ -1,0 +1,893 @@
+{
+  "verdict": "FAIL",
+  "frozen": {
+    "selected_mode": "preload_25",
+    "selection": {
+      "candidates": [
+        {
+          "mode": "preload_12",
+          "feasible_recovery": 0.4787234042553192,
+          "mean_total_fn": 21.611064180642558,
+          "episodes": 180
+        },
+        {
+          "mode": "preload_16",
+          "feasible_recovery": 0.48936170212765956,
+          "mean_total_fn": 26.29541740049167,
+          "episodes": 180
+        },
+        {
+          "mode": "preload_25",
+          "feasible_recovery": 0.5638297872340425,
+          "mean_total_fn": 33.82753109356489,
+          "episodes": 180
+        }
+      ],
+      "selected_mode": "preload_25"
+    },
+    "primary_baseline": "P5T3RecoveryNoFeasibility",
+    "held_out_count": 900,
+    "p_low": 0.2,
+    "p_high": 0.65,
+    "archive_protocol_name": "Protocol_A"
+  },
+  "summary": {
+    "P5T3RecoveryNoFeasibility": {
+      "Protocol_A": {
+        "episodes": 900,
+        "overall_grasp_recovery": 0.19666666666666666,
+        "feasible_recovery": 0.38064516129032255,
+        "safe_termination_on_infeasible": 0.0,
+        "infeasible_recall": null,
+        "false_feasible_rate": 0.0,
+        "false_infeasible_rate": 0.0,
+        "by_topology_feasible": {
+          "3": {
+            "feasible_recovery": 0.14093959731543623,
+            "n_feasible": 149
+          },
+          "4": {
+            "feasible_recovery": 0.39751552795031053,
+            "n_feasible": 161
+          },
+          "5": {
+            "feasible_recovery": 0.5935483870967742,
+            "n_feasible": 155
+          }
+        },
+        "classification_matrix": {},
+        "mean_total_fn": 47.10698575875739,
+        "peak_fn_max": 25.0,
+        "mean_impulse": 32.9748900311302,
+        "mean_work_normal_J": 0.02270705775077908,
+        "mean_work_tangent_J": 24.647814591597292,
+        "mean_damage": 81.27384709837912,
+        "mean_displacement_mm": 1741.0959908168413,
+        "recontact_successes": 0,
+        "recontact_attempts": 0,
+        "applied_budget_violations": 0,
+        "applied_bound_violations": 0,
+        "applied_slew_violations": 0,
+        "consistency_violations": 0,
+        "invalid_force_violations": 0,
+        "latency_mean_ms": 0.021604732470309713,
+        "latency_p95_ms": 0.03732024313649162,
+        "latency_worst_ms": 1.1387999984435737,
+        "solver_p95_ms": 0.0
+      },
+      "Protocol_B": {
+        "episodes": 900,
+        "overall_grasp_recovery": 0.19,
+        "feasible_recovery": 0.38084632516703787,
+        "safe_termination_on_infeasible": 0.0,
+        "infeasible_recall": null,
+        "false_feasible_rate": 0.0,
+        "false_infeasible_rate": 0.0,
+        "by_topology_feasible": {
+          "3": {
+            "feasible_recovery": 0.17037037037037037,
+            "n_feasible": 135
+          },
+          "4": {
+            "feasible_recovery": 0.38125,
+            "n_feasible": 160
+          },
+          "5": {
+            "feasible_recovery": 0.564935064935065,
+            "n_feasible": 154
+          }
+        },
+        "classification_matrix": {},
+        "mean_total_fn": 20.503879010368262,
+        "peak_fn_max": 14.180101035999748,
+        "mean_impulse": 14.352715307257794,
+        "mean_work_normal_J": 0.0033384427982268076,
+        "mean_work_tangent_J": 5.652238103185376,
+        "mean_damage": 0.0,
+        "mean_displacement_mm": 1470.289234090184,
+        "recontact_successes": 0,
+        "recontact_attempts": 0,
+        "applied_budget_violations": 0,
+        "applied_bound_violations": 0,
+        "applied_slew_violations": 0,
+        "consistency_violations": 0,
+        "invalid_force_violations": 0,
+        "latency_mean_ms": 0.02667362059028597,
+        "latency_p95_ms": 0.04497199319303034,
+        "latency_worst_ms": 17.02339999610558,
+        "solver_p95_ms": 0.0
+      }
+    },
+    "P5T4FeasibilityAwareRecovery": {
+      "Protocol_A": {
+        "episodes": 900,
+        "overall_grasp_recovery": 0.05444444444444444,
+        "feasible_recovery": 0.1053763440860215,
+        "safe_termination_on_infeasible": 0.9632183908045977,
+        "infeasible_recall": 0.9977011494252873,
+        "false_feasible_rate": 0.0,
+        "false_infeasible_rate": 0.01935483870967742,
+        "by_topology_feasible": {
+          "3": {
+            "feasible_recovery": 0.04697986577181208,
+            "n_feasible": 149
+          },
+          "4": {
+            "feasible_recovery": 0.062111801242236024,
+            "n_feasible": 161
+          },
+          "5": {
+            "feasible_recovery": 0.2064516129032258,
+            "n_feasible": 155
+          }
+        },
+        "classification_matrix": {
+          "oracle_False__pred_INFEASIBLE": 434,
+          "oracle_True__pred_FEASIBLE": 345,
+          "oracle_True__pred_DEGRADED_RECOVERY": 100,
+          "oracle_True__pred_UNCERTAIN": 7,
+          "oracle_True__pred_INFEASIBLE": 9,
+          "oracle_False__pred_UNCERTAIN": 1
+        },
+        "mean_total_fn": 4.306851204518314,
+        "peak_fn_max": 24.488233387088414,
+        "mean_impulse": 3.0147958431628226,
+        "mean_work_normal_J": 0.0020808179041951857,
+        "mean_work_tangent_J": 0.5547958844593783,
+        "mean_damage": 0.03896538752714975,
+        "mean_displacement_mm": 957.8682334338506,
+        "recontact_successes": 1614,
+        "recontact_attempts": 1139,
+        "applied_budget_violations": 0,
+        "applied_bound_violations": 0,
+        "applied_slew_violations": 0,
+        "consistency_violations": 0,
+        "invalid_force_violations": 0,
+        "latency_mean_ms": 2.3279620531395757,
+        "latency_p95_ms": 5.519875493628206,
+        "latency_worst_ms": 38.35240000626072,
+        "solver_p95_ms": 0.0
+      },
+      "Protocol_B": {
+        "episodes": 900,
+        "overall_grasp_recovery": 0.05555555555555555,
+        "feasible_recovery": 0.111358574610245,
+        "safe_termination_on_infeasible": 0.9401330376940134,
+        "infeasible_recall": 0.9866962305986696,
+        "false_feasible_rate": 0.0066518847006651885,
+        "false_infeasible_rate": 0.022271714922048998,
+        "by_topology_feasible": {
+          "3": {
+            "feasible_recovery": 0.05925925925925926,
+            "n_feasible": 135
+          },
+          "4": {
+            "feasible_recovery": 0.0625,
+            "n_feasible": 160
+          },
+          "5": {
+            "feasible_recovery": 0.2077922077922078,
+            "n_feasible": 154
+          }
+        },
+        "classification_matrix": {
+          "oracle_False__pred_INFEASIBLE": 445,
+          "oracle_True__pred_FEASIBLE": 335,
+          "oracle_True__pred_DEGRADED_RECOVERY": 89,
+          "oracle_True__pred_UNCERTAIN": 11,
+          "oracle_True__pred_INFEASIBLE": 10,
+          "oracle_False__pred_UNCERTAIN": 2,
+          "oracle_False__pred_FEASIBLE": 3,
+          "oracle_False__pred_DEGRADED_RECOVERY": 1
+        },
+        "mean_total_fn": 3.983821346773415,
+        "peak_fn_max": 17.835386438972,
+        "mean_impulse": 2.788674942741393,
+        "mean_work_normal_J": 0.0018381860189218937,
+        "mean_work_tangent_J": 0.45361872821362864,
+        "mean_damage": 0.0005364757494582719,
+        "mean_displacement_mm": 950.4659726236783,
+        "recontact_successes": 1587,
+        "recontact_attempts": 1139,
+        "applied_budget_violations": 0,
+        "applied_bound_violations": 0,
+        "applied_slew_violations": 0,
+        "consistency_violations": 0,
+        "invalid_force_violations": 0,
+        "latency_mean_ms": 2.3174073244223288,
+        "latency_p95_ms": 5.561834021355025,
+        "latency_worst_ms": 43.93489996436983,
+        "solver_p95_ms": 0.0
+      }
+    },
+    "P5T4StaticFeasibilityRecovery": {
+      "Protocol_A": {
+        "episodes": 900,
+        "overall_grasp_recovery": 0.006666666666666667,
+        "feasible_recovery": 0.012903225806451613,
+        "safe_termination_on_infeasible": 1.0,
+        "infeasible_recall": 0.9862068965517241,
+        "false_feasible_rate": 0.0,
+        "false_infeasible_rate": 0.010752688172043012,
+        "by_topology_feasible": {
+          "3": {
+            "feasible_recovery": 0.040268456375838924,
+            "n_feasible": 149
+          },
+          "4": {
+            "feasible_recovery": 0.0,
+            "n_feasible": 161
+          },
+          "5": {
+            "feasible_recovery": 0.0,
+            "n_feasible": 155
+          }
+        },
+        "classification_matrix": {
+          "oracle_False__pred_INFEASIBLE": 429,
+          "oracle_True__pred_FEASIBLE": 444,
+          "oracle_True__pred_INFEASIBLE": 5,
+          "oracle_False__pred_UNCERTAIN": 6,
+          "oracle_True__pred_DEGRADED_RECOVERY": 9,
+          "oracle_True__pred_UNCERTAIN": 3
+        },
+        "mean_total_fn": 4.716411176671649,
+        "peak_fn_max": 25.0,
+        "mean_impulse": 3.301487823670157,
+        "mean_work_normal_J": 0.0012864745761586088,
+        "mean_work_tangent_J": 1.1043813393742268,
+        "mean_damage": 0.35043366493169115,
+        "mean_displacement_mm": 1253.5628795290515,
+        "recontact_successes": 0,
+        "recontact_attempts": 0,
+        "applied_budget_violations": 0,
+        "applied_bound_violations": 0,
+        "applied_slew_violations": 0,
+        "consistency_violations": 0,
+        "invalid_force_violations": 0,
+        "latency_mean_ms": 0.14793359753463253,
+        "latency_p95_ms": 0.05737827668781386,
+        "latency_worst_ms": 34.578199964016676,
+        "solver_p95_ms": 0.0
+      },
+      "Protocol_B": {
+        "episodes": 900,
+        "overall_grasp_recovery": 0.006666666666666667,
+        "feasible_recovery": 0.013363028953229399,
+        "safe_termination_on_infeasible": 0.9889135254988913,
+        "infeasible_recall": 0.9822616407982262,
+        "false_feasible_rate": 0.008869179600886918,
+        "false_infeasible_rate": 0.008908685968819599,
+        "by_topology_feasible": {
+          "3": {
+            "feasible_recovery": 0.044444444444444446,
+            "n_feasible": 135
+          },
+          "4": {
+            "feasible_recovery": 0.0,
+            "n_feasible": 160
+          },
+          "5": {
+            "feasible_recovery": 0.0,
+            "n_feasible": 154
+          }
+        },
+        "classification_matrix": {
+          "oracle_False__pred_INFEASIBLE": 443,
+          "oracle_True__pred_FEASIBLE": 430,
+          "oracle_True__pred_INFEASIBLE": 4,
+          "oracle_True__pred_DEGRADED_RECOVERY": 7,
+          "oracle_False__pred_DEGRADED_RECOVERY": 1,
+          "oracle_False__pred_FEASIBLE": 4,
+          "oracle_False__pred_UNCERTAIN": 3,
+          "oracle_True__pred_UNCERTAIN": 4
+        },
+        "mean_total_fn": 4.469498209275081,
+        "peak_fn_max": 24.0,
+        "mean_impulse": 3.1286487464925585,
+        "mean_work_normal_J": 0.001188340063602923,
+        "mean_work_tangent_J": 0.9965710830510079,
+        "mean_damage": 0.1490906495070374,
+        "mean_displacement_mm": 1235.497845052165,
+        "recontact_successes": 0,
+        "recontact_attempts": 0,
+        "applied_budget_violations": 0,
+        "applied_bound_violations": 0,
+        "applied_slew_violations": 0,
+        "consistency_violations": 0,
+        "invalid_force_violations": 0,
+        "latency_mean_ms": 0.1517627826246936,
+        "latency_p95_ms": 0.06404421656043258,
+        "latency_worst_ms": 35.15100001823157,
+        "solver_p95_ms": 0.0
+      }
+    },
+    "P5T4RateLimitedDynamic": {
+      "Protocol_A": {
+        "episodes": 900,
+        "overall_grasp_recovery": 0.19555555555555557,
+        "feasible_recovery": 0.37849462365591396,
+        "safe_termination_on_infeasible": 0.993103448275862,
+        "infeasible_recall": 0.9793103448275862,
+        "false_feasible_rate": 0.0022988505747126436,
+        "false_infeasible_rate": 0.023655913978494623,
+        "by_topology_feasible": {
+          "3": {
+            "feasible_recovery": 0.1342281879194631,
+            "n_feasible": 149
+          },
+          "4": {
+            "feasible_recovery": 0.391304347826087,
+            "n_feasible": 161
+          },
+          "5": {
+            "feasible_recovery": 0.6,
+            "n_feasible": 155
+          }
+        },
+        "classification_matrix": {
+          "oracle_False__pred_INFEASIBLE": 426,
+          "oracle_True__pred_FEASIBLE": 416,
+          "oracle_True__pred_INFEASIBLE": 11,
+          "oracle_False__pred_UNCERTAIN": 6,
+          "oracle_True__pred_DEGRADED_RECOVERY": 20,
+          "oracle_False__pred_DEGRADED_RECOVERY": 2,
+          "oracle_True__pred_UNCERTAIN": 7,
+          "oracle_False__pred_FEASIBLE": 1
+        },
+        "mean_total_fn": 26.186549382107163,
+        "peak_fn_max": 25.0,
+        "mean_impulse": 18.330584567475025,
+        "mean_work_normal_J": 0.007408714541405332,
+        "mean_work_tangent_J": 7.024493139003716,
+        "mean_damage": 1.136142837637963,
+        "mean_displacement_mm": 1211.5837565627264,
+        "recontact_successes": 0,
+        "recontact_attempts": 0,
+        "applied_budget_violations": 0,
+        "applied_bound_violations": 0,
+        "applied_slew_violations": 0,
+        "consistency_violations": 0,
+        "invalid_force_violations": 0,
+        "latency_mean_ms": 0.14309958090990899,
+        "latency_p95_ms": 0.04838696651859206,
+        "latency_worst_ms": 50.6036999868229,
+        "solver_p95_ms": 0.0
+      },
+      "Protocol_B": {
+        "episodes": 900,
+        "overall_grasp_recovery": 0.19,
+        "feasible_recovery": 0.38084632516703787,
+        "safe_termination_on_infeasible": 0.9312638580931264,
+        "infeasible_recall": 0.9223946784922394,
+        "false_feasible_rate": 0.004434589800443459,
+        "false_infeasible_rate": 0.026726057906458798,
+        "by_topology_feasible": {
+          "3": {
+            "feasible_recovery": 0.17037037037037037,
+            "n_feasible": 135
+          },
+          "4": {
+            "feasible_recovery": 0.38125,
+            "n_feasible": 160
+          },
+          "5": {
+            "feasible_recovery": 0.564935064935065,
+            "n_feasible": 154
+          }
+        },
+        "classification_matrix": {
+          "oracle_False__pred_DEGRADED_RECOVERY": 29,
+          "oracle_True__pred_FEASIBLE": 384,
+          "oracle_False__pred_INFEASIBLE": 416,
+          "oracle_True__pred_INFEASIBLE": 12,
+          "oracle_False__pred_UNCERTAIN": 4,
+          "oracle_True__pred_DEGRADED_RECOVERY": 31,
+          "oracle_True__pred_UNCERTAIN": 8,
+          "oracle_False__pred_FEASIBLE": 2
+        },
+        "mean_total_fn": 15.74482388609566,
+        "peak_fn_max": 23.0,
+        "mean_impulse": 11.021376720266968,
+        "mean_work_normal_J": 0.002919870899141343,
+        "mean_work_tangent_J": 2.906496135681092,
+        "mean_damage": 0.12340259489049955,
+        "mean_displacement_mm": 1200.2927400161398,
+        "recontact_successes": 0,
+        "recontact_attempts": 0,
+        "applied_budget_violations": 0,
+        "applied_bound_violations": 0,
+        "applied_slew_violations": 0,
+        "consistency_violations": 0,
+        "invalid_force_violations": 0,
+        "latency_mean_ms": 0.14925064213457517,
+        "latency_p95_ms": 0.058739234373206176,
+        "latency_worst_ms": 46.55149998143315,
+        "solver_p95_ms": 0.0
+      }
+    },
+    "P5T4PredictiveRecontact": {
+      "Protocol_A": {
+        "episodes": 900,
+        "overall_grasp_recovery": 0.19444444444444445,
+        "feasible_recovery": 0.3763440860215054,
+        "safe_termination_on_infeasible": 0.9954022988505747,
+        "infeasible_recall": 0.9816091954022989,
+        "false_feasible_rate": 0.0022988505747126436,
+        "false_infeasible_rate": 0.023655913978494623,
+        "by_topology_feasible": {
+          "3": {
+            "feasible_recovery": 0.12751677852348994,
+            "n_feasible": 149
+          },
+          "4": {
+            "feasible_recovery": 0.39751552795031053,
+            "n_feasible": 161
+          },
+          "5": {
+            "feasible_recovery": 0.5935483870967742,
+            "n_feasible": 155
+          }
+        },
+        "classification_matrix": {
+          "oracle_False__pred_INFEASIBLE": 427,
+          "oracle_True__pred_FEASIBLE": 417,
+          "oracle_True__pred_INFEASIBLE": 11,
+          "oracle_False__pred_UNCERTAIN": 6,
+          "oracle_True__pred_DEGRADED_RECOVERY": 19,
+          "oracle_True__pred_UNCERTAIN": 7,
+          "oracle_False__pred_FEASIBLE": 1,
+          "oracle_False__pred_DEGRADED_RECOVERY": 1
+        },
+        "mean_total_fn": 47.508187218950034,
+        "peak_fn_max": 25.0,
+        "mean_impulse": 33.255731053265045,
+        "mean_work_normal_J": 0.022742109528658128,
+        "mean_work_tangent_J": 24.746967803148955,
+        "mean_damage": 82.92465748172714,
+        "mean_displacement_mm": 1735.6510493517617,
+        "recontact_successes": 13112,
+        "recontact_attempts": 876,
+        "applied_budget_violations": 0,
+        "applied_bound_violations": 0,
+        "applied_slew_violations": 0,
+        "consistency_violations": 0,
+        "invalid_force_violations": 0,
+        "latency_mean_ms": 0.14168908579703715,
+        "latency_p95_ms": 0.051428986917017014,
+        "latency_worst_ms": 37.273599999025464,
+        "solver_p95_ms": 0.0
+      },
+      "Protocol_B": {
+        "episodes": 900,
+        "overall_grasp_recovery": 0.19,
+        "feasible_recovery": 0.38084632516703787,
+        "safe_termination_on_infeasible": 0.9312638580931264,
+        "infeasible_recall": 0.9223946784922394,
+        "false_feasible_rate": 0.004434589800443459,
+        "false_infeasible_rate": 0.026726057906458798,
+        "by_topology_feasible": {
+          "3": {
+            "feasible_recovery": 0.17037037037037037,
+            "n_feasible": 135
+          },
+          "4": {
+            "feasible_recovery": 0.38125,
+            "n_feasible": 160
+          },
+          "5": {
+            "feasible_recovery": 0.564935064935065,
+            "n_feasible": 154
+          }
+        },
+        "classification_matrix": {
+          "oracle_False__pred_DEGRADED_RECOVERY": 29,
+          "oracle_True__pred_FEASIBLE": 384,
+          "oracle_False__pred_INFEASIBLE": 416,
+          "oracle_True__pred_INFEASIBLE": 12,
+          "oracle_False__pred_UNCERTAIN": 4,
+          "oracle_True__pred_DEGRADED_RECOVERY": 31,
+          "oracle_True__pred_UNCERTAIN": 8,
+          "oracle_False__pred_FEASIBLE": 2
+        },
+        "mean_total_fn": 20.52908535957461,
+        "peak_fn_max": 14.180101035999748,
+        "mean_impulse": 14.370359751702239,
+        "mean_work_normal_J": 0.0033389068051419496,
+        "mean_work_tangent_J": 5.6490935230406585,
+        "mean_damage": 0.0,
+        "mean_displacement_mm": 1470.226431332009,
+        "recontact_successes": 12896,
+        "recontact_attempts": 841,
+        "applied_budget_violations": 0,
+        "applied_bound_violations": 0,
+        "applied_slew_violations": 0,
+        "consistency_violations": 0,
+        "invalid_force_violations": 0,
+        "latency_mean_ms": 0.147235224604614,
+        "latency_p95_ms": 0.063051011529751,
+        "latency_worst_ms": 49.28649996872991,
+        "solver_p95_ms": 0.0
+      }
+    },
+    "P5T4CorrectiveRecovery": {
+      "Protocol_A": {
+        "episodes": 900,
+        "overall_grasp_recovery": 0.19444444444444445,
+        "feasible_recovery": 0.3763440860215054,
+        "safe_termination_on_infeasible": 0.9954022988505747,
+        "infeasible_recall": 0.9816091954022989,
+        "false_feasible_rate": 0.0022988505747126436,
+        "false_infeasible_rate": 0.023655913978494623,
+        "by_topology_feasible": {
+          "3": {
+            "feasible_recovery": 0.12751677852348994,
+            "n_feasible": 149
+          },
+          "4": {
+            "feasible_recovery": 0.39751552795031053,
+            "n_feasible": 161
+          },
+          "5": {
+            "feasible_recovery": 0.5935483870967742,
+            "n_feasible": 155
+          }
+        },
+        "classification_matrix": {
+          "oracle_False__pred_INFEASIBLE": 427,
+          "oracle_True__pred_FEASIBLE": 417,
+          "oracle_True__pred_INFEASIBLE": 11,
+          "oracle_False__pred_UNCERTAIN": 6,
+          "oracle_True__pred_DEGRADED_RECOVERY": 19,
+          "oracle_True__pred_UNCERTAIN": 7,
+          "oracle_False__pred_FEASIBLE": 1,
+          "oracle_False__pred_DEGRADED_RECOVERY": 1
+        },
+        "mean_total_fn": 33.704892953645164,
+        "peak_fn_max": 25.0,
+        "mean_impulse": 23.59342506755163,
+        "mean_work_normal_J": 0.01566459203764046,
+        "mean_work_tangent_J": 11.637362191697894,
+        "mean_damage": 54.53892941326749,
+        "mean_displacement_mm": 1206.4406999033092,
+        "recontact_successes": 12993,
+        "recontact_attempts": 210,
+        "applied_budget_violations": 0,
+        "applied_bound_violations": 0,
+        "applied_slew_violations": 0,
+        "consistency_violations": 0,
+        "invalid_force_violations": 0,
+        "latency_mean_ms": 0.14401581195979526,
+        "latency_p95_ms": 0.051213732513133395,
+        "latency_worst_ms": 31.818299961742014,
+        "solver_p95_ms": 0.0
+      },
+      "Protocol_B": {
+        "episodes": 900,
+        "overall_grasp_recovery": 0.19,
+        "feasible_recovery": 0.38084632516703787,
+        "safe_termination_on_infeasible": 0.9312638580931264,
+        "infeasible_recall": 0.9223946784922394,
+        "false_feasible_rate": 0.004434589800443459,
+        "false_infeasible_rate": 0.026726057906458798,
+        "by_topology_feasible": {
+          "3": {
+            "feasible_recovery": 0.17037037037037037,
+            "n_feasible": 135
+          },
+          "4": {
+            "feasible_recovery": 0.38125,
+            "n_feasible": 160
+          },
+          "5": {
+            "feasible_recovery": 0.564935064935065,
+            "n_feasible": 154
+          }
+        },
+        "classification_matrix": {
+          "oracle_False__pred_DEGRADED_RECOVERY": 29,
+          "oracle_True__pred_FEASIBLE": 384,
+          "oracle_False__pred_INFEASIBLE": 416,
+          "oracle_True__pred_INFEASIBLE": 12,
+          "oracle_False__pred_UNCERTAIN": 4,
+          "oracle_True__pred_DEGRADED_RECOVERY": 31,
+          "oracle_True__pred_UNCERTAIN": 8,
+          "oracle_False__pred_FEASIBLE": 2
+        },
+        "mean_total_fn": 15.76867110831788,
+        "peak_fn_max": 23.0,
+        "mean_impulse": 11.038069775822526,
+        "mean_work_normal_J": 0.002920308541336092,
+        "mean_work_tangent_J": 2.903875856389922,
+        "mean_damage": 0.12340259489049955,
+        "mean_displacement_mm": 1200.2369099962439,
+        "recontact_successes": 12195,
+        "recontact_attempts": 197,
+        "applied_budget_violations": 0,
+        "applied_bound_violations": 0,
+        "applied_slew_violations": 0,
+        "consistency_violations": 0,
+        "invalid_force_violations": 0,
+        "latency_mean_ms": 0.15080898655310554,
+        "latency_p95_ms": 0.061218497576191945,
+        "latency_worst_ms": 61.18719995720312,
+        "solver_p95_ms": 0.0
+      }
+    },
+    "P5T4SafeDegradation": {
+      "Protocol_A": {
+        "episodes": 900,
+        "overall_grasp_recovery": 0.03666666666666667,
+        "feasible_recovery": 0.07096774193548387,
+        "safe_termination_on_infeasible": 0.9701149425287356,
+        "infeasible_recall": 1.0,
+        "false_feasible_rate": 0.0,
+        "false_infeasible_rate": 0.42795698924731185,
+        "by_topology_feasible": {
+          "3": {
+            "feasible_recovery": 0.12080536912751678,
+            "n_feasible": 149
+          },
+          "4": {
+            "feasible_recovery": 0.031055900621118012,
+            "n_feasible": 161
+          },
+          "5": {
+            "feasible_recovery": 0.06451612903225806,
+            "n_feasible": 155
+          }
+        },
+        "classification_matrix": {
+          "oracle_False__pred_INFEASIBLE": 430,
+          "oracle_True__pred_INFEASIBLE": 199
+        },
+        "mean_total_fn": 3.9117723482954805,
+        "peak_fn_max": 24.488233387088414,
+        "mean_impulse": 2.7382406438068383,
+        "mean_work_normal_J": 0.001318579855128742,
+        "mean_work_tangent_J": 0.5791502982953921,
+        "mean_damage": 0.15683590605867573,
+        "mean_displacement_mm": 1128.6795345871637,
+        "recontact_successes": 0,
+        "recontact_attempts": 0,
+        "applied_budget_violations": 0,
+        "applied_bound_violations": 0,
+        "applied_slew_violations": 0,
+        "consistency_violations": 0,
+        "invalid_force_violations": 0,
+        "latency_mean_ms": 1.2721872349119088,
+        "latency_p95_ms": 2.9509159956069193,
+        "latency_worst_ms": 46.927499992307276,
+        "solver_p95_ms": 0.0
+      },
+      "Protocol_B": {
+        "episodes": 900,
+        "overall_grasp_recovery": 0.03666666666666667,
+        "feasible_recovery": 0.07349665924276169,
+        "safe_termination_on_infeasible": 0.9445676274944568,
+        "infeasible_recall": 1.0,
+        "false_feasible_rate": 0.0,
+        "false_infeasible_rate": 0.4209354120267261,
+        "by_topology_feasible": {
+          "3": {
+            "feasible_recovery": 0.13333333333333333,
+            "n_feasible": 135
+          },
+          "4": {
+            "feasible_recovery": 0.03125,
+            "n_feasible": 160
+          },
+          "5": {
+            "feasible_recovery": 0.06493506493506493,
+            "n_feasible": 154
+          }
+        },
+        "classification_matrix": {
+          "oracle_False__pred_INFEASIBLE": 440,
+          "oracle_True__pred_INFEASIBLE": 189
+        },
+        "mean_total_fn": 3.830987637226637,
+        "peak_fn_max": 14.422657884115301,
+        "mean_impulse": 2.6816913460586487,
+        "mean_work_normal_J": 0.0012404237049582524,
+        "mean_work_tangent_J": 0.5398170121670691,
+        "mean_damage": 0.0,
+        "mean_displacement_mm": 1091.0170472160507,
+        "recontact_successes": 0,
+        "recontact_attempts": 0,
+        "applied_budget_violations": 0,
+        "applied_bound_violations": 0,
+        "applied_slew_violations": 0,
+        "consistency_violations": 0,
+        "invalid_force_violations": 0,
+        "latency_mean_ms": 1.2840159477006334,
+        "latency_p95_ms": 2.906999460828956,
+        "latency_worst_ms": 24.491699994541705,
+        "solver_p95_ms": 0.0
+      }
+    },
+    "stress_protocol_a": {
+      "episodes": 90,
+      "overall_grasp_recovery": 0.1,
+      "feasible_recovery": 0.21428571428571427,
+      "safe_termination_on_infeasible": 1.0,
+      "infeasible_recall": 1.0,
+      "false_feasible_rate": 0.0,
+      "false_infeasible_rate": 0.0,
+      "by_topology_feasible": {
+        "3": {
+          "feasible_recovery": 0.14285714285714285,
+          "n_feasible": 14
+        },
+        "4": {
+          "feasible_recovery": 0.14285714285714285,
+          "n_feasible": 14
+        },
+        "5": {
+          "feasible_recovery": 0.35714285714285715,
+          "n_feasible": 14
+        }
+      },
+      "classification_matrix": {
+        "oracle_True__pred_FEASIBLE": 32,
+        "oracle_False__pred_INFEASIBLE": 48,
+        "oracle_True__pred_UNCERTAIN": 2,
+        "oracle_True__pred_DEGRADED_RECOVERY": 5
+      },
+      "mean_total_fn": 32.415743100490786,
+      "peak_fn_max": 25.0,
+      "mean_impulse": 22.691020170343574,
+      "mean_work_normal_J": 0.015390449644472682,
+      "mean_work_tangent_J": 5.398365740221738,
+      "mean_damage": 53.67353364657259,
+      "mean_displacement_mm": 1405.195592803853,
+      "recontact_successes": 504,
+      "recontact_attempts": 10,
+      "applied_budget_violations": 0,
+      "applied_bound_violations": 0,
+      "applied_slew_violations": 0,
+      "consistency_violations": 0,
+      "invalid_force_violations": 0,
+      "latency_mean_ms": 0.12557521432874696,
+      "latency_p95_ms": 0.04015548300230871,
+      "latency_worst_ms": 23.417300020810217,
+      "solver_p95_ms": 0.0
+    }
+  },
+  "scorecard": {
+    "criteria": {
+      "C1_infeasible_recall": 0.9816091954022989,
+      "C2_false_feasible": 0.0022988505747126436,
+      "C3_feasible_recovery": 0.3763440860215054,
+      "C4_each_topology": 0.12751677852348994,
+      "C5_safe_termination": 0.9954022988505747,
+      "C6_budget": 0,
+      "C7_conservation": 0,
+      "C8_leakage": 0,
+      "C9_actuator": 0,
+      "C10_latency_p95": 0.051213732513133395,
+      "C11_replay": 0
+    },
+    "full_pass": {
+      "C1_infeasible_recall": true,
+      "C2_false_feasible": true,
+      "C3_feasible_recovery": false,
+      "C4_each_topology": false,
+      "C5_safe_termination": true,
+      "C6_budget": true,
+      "C7_conservation": true,
+      "C8_leakage": true,
+      "C9_actuator": true,
+      "C10_latency_p95": true,
+      "C11_replay": true
+    },
+    "safety_ok": true,
+    "conditional_floor": false,
+    "minimum_topology": 0.12751677852348994
+  },
+  "paired_protocol_a": {
+    "P5T3RecoveryNoFeasibility": {
+      "n_feasible": 465,
+      "b_proposed_only": 0,
+      "c_baseline_only": 2,
+      "difference": -0.004301075268817204,
+      "difference_95ci": [
+        -0.010752688172043012,
+        0.0
+      ],
+      "exact_p_two_sided": 0.5,
+      "significant_after_bonferroni": false
+    },
+    "P5T4FeasibilityAwareRecovery": {
+      "n_feasible": 465,
+      "b_proposed_only": 133,
+      "c_baseline_only": 7,
+      "difference": 0.2709677419354839,
+      "difference_95ci": [
+        0.23010752688172043,
+        0.3139784946236559
+      ],
+      "exact_p_two_sided": 2.717864140919989e-31,
+      "significant_after_bonferroni": true
+    },
+    "P5T4StaticFeasibilityRecovery": {
+      "n_feasible": 465,
+      "b_proposed_only": 174,
+      "c_baseline_only": 5,
+      "difference": 0.3634408602150538,
+      "difference_95ci": [
+        0.31827956989247314,
+        0.4064516129032258
+      ],
+      "exact_p_two_sided": 3.888568772365192e-45,
+      "significant_after_bonferroni": true
+    },
+    "P5T4RateLimitedDynamic": {
+      "n_feasible": 465,
+      "b_proposed_only": 1,
+      "c_baseline_only": 2,
+      "difference": -0.002150537634408602,
+      "difference_95ci": [
+        -0.008602150537634409,
+        0.004301075268817204
+      ],
+      "exact_p_two_sided": 1.0,
+      "significant_after_bonferroni": false
+    },
+    "P5T4PredictiveRecontact": {
+      "n_feasible": 465,
+      "b_proposed_only": 0,
+      "c_baseline_only": 0,
+      "difference": 0.0,
+      "difference_95ci": [
+        0.0,
+        0.0
+      ],
+      "exact_p_two_sided": 1.0,
+      "significant_after_bonferroni": false
+    },
+    "P5T4SafeDegradation": {
+      "n_feasible": 465,
+      "b_proposed_only": 159,
+      "c_baseline_only": 17,
+      "difference": 0.3053763440860215,
+      "difference_95ci": [
+        0.25591397849462366,
+        0.3548387096774194
+      ],
+      "exact_p_two_sided": 4.407506410155759e-30,
+      "significant_after_bonferroni": true
+    }
+  },
+  "replay_match": true,
+  "failure_counts": {
+    "correct_infeasibility_and_safe_stop": 433,
+    "failed_contact_reestablishment": 47,
+    "controller_did_not_stabilize": 225,
+    "recovered": 175,
+    "false_infeasible": 11,
+    "uncertain": 7,
+    "false_feasible": 1,
+    "infeasible_not_safely_stopped": 1
+  }
+}

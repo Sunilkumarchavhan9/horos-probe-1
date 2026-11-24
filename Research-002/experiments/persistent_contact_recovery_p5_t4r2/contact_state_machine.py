@@ -29,6 +29,10 @@ class ContactLifecycle:
         self.transitions.append({"contact": index, "from": self.state[index], "to": new_state, "reason": reason})
         self.state[index] = new_state
 
+    def mark_scheduled(self, index: int):
+        if self.state[index] == ACTIVE:
+            self._set(index, LOSS_SCHEDULED, "event_pending")
+
     def mark_loss(self, index: int, permanent: bool):
         self.persist[index] = 0
         if permanent:

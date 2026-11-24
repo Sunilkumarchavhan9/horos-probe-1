@@ -21,6 +21,9 @@ class LifecycleGraspEnv(FeasibilityGraspEnv):
         obs = super().reset()
         self.events = build_events(self.scenario)
         self.lifecycle = ContactLifecycle(len(self.template))
+        for event in self.events:
+            if float(event["scheduled_time"]) > float(self.time) + 1e-12:
+                self.lifecycle.mark_scheduled(int(event["contact_id"]))
         self.manager = PersistentContactManager()
         self.loss_calls = 0
         self.loss_applications = 0
@@ -59,6 +62,8 @@ class LifecycleGraspEnv(FeasibilityGraspEnv):
                 event["stiffness_applied"] = True
             self._lose(index)
             event["trigger_time"] = t
+            event["contact_valid"] = False
+            event["reestablishment_status"] = "obstructed" if event["persistent"] else "inactive"
             if not event["persistent"]:
                 event["consumed"] = True
             permanent = bool(event["persistent"])
@@ -82,6 +87,16 @@ class LifecycleGraspEnv(FeasibilityGraspEnv):
             stage = self.manager.approach(self, index)
             if stage == "forming":
                 self.lifecycle.mark_forming(index)
+            self._mark_reestablishment(index, stage)
+
+    def _mark_reestablishment(self, index: int, stage: str):
+        for event in reversed(self.events):
+            if int(event["contact_id"]) != int(index):
+                continue
+            event["contact_valid"] = bool(self.template[index].valid)
+            if stage in ("forming", "loaded"):
+                event["reestablishment_status"] = stage
+            return
 
     def step(self, command):
         obs, info = super().step(command)

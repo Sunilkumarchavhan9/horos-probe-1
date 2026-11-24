@@ -42,3 +42,8 @@ def test_oneshot_scheduler_consumes_the_loss_once():
     assert info["loss_applications"] == 1
     assert info["events_consumed"] == 1
     assert obs["valid"][0] is False
+    event = env.events[0]
+    assert event["consumed"] is True
+    assert event["contact_valid"] is False
+    assert event["reestablishment_status"] == "inactive"
+    assert event["subsequent_event_ids"] == []

@@ -109,4 +109,16 @@ Protocol B false-feasible for topology is just over 5%. Preload remains ahead. R
 
 Event-scheduler correctness, physical formation, and 100-step persistence after formation are separated from grasp recovery. The scheduler now consumes a one-shot event once, keeps an obstruction closed, and still fires a later event. Formed contacts can stay loaded. Grasp recovery on the feasible held-out set is 49/303. Infeasible recognition and safe stops are below their bars. The topology controller does not improve on P5-T3 or on `preload_25`.
 
+## Records added without refitting
+
+The frozen controller was not changed and the held-out set was not scored again. These figures come from `p5_t4r2_raw_records.json`.
+
+Ablation C, persistent lifecycle with the existing controller, is the same run as ablation B. The lifecycle records state and does not write a force command on the original finger. Feasible recovery stays 112/303.
+
+Protocol A topology calibration, 600 episodes, one unresolved label: accuracy 470/599 = 78.46% when `FEASIBLE` and `DEGRADED_RECOVERY` count as a feasible prediction and `INFEASIBLE` counts as the infeasible prediction. Brier score 0.215. Ten-bin expected calibration error 0.215. Most probabilities sit at 0 or 1, and the 425 episodes with probability 1.0 were feasible only 70.35% of the time.
+
+Feasible recovery by scheduled loss-event count: no removal event 14/172, one event 33/112, two or more events 2/19. After at least one physical formation, 34/127 feasible episodes still recovered. Mean displacement is 3.20 mm on the 49 recoveries and 498.3 mm on the 254 feasible failures. The archived plant does not publish peak angular velocity, so that metric is absent rather than measured as zero.
+
+Static wrench feasibility and bounded-force feasibility are now separate solves. The held-out command did not use those flags. It used the causal estimator label and the 14 N allocator. Friction is projected inside the plant reaction; the plant does not keep a separate cone-violation counter. Conservation violations in the logged residual are 0. Planner latency and memory were not instrumented separately from the step timer.
+
 **Recommendation: FAIL.**

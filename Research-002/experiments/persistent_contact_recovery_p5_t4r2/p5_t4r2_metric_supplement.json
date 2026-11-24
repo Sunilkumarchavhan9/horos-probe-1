@@ -1,0 +1,157 @@
+{
+  "source": "p5_t4r2_raw_records.json",
+  "note": "Computed from the frozen held-out records. The controller and the FAIL verdict were not refit. peak_omega is 0 in every row because the archived plant does not publish a peak angular-velocity metric; that zero is not a physical measurement.",
+  "ablation_C": "The persistent lifecycle does not command force. On the original finger it is the same run as ablation B: 112/303 feasible recoveries.",
+  "protocol_a_topology_calibration": {
+    "n_with_probability": 600,
+    "brier": 0.214921875,
+    "ece_10bin": 0.2152083333333334,
+    "accuracy_excluding_unresolved": 0.7846410684474123,
+    "correct": 470,
+    "labeled": 599,
+    "unresolved": 1,
+    "bins": [
+      {
+        "lo": 0.0,
+        "n": 170,
+        "mean_p": 0.0,
+        "observed_feasible": 0.0058823529411764705
+      },
+      {
+        "lo": 0.1,
+        "n": 1,
+        "mean_p": 0.125,
+        "observed_feasible": 1.0
+      },
+      {
+        "lo": 0.6000000000000001,
+        "n": 1,
+        "mean_p": 0.625,
+        "observed_feasible": 0.0
+      },
+      {
+        "lo": 0.8,
+        "n": 3,
+        "mean_p": 0.875,
+        "observed_feasible": 0.6666666666666666
+      },
+      {
+        "lo": 0.9,
+        "n": 425,
+        "mean_p": 1.0,
+        "observed_feasible": 0.7035294117647058
+      }
+    ]
+  },
+  "protocol_a_topology_recovery_slices": {
+    "by_event_count_feasible": {
+      "0": {
+        "recovered": 14,
+        "n": 172,
+        "mean_displacement_mm": 665.9300909699575,
+        "mean_peak_omega": 0.0
+      },
+      "1": {
+        "recovered": 33,
+        "n": 112,
+        "mean_displacement_mm": 90.10281113970915,
+        "mean_peak_omega": 0.0
+      },
+      "2": {
+        "recovered": 1,
+        "n": 9,
+        "mean_displacement_mm": 214.54642919695698,
+        "mean_peak_omega": 0.0
+      },
+      "3": {
+        "recovered": 1,
+        "n": 10,
+        "mean_displacement_mm": 16.946544759301695,
+        "mean_peak_omega": 0.0
+      }
+    },
+    "one_loss_event": {
+      "recovered": 33,
+      "n": 112,
+      "mean_displacement_mm": 90.10281113970915,
+      "mean_peak_omega": 0.0
+    },
+    "multiple_loss_events": {
+      "recovered": 2,
+      "n": 19,
+      "mean_displacement_mm": 110.54649001924365,
+      "mean_peak_omega": 0.0
+    },
+    "after_formation": {
+      "recovered": 34,
+      "n": 127,
+      "mean_displacement_mm": 66.63664965575298,
+      "mean_peak_omega": 0.0
+    },
+    "recovered": {
+      "recovered": 49,
+      "n": 49,
+      "mean_displacement_mm": 3.2030888325855185,
+      "mean_peak_omega": 0.0
+    },
+    "not_recovered": {
+      "recovered": 0,
+      "n": 254,
+      "mean_displacement_mm": 498.3264663466498,
+      "mean_peak_omega": 0.0
+    }
+  },
+  "protocol_b_topology_calibration": {
+    "n_with_probability": 600,
+    "brier": 0.24666666666666667,
+    "ece_10bin": 0.25125000000000003,
+    "accuracy_excluding_unresolved": 0.7504215851602024,
+    "correct": 445,
+    "labeled": 593,
+    "unresolved": 7,
+    "bins": [
+      {
+        "lo": 0.0,
+        "n": 158,
+        "mean_p": 0.0,
+        "observed_feasible": 0.0
+      },
+      {
+        "lo": 0.1,
+        "n": 2,
+        "mean_p": 0.125,
+        "observed_feasible": 0.0
+      },
+      {
+        "lo": 0.5,
+        "n": 1,
+        "mean_p": 0.5,
+        "observed_feasible": 1.0
+      },
+      {
+        "lo": 0.6000000000000001,
+        "n": 6,
+        "mean_p": 0.625,
+        "observed_feasible": 0.0
+      },
+      {
+        "lo": 0.7000000000000001,
+        "n": 5,
+        "mean_p": 0.75,
+        "observed_feasible": 0.2
+      },
+      {
+        "lo": 0.8,
+        "n": 4,
+        "mean_p": 0.875,
+        "observed_feasible": 0.0
+      },
+      {
+        "lo": 0.9,
+        "n": 424,
+        "mean_p": 1.0,
+        "observed_feasible": 0.6698113207547169
+      }
+    ]
+  }
+}

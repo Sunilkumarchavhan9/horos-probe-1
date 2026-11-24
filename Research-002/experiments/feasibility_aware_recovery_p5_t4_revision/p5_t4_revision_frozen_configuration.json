@@ -1,0 +1,31 @@
+{
+  "selected_mode": "preload_25",
+  "selection": {
+    "candidates": [
+      {
+        "mode": "preload_12",
+        "feasible_recovery": 0.4787234042553192,
+        "mean_total_fn": 21.611064180642558,
+        "episodes": 180
+      },
+      {
+        "mode": "preload_16",
+        "feasible_recovery": 0.48936170212765956,
+        "mean_total_fn": 26.29541740049167,
+        "episodes": 180
+      },
+      {
+        "mode": "preload_25",
+        "feasible_recovery": 0.5638297872340425,
+        "mean_total_fn": 33.82753109356489,
+        "episodes": 180
+      }
+    ],
+    "selected_mode": "preload_25"
+  },
+  "primary_baseline": "P5T3RecoveryNoFeasibility",
+  "held_out_count": 900,
+  "p_low": 0.2,
+  "p_high": 0.65,
+  "archive_protocol_name": "Protocol_A"
+}

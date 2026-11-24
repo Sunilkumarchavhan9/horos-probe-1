@@ -1,0 +1,38 @@
+{
+  "counts": {
+    "correct_infeasibility_and_safe_stop": 433,
+    "failed_contact_reestablishment": 47,
+    "controller_did_not_stabilize": 225,
+    "recovered": 175,
+    "false_infeasible": 11,
+    "uncertain": 7,
+    "false_feasible": 1,
+    "infeasible_not_safely_stopped": 1
+  },
+  "by_topology": {
+    "3": {
+      "correct_infeasibility_and_safe_stop": 150,
+      "failed_contact_reestablishment": 17,
+      "controller_did_not_stabilize": 97,
+      "recovered": 19,
+      "false_infeasible": 10,
+      "uncertain": 6,
+      "false_feasible": 1
+    },
+    "4": {
+      "correct_infeasibility_and_safe_stop": 138,
+      "recovered": 64,
+      "failed_contact_reestablishment": 19,
+      "controller_did_not_stabilize": 77,
+      "uncertain": 1,
+      "infeasible_not_safely_stopped": 1
+    },
+    "5": {
+      "correct_infeasibility_and_safe_stop": 145,
+      "recovered": 92,
+      "controller_did_not_stabilize": 51,
+      "failed_contact_reestablishment": 11,
+      "false_infeasible": 1
+    }
+  }
+}

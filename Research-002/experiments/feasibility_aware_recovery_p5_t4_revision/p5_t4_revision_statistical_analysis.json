@@ -1,0 +1,78 @@
+{
+  "bonferroni_alpha": 0.008333333333333333,
+  "paired_protocol_a_feasible_recovery": {
+    "P5T3RecoveryNoFeasibility": {
+      "n_feasible": 465,
+      "b_proposed_only": 0,
+      "c_baseline_only": 2,
+      "difference": -0.004301075268817204,
+      "difference_95ci": [
+        -0.010752688172043012,
+        0.0
+      ],
+      "exact_p_two_sided": 0.5,
+      "significant_after_bonferroni": false
+    },
+    "P5T4FeasibilityAwareRecovery": {
+      "n_feasible": 465,
+      "b_proposed_only": 133,
+      "c_baseline_only": 7,
+      "difference": 0.2709677419354839,
+      "difference_95ci": [
+        0.23010752688172043,
+        0.3139784946236559
+      ],
+      "exact_p_two_sided": 2.717864140919989e-31,
+      "significant_after_bonferroni": true
+    },
+    "P5T4StaticFeasibilityRecovery": {
+      "n_feasible": 465,
+      "b_proposed_only": 174,
+      "c_baseline_only": 5,
+      "difference": 0.3634408602150538,
+      "difference_95ci": [
+        0.31827956989247314,
+        0.4064516129032258
+      ],
+      "exact_p_two_sided": 3.888568772365192e-45,
+      "significant_after_bonferroni": true
+    },
+    "P5T4RateLimitedDynamic": {
+      "n_feasible": 465,
+      "b_proposed_only": 1,
+      "c_baseline_only": 2,
+      "difference": -0.002150537634408602,
+      "difference_95ci": [
+        -0.008602150537634409,
+        0.004301075268817204
+      ],
+      "exact_p_two_sided": 1.0,
+      "significant_after_bonferroni": false
+    },
+    "P5T4PredictiveRecontact": {
+      "n_feasible": 465,
+      "b_proposed_only": 0,
+      "c_baseline_only": 0,
+      "difference": 0.0,
+      "difference_95ci": [
+        0.0,
+        0.0
+      ],
+      "exact_p_two_sided": 1.0,
+      "significant_after_bonferroni": false
+    },
+    "P5T4SafeDegradation": {
+      "n_feasible": 465,
+      "b_proposed_only": 159,
+      "c_baseline_only": 17,
+      "difference": 0.3053763440860215,
+      "difference_95ci": [
+        0.25591397849462366,
+        0.3548387096774194
+      ],
+      "exact_p_two_sided": 4.407506410155759e-30,
+      "significant_after_bonferroni": true
+    }
+  },
+  "primary_baseline": "P5T3RecoveryNoFeasibility"
+}

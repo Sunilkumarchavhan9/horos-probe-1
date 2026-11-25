@@ -20,11 +20,19 @@ import numpy as np
 import torch
 
 from .contracts import (
+    COMPROMISED_HOLDOUT_ID,
+    COMPROMISED_HOLDOUT_PROTOCOL,
+    COMPROMISED_HOLDOUT_STATUS,
+    CompromisedHoldoutError,
     ContractViolationError,
+    HoldoutIneligibleError,
     LOCKED_HCTT_CONFIG,
     SUPPORTED_OPERATIONAL_MODE_IDS,
     UNSUPPORTED_DATASET_MODE_IDS,
     get_task_interface,
+    is_compromised_holdout_file_content,
+    is_compromised_holdout_path,
+    is_compromised_holdout_sample_id,
 )
 
 
@@ -51,46 +59,95 @@ class AuditTargetLoader:
 
     def __init__(
         self,
-        production_root: Path | str,
+        production_root: Path | str | Sequence[Path | str],
         audit_salt: Optional[bytes] = None,
     ):
-        self.production_root = Path(production_root)
-        self.audit_dir = self.production_root / "audit"
-        self.accepted_manifest_path = self.production_root / "accepted_manifest.json"
-        self.audit_manifest_path = self.audit_dir / "stage3_3_audit_manifest.json"
+        if isinstance(production_root, (str, Path)):
+            roots = [Path(production_root)]
+        else:
+            roots = [Path(p) for p in production_root]
+        if not roots:
+            raise ContractViolationError("At least one production_root must be supplied.")
 
-        if not self.audit_dir.is_dir():
-            raise ContractViolationError(f"Audit directory missing: {self.audit_dir}")
-        if not self.accepted_manifest_path.is_file():
-            raise ContractViolationError(f"Accepted manifest missing: {self.accepted_manifest_path}")
-        if not self.audit_manifest_path.is_file():
-            raise ContractViolationError(f"Master audit manifest missing: {self.audit_manifest_path}")
-
-        self.audit_manifest: Dict[str, Any] = json.loads(self.audit_manifest_path.read_text(encoding="utf-8"))
-        if audit_salt is not None:
-            expected_salt_sha = self.audit_manifest.get("audit_salt_sha256")
-            actual_salt_sha = hashlib.sha256(audit_salt).hexdigest()
-            if expected_salt_sha != actual_salt_sha:
-                raise ContractViolationError(
-                    f"Provided audit_salt SHA-256 ({actual_salt_sha}) does not match audit manifest ({expected_salt_sha})."
-                )
+        self.production_roots: List[Path] = roots
+        self.production_root: Path = roots[0]
         self.audit_salt = audit_salt
-
+        self.audit_manifests: List[Dict[str, Any]] = []
         self.targets_by_sample_id: Dict[str, AuditEpisodeTargets] = {}
         self.mode_histogram: Dict[int, int] = {m: 0 for m in SUPPORTED_OPERATIONAL_MODE_IDS}
-        self._load_and_verify()
-
-    def _load_and_verify(self) -> None:
-        manifest_entries = json.loads(self.accepted_manifest_path.read_text(encoding="utf-8"))
-        expected_total = int(self.audit_manifest.get("total_accepted", -1))
-        if len(manifest_entries) != expected_total:
-            raise ContractViolationError(
-                f"accepted_manifest count ({len(manifest_entries)}) != audit_manifest total_accepted ({expected_total})"
-            )
+        self.is_compromised: bool = False
+        self.quarantine_status: str = "CLEAN"
 
         seen_sample_ids = set()
         seen_seeds = set()
         seen_canon_ids = set()
+
+        for root in self.production_roots:
+            self._load_and_verify_root(root, seen_sample_ids, seen_seeds, seen_canon_ids)
+
+    def assert_evaluation_eligible(self) -> None:
+        """Asserts that targets are eligible for evaluation (not quarantined/compromised)."""
+        if getattr(self, "is_compromised", False):
+            raise HoldoutIneligibleError(
+                f"Target loader root is quarantined under status '{getattr(self, 'quarantine_status', COMPROMISED_HOLDOUT_STATUS)}'. "
+                "Supervised targets are permanently ineligible for evaluation."
+            )
+
+    def _load_and_verify_root(
+        self,
+        root: Path,
+        seen_sample_ids: set,
+        seen_seeds: set,
+        seen_canon_ids: set,
+    ) -> None:
+        audit_dir = root / "audit"
+        accepted_manifest_path = root / "accepted_manifest.json"
+        # Accept either stage3_3_audit_manifest.json or stage35_audit_manifest.json
+        audit_manifest_path = audit_dir / "stage3_3_audit_manifest.json"
+        if not audit_manifest_path.is_file():
+            audit_manifest_path = audit_dir / "stage35_audit_manifest.json"
+
+        if is_compromised_holdout_path(root):
+            self.is_compromised = True
+            self.quarantine_status = COMPROMISED_HOLDOUT_STATUS
+            raise HoldoutIneligibleError(
+                f"Target loader root '{root}' matches quarantined dataset '{COMPROMISED_HOLDOUT_ID}' "
+                f"(status: {COMPROMISED_HOLDOUT_STATUS}). Ingestion of quarantined targets is strictly prohibited."
+            )
+
+        if not audit_dir.is_dir():
+            raise ContractViolationError(f"Audit directory missing: {audit_dir}")
+        if not accepted_manifest_path.is_file():
+            raise ContractViolationError(f"Accepted manifest missing: {accepted_manifest_path}")
+        if not audit_manifest_path.is_file():
+            raise ContractViolationError(f"Master audit manifest missing in {audit_dir}")
+
+        audit_manifest: Dict[str, Any] = json.loads(audit_manifest_path.read_text(encoding="utf-8"))
+        if audit_manifest.get("protocol") == COMPROMISED_HOLDOUT_PROTOCOL:
+            self.is_compromised = True
+            self.quarantine_status = COMPROMISED_HOLDOUT_STATUS
+            raise HoldoutIneligibleError(
+                f"Audit manifest protocol '{COMPROMISED_HOLDOUT_PROTOCOL}' belongs to quarantined dataset "
+                f"'{COMPROMISED_HOLDOUT_ID}' (status: {COMPROMISED_HOLDOUT_STATUS}). Ingestion strictly prohibited."
+            )
+        self.audit_manifests.append(audit_manifest)
+        if not hasattr(self, "audit_manifest"):
+            self.audit_manifest = audit_manifest
+
+        if self.audit_salt is not None:
+            expected_salt_sha = audit_manifest.get("audit_salt_sha256")
+            actual_salt_sha = hashlib.sha256(self.audit_salt).hexdigest()
+            if expected_salt_sha != actual_salt_sha:
+                raise ContractViolationError(
+                    f"Provided audit_salt SHA-256 ({actual_salt_sha}) does not match audit manifest ({expected_salt_sha})."
+                )
+
+        manifest_entries = json.loads(accepted_manifest_path.read_text(encoding="utf-8"))
+        expected_total = int(audit_manifest.get("total_accepted", -1))
+        if len(manifest_entries) != expected_total:
+            raise ContractViolationError(
+                f"accepted_manifest count ({len(manifest_entries)}) != audit_manifest total_accepted ({expected_total})"
+            )
 
         for entry in manifest_entries:
             sid = str(entry["sample_id"])
@@ -100,6 +157,7 @@ class AuditTargetLoader:
             stratum = str(entry["stratum"])
             prov_hash = str(entry["provenance_hash"])
             spec = get_task_interface(task)
+            allowed_lengths = spec.allowed_episode_lengths or (spec.canonical_episode_length,)
 
             if sid in seen_sample_ids or cid in seen_canon_ids or seed in seen_seeds:
                 raise ContractViolationError(f"Duplicate episode identifier detected: sid={sid}, cid={cid}, seed={seed}")
@@ -114,9 +172,17 @@ class AuditTargetLoader:
                         f"HMAC verification failed for {cid}: expected {recomputed_sid}, found {sid}"
                     )
 
-            priv_path = self.audit_dir / f"{cid}.privileged.json"
+            priv_path = audit_dir / f"{cid}.privileged.json"
             if not priv_path.is_file():
                 raise ContractViolationError(f"Missing privileged audit file: {priv_path}")
+
+            # Pre-parse content-digest check using streaming SHA-256
+            if is_compromised_holdout_file_content(priv_path):
+                raise CompromisedHoldoutError(
+                    f"Privileged audit file '{priv_path.name}' matches quarantined SHA-256 digest "
+                    f"from dataset '{COMPROMISED_HOLDOUT_ID}' (status: {COMPROMISED_HOLDOUT_STATUS}). "
+                    "Pre-parse rejection enforced."
+                )
 
             priv = json.loads(priv_path.read_text(encoding="utf-8"))
             if str(priv.get("sample_id")) != sid:
@@ -130,15 +196,15 @@ class AuditTargetLoader:
             if str(priv.get("provenance_hash")) != prov_hash:
                 raise ContractViolationError(f"provenance_hash mismatch in {priv_path.name}")
 
-            if priv.get("audit_salt_sha256") != self.audit_manifest.get("audit_salt_sha256"):
+            if priv.get("audit_salt_sha256") != audit_manifest.get("audit_salt_sha256"):
                 raise ContractViolationError(f"audit_salt_sha256 mismatch in {priv_path.name}")
 
             modes = np.asarray(priv["modes"], dtype=np.int64)
-            T = spec.canonical_episode_length
-            if modes.shape != (T,):
+            if modes.ndim != 1 or modes.shape[0] not in allowed_lengths:
                 raise ContractViolationError(
-                    f"Episode {cid} mode length {modes.shape} != expected ({T},)"
+                    f"Episode {cid} mode length {modes.shape} not in allowed lengths {allowed_lengths}"
                 )
+            T = int(modes.shape[0])
 
             unique_modes = set(int(m) for m in np.unique(modes))
             unsupported = unique_modes.intersection(UNSUPPORTED_DATASET_MODE_IDS)
@@ -199,6 +265,18 @@ class AuditTargetLoader:
         horizon: int = LOCKED_HCTT_CONFIG.max_future_horizon,
     ) -> Dict[str, Any]:
         """Joins clean sample_ids to privileged supervised loss targets (NEVER model inputs)."""
+        if getattr(self, "is_compromised", False):
+            raise CompromisedHoldoutError(
+                f"Cannot extract supervised targets from quarantined dataset '{COMPROMISED_HOLDOUT_ID}' "
+                f"(status: {getattr(self, 'quarantine_status', COMPROMISED_HOLDOUT_STATUS)})."
+            )
+        for sid in sample_ids:
+            if is_compromised_holdout_sample_id(sid):
+                raise CompromisedHoldoutError(
+                    f"Sample ID '{sid}' belongs to quarantined holdout '{COMPROMISED_HOLDOUT_ID}'. "
+                    "Access to supervised ground-truth targets is strictly forbidden."
+                )
+
         if len(sample_ids) != len(anchor_steps) or future_mask.shape != (len(sample_ids), horizon):
             raise ContractViolationError("Batch target join dimension mismatch.")
 

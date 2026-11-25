@@ -24,9 +24,15 @@ from scipy import stats as scipy_stats
 
 from .contracts import (
     BENCHMARK_ACCEPTANCE_TARGETS,
+    COMPROMISED_HOLDOUT_ID,
+    COMPROMISED_HOLDOUT_STATUS,
+    CompromisedHoldoutError,
+    HoldoutIneligibleError,
     LOCKED_HCTT_CONFIG,
     OPERATIONAL_MODE_NAMES,
     SUPPORTED_OPERATIONAL_MODE_IDS,
+    is_compromised_holdout_path,
+    is_compromised_holdout_sample_id,
 )
 from .dataset import HCTTTemporalDataset, split_batch_inputs_and_targets
 from .hctt import HCTTWorldModel
@@ -143,6 +149,86 @@ class HCTTReadOnlyEvaluator:
     def __init__(self, target_loader: AuditTargetLoader):
         self.target_loader = target_loader
 
+    def verify_dataset_eligibility(
+        self,
+        dataset: HCTTTemporalDataset,
+        target_loader: Optional[AuditTargetLoader] = None,
+    ) -> None:
+        """Asserts dataset and optional target_loader are eligible for scientific evaluation."""
+        for d in getattr(dataset, "training_dirs", []):
+            if is_compromised_holdout_path(d):
+                raise CompromisedHoldoutError(
+                    f"Dataset directory '{d}' belongs to quarantined holdout '{COMPROMISED_HOLDOUT_ID}' "
+                    f"(status: {COMPROMISED_HOLDOUT_STATUS}). Evaluation strictly blocked."
+                )
+        if getattr(dataset, "allowed_sample_ids", None) is not None:
+            for sid in dataset.allowed_sample_ids:
+                if is_compromised_holdout_sample_id(sid):
+                    raise CompromisedHoldoutError(
+                        f"Dataset contains quarantined sample ID '{sid}' "
+                        f"(status: {COMPROMISED_HOLDOUT_STATUS}). Evaluation strictly blocked."
+                    )
+        for ep in getattr(dataset, "episodes", []):
+            if is_compromised_holdout_sample_id(ep.sample_id):
+                raise CompromisedHoldoutError(
+                    f"Episode '{ep.sample_id}' belongs to quarantined holdout '{COMPROMISED_HOLDOUT_ID}'. "
+                    f"Evaluation strictly blocked."
+                )
+        if target_loader is not None:
+            target_loader.assert_evaluation_eligible()
+
+    def verify_holdout_eligibility(
+        self,
+        holdout_identifier: str,
+        authorization_artifact: Optional[Any] = None,
+    ) -> None:
+        """Verifies eligibility of a dataset for final benchmark evaluation."""
+        h_id_clean = str(holdout_identifier).lower()
+        if (
+            holdout_identifier == COMPROMISED_HOLDOUT_ID
+            or "final_holdout" in h_id_clean
+            or "stage35_final_holdout" in h_id_clean
+            or "stage35" in h_id_clean
+        ):
+            raise HoldoutIneligibleError(
+                f"Holdout '{holdout_identifier}' is quarantined under status '{COMPROMISED_HOLDOUT_STATUS}'. "
+                "Final benchmark evaluation is permanently blocked."
+            )
+
+        # Reject caller-supplied boolean credentials
+        if isinstance(authorization_artifact, dict) and "certified_private_holdout" in authorization_artifact:
+            raise HoldoutIneligibleError(
+                "Caller-supplied boolean credentials ('certified_private_holdout') are strictly rejected. "
+                "Final holdout evaluation requires an independently authorized, cryptographically validated provenance artifact."
+            )
+
+        # In current stage, no replacement private holdout has been authorized or created
+        raise HoldoutIneligibleError(
+            "No authorized private holdout currently exists (NEW_PRIVATE_HOLDOUT = NOT_CREATED). "
+            "Final benchmark evaluation is permanently blocked until an independent private holdout is authorized and generated."
+        )
+
+    def evaluate_final_holdout(
+        self,
+        model: HCTTWorldModel,
+        dataset: HCTTTemporalDataset,
+        target_loader: AuditTargetLoader,
+        holdout_credentials: Any = None,
+        device: str = "cpu",
+    ) -> Dict[str, Any]:
+        """Authorized final benchmark evaluation on an independently certified private holdout."""
+        holdout_id = (
+            holdout_credentials.get("holdout_id", "")
+            if isinstance(holdout_credentials, dict)
+            else str(holdout_credentials or "")
+        )
+        self.verify_holdout_eligibility(holdout_id, authorization_artifact=holdout_credentials)
+        self.verify_dataset_eligibility(dataset, target_loader)
+        return self.evaluate_hctt(
+            model=model,
+            dataset=dataset,
+        )
+
     def evaluate_hctt(
         self,
         model: HCTTWorldModel,
@@ -151,6 +237,7 @@ class HCTTReadOnlyEvaluator:
         nominal_alpha: float = 0.10,
     ) -> Dict[str, Any]:
         """Executes full strictly read-only evaluation (torch.no_grad(), zero weight updates)."""
+        self.verify_dataset_eligibility(dataset, self.target_loader)
         model.eval()
         horizons = LOCKED_HCTT_CONFIG.prediction_horizons
 
@@ -308,6 +395,7 @@ class HCTTReadOnlyEvaluator:
         batch_size: int = 64,
     ) -> Dict[str, Any]:
         """Evaluates frozen Phase 3.4 B1/B2/B3 HybridContactStateModel in read-only mode on Stage 3.4 windows."""
+        self.verify_dataset_eligibility(dataset, self.target_loader)
         hybrid_model.eval()
         horizons = LOCKED_HCTT_CONFIG.prediction_horizons
         state_sq_errs: Dict[int, List[float]] = {h: [] for h in horizons}
@@ -387,4 +475,151 @@ class HCTTReadOnlyEvaluator:
             "contact_mode_metrics": _compute_multiclass_f1(y_true_m, y_pred_m),
             "ood_auroc": _compute_auroc(unc1, ood_y),
             "uncertainty_error_corr": _safe_corr(unc1, err1),
+        }
+
+    def evaluate_strict_vs_masked(
+        self,
+        model: HCTTWorldModel,
+        dataset: HCTTTemporalDataset,
+        task: str,
+        batch_size: int = 32,
+    ) -> Dict[str, Any]:
+        """Evaluates Path 1 (strict 10-step history & complete horizon) separately from Path 2 (masked)."""
+        self.verify_dataset_eligibility(dataset, self.target_loader)
+        model.eval()
+        horizons = LOCKED_HCTT_CONFIG.prediction_horizons
+
+        # Path 1: Strictly filtered full-history + full-horizon windows per horizon
+        strict_by_horizon: Dict[str, Any] = {}
+        with torch.no_grad():
+            for h in horizons:
+                strict_batches = dataset.iter_strict_batches_for_horizon(
+                    horizon=h, batch_size=batch_size, task=task, shuffle=False
+                )
+                s_errs: List[float] = []
+                w_errs: List[float] = []
+                true_m_list: List[np.ndarray] = []
+                pred_m_list: List[np.ndarray] = []
+                for batch in strict_batches:
+                    model_inputs, sim_targets = split_batch_inputs_and_targets(batch)
+                    audit_targets = self.target_loader.get_batch_targets(
+                        batch["sample_ids"], batch["anchor_steps"], batch["future_mask"]
+                    )
+                    out = model(**model_inputs)
+                    idx = h - 1
+                    pred_s = out["pred_next_states"][:, idx, :].cpu().numpy()
+                    true_s = sim_targets["target_next_states"][:, idx, :].cpu().numpy()
+                    pred_w = out["pred_next_wrenches"][:, idx, :].cpu().numpy()
+                    true_w = sim_targets["target_next_wrenches"][:, idx, :].cpu().numpy()
+
+                    s_errs.extend(np.mean((pred_s - true_s) ** 2, axis=-1).tolist())
+                    w_errs.extend(np.mean((pred_w - true_w) ** 2, axis=-1).tolist())
+
+                    true_m_list.append(audit_targets["target_modes"][:, :h].numpy().reshape(-1))
+                    pred_m_list.append(torch.argmax(out["pred_mode_probs"][:, :h, :], dim=-1).cpu().numpy().reshape(-1))
+
+                if s_errs:
+                    s_mse = float(np.mean(s_errs))
+                    w_mse = float(np.mean(w_errs))
+                    yt = np.concatenate(true_m_list)
+                    yp = np.concatenate(pred_m_list)
+                    m_f1 = _compute_multiclass_f1(yt, yp)
+                    strict_by_horizon[f"H_{h}"] = {
+                        "path": "strict_unpadded_10step_history",
+                        "n_strict_windows": len(s_errs),
+                        "state_mse": round(s_mse, 6),
+                        "state_rmse": round(math.sqrt(s_mse), 6),
+                        "wrench_mse": round(w_mse, 6),
+                        "wrench_rmse": round(math.sqrt(w_mse), 6),
+                        "mode_macro_f1_all_5": m_f1["macro_f1_all_5"],
+                        "mode_macro_f1_present_modes": m_f1["macro_f1_present_modes"],
+                    }
+                else:
+                    strict_by_horizon[f"H_{h}"] = {
+                        "path": "strict_unpadded_10step_history",
+                        "n_strict_windows": 0,
+                        "state_mse": None,
+                        "state_rmse": None,
+                        "wrench_mse": None,
+                        "wrench_rmse": None,
+                        "mode_macro_f1_all_5": None,
+                        "mode_macro_f1_present_modes": None,
+                    }
+
+        # Path 2: Masked sliding windows (all windows; strictly never mixed into strict metrics)
+        task_masked_ds = HCTTTemporalDataset(
+            training_dir=dataset.training_dirs,
+            task_filter=task,
+            allowed_sample_ids=dataset.allowed_sample_ids,
+            window_mode="masked_sliding",
+        )
+        masked_res = self.evaluate_hctt(model, task_masked_ds, batch_size=batch_size)
+        hist_len_counts: Dict[int, int] = {}
+        for w in task_masked_ds.windows:
+            hist_len_counts[w.valid_hist_len] = hist_len_counts.get(w.valid_hist_len, 0) + 1
+
+        return {
+            "task": task,
+            "path1_strict_windows": strict_by_horizon,
+            "path2_masked_windows": {
+                "valid_hist_len_distribution": dict(sorted(hist_len_counts.items())),
+                "metrics": masked_res,
+            },
+        }
+
+    def evaluate_persistence_and_const_vel_baselines(
+        self,
+        dataset: HCTTTemporalDataset,
+        task: str,
+        strict_only: bool = True,
+    ) -> Dict[str, Any]:
+        """Evaluates native dt=0.01s Persistence and Constant-Velocity baselines on exact strict/masked windows."""
+        self.verify_dataset_eligibility(dataset, None)
+        horizons = LOCKED_HCTT_CONFIG.prediction_horizons
+        pers_errs: Dict[int, List[float]] = {h: [] for h in horizons}
+        cvel_errs: Dict[int, List[float]] = {h: [] for h in horizons}
+
+        for h in horizons:
+            batches = (
+                dataset.iter_strict_batches_for_horizon(horizon=h, batch_size=64, task=task, shuffle=False)
+                if strict_only
+                else dataset.iter_homogeneous_batches(batch_size=64, task=task, shuffle=False)
+            )
+            idx = h - 1
+            for batch in batches:
+                s_curr = batch["hist_states"][:, -1, :].numpy()  # (B, D)
+                s_prev = batch["hist_states"][:, -2, :].numpy()  # (B, D) valid on strict_only (len>=10)
+                mask_prev = batch["hist_mask"][:, -2].numpy().astype(bool)
+                delta_step = np.where(mask_prev[:, None], s_curr - s_prev, 0.0)
+                f_valid = batch["future_mask"][:, idx].numpy().astype(bool)
+                if not np.any(f_valid):
+                    continue
+                true_s = batch["target_next_states"][:, idx, :].numpy()
+
+                pred_pers = s_curr
+                pred_cvel = s_curr + float(h) * delta_step
+
+                pers_errs[h].extend(np.mean((pred_pers[f_valid] - true_s[f_valid]) ** 2, axis=-1).tolist())
+                cvel_errs[h].extend(np.mean((pred_cvel[f_valid] - true_s[f_valid]) ** 2, axis=-1).tolist())
+
+        return {
+            "task": task,
+            "dt_s": dataset.dt_s,
+            "strict_windows_only": strict_only,
+            "persistence": {
+                f"H_{h}": {
+                    "physical_time_s": round(h * dataset.dt_s, 4),
+                    "n_windows": len(pers_errs[h]),
+                    "state_mse": round(float(np.mean(pers_errs[h])), 6) if pers_errs[h] else None,
+                }
+                for h in horizons
+            },
+            "constant_velocity": {
+                f"H_{h}": {
+                    "physical_time_s": round(h * dataset.dt_s, 4),
+                    "n_windows": len(cvel_errs[h]),
+                    "state_mse": round(float(np.mean(cvel_errs[h])), 6) if cvel_errs[h] else None,
+                }
+                for h in horizons
+            },
         }

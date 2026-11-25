@@ -1,0 +1,999 @@
+{
+  "training_permitted": 0,
+  "execution_authorized": 0,
+  "gradient_steps": 0,
+  "optimizer_updates": 0,
+  "student_model_training": "NOT_EXECUTED",
+  "final_holdout_evaluated": false,
+  "recomputed_window_counts": {
+    "stage33_prelift_T20_500ep": {
+      "num_episodes": 500,
+      "episode_lengths": [
+        20
+      ],
+      "episode_length": 20,
+      "total_windows": 10000,
+      "horizons": {
+        "1": {
+          "windows_with_valid_horizon": 10000,
+          "windows_with_full_10step_history_and_horizon": 5500
+        },
+        "3": {
+          "windows_with_valid_horizon": 9000,
+          "windows_with_full_10step_history_and_horizon": 4500
+        },
+        "5": {
+          "windows_with_valid_horizon": 8000,
+          "windows_with_full_10step_history_and_horizon": 3500
+        },
+        "10": {
+          "windows_with_valid_horizon": 5500,
+          "windows_with_full_10step_history_and_horizon": 1000
+        },
+        "20": {
+          "windows_with_valid_horizon": 500,
+          "windows_with_full_10step_history_and_horizon": 0
+        }
+      }
+    },
+    "stage35_prelift_T40_500ep": {
+      "num_episodes": 500,
+      "episode_lengths": [
+        40
+      ],
+      "episode_length": 40,
+      "total_windows": 20000,
+      "horizons": {
+        "1": {
+          "windows_with_valid_horizon": 20000,
+          "windows_with_full_10step_history_and_horizon": 15500
+        },
+        "3": {
+          "windows_with_valid_horizon": 19000,
+          "windows_with_full_10step_history_and_horizon": 14500
+        },
+        "5": {
+          "windows_with_valid_horizon": 18000,
+          "windows_with_full_10step_history_and_horizon": 13500
+        },
+        "10": {
+          "windows_with_valid_horizon": 15500,
+          "windows_with_full_10step_history_and_horizon": 11000
+        },
+        "20": {
+          "windows_with_valid_horizon": 10500,
+          "windows_with_full_10step_history_and_horizon": 6000
+        }
+      }
+    },
+    "stage33_peg_in_hole_T30_500ep": {
+      "num_episodes": 500,
+      "episode_lengths": [
+        30
+      ],
+      "episode_length": 30,
+      "total_windows": 15000,
+      "horizons": {
+        "1": {
+          "windows_with_valid_horizon": 15000,
+          "windows_with_full_10step_history_and_horizon": 10500
+        },
+        "3": {
+          "windows_with_valid_horizon": 14000,
+          "windows_with_full_10step_history_and_horizon": 9500
+        },
+        "5": {
+          "windows_with_valid_horizon": 13000,
+          "windows_with_full_10step_history_and_horizon": 8500
+        },
+        "10": {
+          "windows_with_valid_horizon": 10500,
+          "windows_with_full_10step_history_and_horizon": 6000
+        },
+        "20": {
+          "windows_with_valid_horizon": 5500,
+          "windows_with_full_10step_history_and_horizon": 1000
+        }
+      }
+    },
+    "stage35_train_strict_minfut1": {
+      "compliant_prelift": {
+        "num_episodes": 348,
+        "episode_lengths": [
+          40
+        ],
+        "episode_length": 40,
+        "total_windows": 10788,
+        "horizons": {
+          "1": {
+            "windows_with_valid_horizon": 10788,
+            "windows_with_full_10step_history_and_horizon": 10788
+          },
+          "3": {
+            "windows_with_valid_horizon": 10092,
+            "windows_with_full_10step_history_and_horizon": 10092
+          },
+          "5": {
+            "windows_with_valid_horizon": 9396,
+            "windows_with_full_10step_history_and_horizon": 9396
+          },
+          "10": {
+            "windows_with_valid_horizon": 7656,
+            "windows_with_full_10step_history_and_horizon": 7656
+          },
+          "20": {
+            "windows_with_valid_horizon": 4176,
+            "windows_with_full_10step_history_and_horizon": 4176
+          }
+        }
+      },
+      "peg_in_hole": {
+        "num_episodes": 350,
+        "episode_lengths": [
+          30
+        ],
+        "episode_length": 30,
+        "total_windows": 7350,
+        "horizons": {
+          "1": {
+            "windows_with_valid_horizon": 7350,
+            "windows_with_full_10step_history_and_horizon": 7350
+          },
+          "3": {
+            "windows_with_valid_horizon": 6650,
+            "windows_with_full_10step_history_and_horizon": 6650
+          },
+          "5": {
+            "windows_with_valid_horizon": 5950,
+            "windows_with_full_10step_history_and_horizon": 5950
+          },
+          "10": {
+            "windows_with_valid_horizon": 4200,
+            "windows_with_full_10step_history_and_horizon": 4200
+          },
+          "20": {
+            "windows_with_valid_horizon": 700,
+            "windows_with_full_10step_history_and_horizon": 700
+          }
+        }
+      }
+    }
+  },
+  "objective_verification_val_no_grad": {
+    "locked_4term": {
+      "forward_ok": true,
+      "parameters_unchanged": true,
+      "training_steps_executed": 0,
+      "loss_total": 11.64045238494873,
+      "l_sim_dynamics": 10.996219635009766,
+      "l_state_mse": 5.41998291015625,
+      "l_wrench_mse": 3.238295316696167,
+      "l_mode_focal": 1.1656882762908936,
+      "l_sys_id": 0.24555537104606628,
+      "l_distill": 0.0,
+      "distillation_active": false
+    },
+    "experimental_3term": {
+      "forward_ok": true,
+      "parameters_unchanged": true,
+      "training_steps_executed": 0,
+      "loss_total": 11.64045238494873,
+      "l_sim_dynamics": 10.996219635009766,
+      "l_state_mse": 5.41998291015625,
+      "l_wrench_mse": 3.238295316696167,
+      "l_mode_focal": 1.1656882762908936,
+      "l_sys_id": 0.24555537104606628,
+      "l_distill": 0.0,
+      "distillation_active": false
+    }
+  },
+  "val_strict_vs_masked_untrained_hctt": {
+    "compliant_prelift_T40_val": {
+      "task": "compliant_prelift",
+      "path1_strict_windows": {
+        "H_1": {
+          "path": "strict_unpadded_10step_history",
+          "n_strict_windows": 2356,
+          "state_mse": 0.055885,
+          "state_rmse": 0.2364,
+          "wrench_mse": 2.077365,
+          "wrench_rmse": 1.441307,
+          "mode_macro_f1_all_5": 0.0,
+          "mode_macro_f1_present_modes": 0.0
+        },
+        "H_3": {
+          "path": "strict_unpadded_10step_history",
+          "n_strict_windows": 2204,
+          "state_mse": 0.3251,
+          "state_rmse": 0.570175,
+          "wrench_mse": 2.137054,
+          "wrench_rmse": 1.461867,
+          "mode_macro_f1_all_5": 0.0,
+          "mode_macro_f1_present_modes": 0.0
+        },
+        "H_5": {
+          "path": "strict_unpadded_10step_history",
+          "n_strict_windows": 2052,
+          "state_mse": 0.886675,
+          "state_rmse": 0.941634,
+          "wrench_mse": 2.288688,
+          "wrench_rmse": 1.512841,
+          "mode_macro_f1_all_5": 0.0,
+          "mode_macro_f1_present_modes": 0.0
+        },
+        "H_10": {
+          "path": "strict_unpadded_10step_history",
+          "n_strict_windows": 1672,
+          "state_mse": 3.304419,
+          "state_rmse": 1.817806,
+          "wrench_mse": 2.192617,
+          "wrench_rmse": 1.480749,
+          "mode_macro_f1_all_5": 0.0,
+          "mode_macro_f1_present_modes": 0.0
+        },
+        "H_20": {
+          "path": "strict_unpadded_10step_history",
+          "n_strict_windows": 912,
+          "state_mse": 14.151903,
+          "state_rmse": 3.761901,
+          "wrench_mse": 2.39028,
+          "wrench_rmse": 1.546053,
+          "mode_macro_f1_all_5": 0.0305,
+          "mode_macro_f1_present_modes": 0.0764
+        }
+      },
+      "path2_masked_windows": {
+        "valid_hist_len_distribution": {
+          "1": 76,
+          "2": 76,
+          "3": 76,
+          "4": 76,
+          "5": 76,
+          "6": 76,
+          "7": 76,
+          "8": 76,
+          "9": 76,
+          "10": 2356
+        },
+        "metrics": {
+          "model_status": "EVALUATED_READ_ONLY",
+          "trust_calibrated": false,
+          "finite_outputs_verified": true,
+          "total_windows_evaluated": 3040,
+          "horizon_metrics": {
+            "H_1": {
+              "n_valid_windows": 3040,
+              "state_mse": 0.105742,
+              "state_rmse": 0.32518,
+              "wrench_mse": 1.674986,
+              "wrench_rmse": 1.294213
+            },
+            "H_3": {
+              "n_valid_windows": 2888,
+              "state_mse": 0.416581,
+              "state_rmse": 0.645431,
+              "wrench_mse": 1.751243,
+              "wrench_rmse": 1.323345
+            },
+            "H_5": {
+              "n_valid_windows": 2736,
+              "state_mse": 0.974977,
+              "state_rmse": 0.987409,
+              "wrench_mse": 1.932588,
+              "wrench_rmse": 1.390175
+            },
+            "H_10": {
+              "n_valid_windows": 2356,
+              "state_mse": 3.403053,
+              "state_rmse": 1.844736,
+              "wrench_mse": 2.017782,
+              "wrench_rmse": 1.420486
+            },
+            "H_20": {
+              "n_valid_windows": 1596,
+              "state_mse": 14.331589,
+              "state_rmse": 3.785708,
+              "wrench_mse": 2.381781,
+              "wrench_rmse": 1.543302
+            }
+          },
+          "contact_mode_metrics": {
+            "macro_f1_all_5": 0.0229,
+            "macro_f1_present_modes": 0.0286,
+            "per_class": {
+              "Free": {
+                "mode_id": 0,
+                "support": 76,
+                "precision": 0.0017,
+                "recall": 1.0,
+                "f1": 0.0035
+              },
+              "FirstContact": {
+                "mode_id": 1,
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "Sticking": {
+                "mode_id": 2,
+                "support": 29081,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "Sliding": {
+                "mode_id": 3,
+                "support": 17095,
+                "precision": 0.4533,
+                "recall": 0.0633,
+                "f1": 0.1111
+              },
+              "Impact": {
+                "mode_id": 4,
+                "support": 108,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              }
+            },
+            "absent_modes_note": "Modes 5 (Jamming) and 6 (Release) have 0 examples in Stage 3.3 data."
+          },
+          "mode_calibration": {
+            "ece": 0.2502,
+            "brier_score": 0.8367
+          },
+          "sysid_friction": {
+            "r2": -0.4249,
+            "pearson_r": -0.2197,
+            "spearman_rho": -0.1801
+          },
+          "sysid_mass": {
+            "r2": -1.738,
+            "pearson_r": 0.4574,
+            "spearman_rho": 0.2207
+          },
+          "ood_auroc": 0.1397,
+          "uncertainty_error_corr": {
+            "pearson_r": -0.773,
+            "spearman_rho": -0.6039
+          },
+          "conformal_nominal_target": 0.9,
+          "conformal_coverage": "UNCALIBRATED_PRETRAINING",
+          "benchmark_acceptance_targets": {
+            "multi_horizon_mse_reduction_min": 0.4,
+            "contact_mode_macro_f1_min": 0.85,
+            "latent_friction_r2_min": 0.6,
+            "latent_mass_r2_min": 0.6,
+            "ood_discrimination_auroc_min": 0.85,
+            "conformal_coverage_min": 0.9
+          }
+        }
+      }
+    },
+    "peg_in_hole_T30_val": {
+      "task": "peg_in_hole",
+      "path1_strict_windows": {
+        "H_1": {
+          "path": "strict_unpadded_10step_history",
+          "n_strict_windows": 1050,
+          "state_mse": 33.234935,
+          "state_rmse": 5.764975,
+          "wrench_mse": 0.506867,
+          "wrench_rmse": 0.711946,
+          "mode_macro_f1_all_5": 0.1004,
+          "mode_macro_f1_present_modes": 0.1004
+        },
+        "H_3": {
+          "path": "strict_unpadded_10step_history",
+          "n_strict_windows": 950,
+          "state_mse": 52.401102,
+          "state_rmse": 7.238861,
+          "wrench_mse": 0.58981,
+          "wrench_rmse": 0.767991,
+          "mode_macro_f1_all_5": 0.0965,
+          "mode_macro_f1_present_modes": 0.0965
+        },
+        "H_5": {
+          "path": "strict_unpadded_10step_history",
+          "n_strict_windows": 850,
+          "state_mse": 71.498632,
+          "state_rmse": 8.455686,
+          "wrench_mse": 0.654389,
+          "wrench_rmse": 0.808943,
+          "mode_macro_f1_all_5": 0.0915,
+          "mode_macro_f1_present_modes": 0.0915
+        },
+        "H_10": {
+          "path": "strict_unpadded_10step_history",
+          "n_strict_windows": 600,
+          "state_mse": 117.527399,
+          "state_rmse": 10.841005,
+          "wrench_mse": 0.256605,
+          "wrench_rmse": 0.506562,
+          "mode_macro_f1_all_5": 0.0791,
+          "mode_macro_f1_present_modes": 0.0791
+        },
+        "H_20": {
+          "path": "strict_unpadded_10step_history",
+          "n_strict_windows": 100,
+          "state_mse": 146.810987,
+          "state_rmse": 12.116558,
+          "wrench_mse": 0.311638,
+          "wrench_rmse": 0.558245,
+          "mode_macro_f1_all_5": 0.1135,
+          "mode_macro_f1_present_modes": 0.1135
+        }
+      },
+      "path2_masked_windows": {
+        "valid_hist_len_distribution": {
+          "1": 50,
+          "2": 50,
+          "3": 50,
+          "4": 50,
+          "5": 50,
+          "6": 50,
+          "7": 50,
+          "8": 50,
+          "9": 50,
+          "10": 1050
+        },
+        "metrics": {
+          "model_status": "EVALUATED_READ_ONLY",
+          "trust_calibrated": false,
+          "finite_outputs_verified": true,
+          "total_windows_evaluated": 1500,
+          "horizon_metrics": {
+            "H_1": {
+              "n_valid_windows": 1500,
+              "state_mse": 43.802747,
+              "state_rmse": 6.618364,
+              "wrench_mse": 0.359314,
+              "wrench_rmse": 0.599428
+            },
+            "H_3": {
+              "n_valid_windows": 1400,
+              "state_mse": 58.000849,
+              "state_rmse": 7.615829,
+              "wrench_mse": 0.414987,
+              "wrench_rmse": 0.644195
+            },
+            "H_5": {
+              "n_valid_windows": 1300,
+              "state_mse": 71.635777,
+              "state_rmse": 8.463792,
+              "wrench_mse": 0.449846,
+              "wrench_rmse": 0.670706
+            },
+            "H_10": {
+              "n_valid_windows": 1050,
+              "state_mse": 118.152552,
+              "state_rmse": 10.8698,
+              "wrench_mse": 0.536567,
+              "wrench_rmse": 0.732507
+            },
+            "H_20": {
+              "n_valid_windows": 550,
+              "state_mse": 187.160304,
+              "state_rmse": 13.680654,
+              "wrench_mse": 0.303705,
+              "wrench_rmse": 0.551094
+            }
+          },
+          "contact_mode_metrics": {
+            "macro_f1_all_5": 0.111,
+            "macro_f1_present_modes": 0.111,
+            "per_class": {
+              "Free": {
+                "mode_id": 0,
+                "support": 6898,
+                "precision": 0.3678,
+                "recall": 0.9943,
+                "f1": 0.537
+              },
+              "FirstContact": {
+                "mode_id": 1,
+                "support": 923,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "Sticking": {
+                "mode_id": 2,
+                "support": 12269,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "Sliding": {
+                "mode_id": 3,
+                "support": 359,
+                "precision": 0.0108,
+                "recall": 0.0557,
+                "f1": 0.0181
+              },
+              "Impact": {
+                "mode_id": 4,
+                "support": 51,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              }
+            },
+            "absent_modes_note": "Modes 5 (Jamming) and 6 (Release) have 0 examples in Stage 3.3 data."
+          },
+          "mode_calibration": {
+            "ece": 0.0759,
+            "brier_score": 0.7922
+          },
+          "sysid_friction": {
+            "r2": -4.6628,
+            "pearson_r": -0.0226,
+            "spearman_rho": -0.0001
+          },
+          "sysid_mass": {
+            "r2": null,
+            "pearson_r": null,
+            "spearman_rho": null
+          },
+          "ood_auroc": 0.5126,
+          "uncertainty_error_corr": {
+            "pearson_r": -0.45,
+            "spearman_rho": 0.2514
+          },
+          "conformal_nominal_target": 0.9,
+          "conformal_coverage": "UNCALIBRATED_PRETRAINING",
+          "benchmark_acceptance_targets": {
+            "multi_horizon_mse_reduction_min": 0.4,
+            "contact_mode_macro_f1_min": 0.85,
+            "latent_friction_r2_min": 0.6,
+            "latent_mass_r2_min": 0.6,
+            "ood_discrimination_auroc_min": 0.85,
+            "conformal_coverage_min": 0.9
+          }
+        }
+      }
+    }
+  },
+  "matched_timestep_benchmarks": {
+    "compliant_prelift_dt01_strict_val": {
+      "dt_s": 0.01,
+      "frozen_baselines_native_dt01": {
+        "b1_deterministic": {
+          "architecture_id": "B1",
+          "task": "compliant_prelift",
+          "horizon_metrics": {
+            "H_1": {
+              "n_valid_windows": 2356,
+              "state_mse": 0.077927
+            },
+            "H_3": {
+              "n_valid_windows": 2204,
+              "state_mse": 0.978779
+            },
+            "H_5": {
+              "n_valid_windows": 2052,
+              "state_mse": 3.574071
+            },
+            "H_10": {
+              "n_valid_windows": 1672,
+              "state_mse": 23.500819
+            },
+            "H_20": {
+              "n_valid_windows": 912,
+              "state_mse": 120.99822
+            }
+          },
+          "contact_mode_metrics": {
+            "macro_f1_all_5": 0.3144,
+            "macro_f1_present_modes": 0.786,
+            "per_class": {
+              "Free": {
+                "mode_id": 0,
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "FirstContact": {
+                "mode_id": 1,
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "Sticking": {
+                "mode_id": 2,
+                "support": 19900,
+                "precision": 0.8343,
+                "recall": 0.7106,
+                "f1": 0.7675
+              },
+              "Sliding": {
+                "mode_id": 3,
+                "support": 12780,
+                "precision": 0.8304,
+                "recall": 0.7802,
+                "f1": 0.8045
+              },
+              "Impact": {
+                "mode_id": 4,
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              }
+            },
+            "absent_modes_note": "Modes 5 (Jamming) and 6 (Release) have 0 examples in Stage 3.3 data."
+          },
+          "ood_auroc": 0.5,
+          "uncertainty_error_corr": {
+            "pearson_r": null,
+            "spearman_rho": null
+          }
+        },
+        "b2_probabilistic": {
+          "architecture_id": "B2",
+          "task": "compliant_prelift",
+          "horizon_metrics": {
+            "H_1": {
+              "n_valid_windows": 2356,
+              "state_mse": 0.026538
+            },
+            "H_3": {
+              "n_valid_windows": 2204,
+              "state_mse": 0.492079
+            },
+            "H_5": {
+              "n_valid_windows": 2052,
+              "state_mse": 1.992798
+            },
+            "H_10": {
+              "n_valid_windows": 1672,
+              "state_mse": 14.407692
+            },
+            "H_20": {
+              "n_valid_windows": 912,
+              "state_mse": 97.330033
+            }
+          },
+          "contact_mode_metrics": {
+            "macro_f1_all_5": 0.256,
+            "macro_f1_present_modes": 0.6399,
+            "per_class": {
+              "Free": {
+                "mode_id": 0,
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "FirstContact": {
+                "mode_id": 1,
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "Sticking": {
+                "mode_id": 2,
+                "support": 19900,
+                "precision": 0.8185,
+                "recall": 0.5195,
+                "f1": 0.6356
+              },
+              "Sliding": {
+                "mode_id": 3,
+                "support": 12780,
+                "precision": 0.5303,
+                "recall": 0.8206,
+                "f1": 0.6442
+              },
+              "Impact": {
+                "mode_id": 4,
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              }
+            },
+            "absent_modes_note": "Modes 5 (Jamming) and 6 (Release) have 0 examples in Stage 3.3 data."
+          },
+          "ood_auroc": 0.0873,
+          "uncertainty_error_corr": {
+            "pearson_r": -0.758,
+            "spearman_rho": -0.8867
+          }
+        },
+        "b3_ensemble": {
+          "architecture_id": "B3",
+          "task": "compliant_prelift",
+          "horizon_metrics": {
+            "H_1": {
+              "n_valid_windows": 2356,
+              "state_mse": 0.00812
+            },
+            "H_3": {
+              "n_valid_windows": 2204,
+              "state_mse": 0.156886
+            },
+            "H_5": {
+              "n_valid_windows": 2052,
+              "state_mse": 0.592028
+            },
+            "H_10": {
+              "n_valid_windows": 1672,
+              "state_mse": 3.608077
+            },
+            "H_20": {
+              "n_valid_windows": 912,
+              "state_mse": 25.149235
+            }
+          },
+          "contact_mode_metrics": {
+            "macro_f1_all_5": 0.1456,
+            "macro_f1_present_modes": 0.3641,
+            "per_class": {
+              "Free": {
+                "mode_id": 0,
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "FirstContact": {
+                "mode_id": 1,
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "Sticking": {
+                "mode_id": 2,
+                "support": 19900,
+                "precision": 0.694,
+                "recall": 0.6845,
+                "f1": 0.6892
+              },
+              "Sliding": {
+                "mode_id": 3,
+                "support": 12780,
+                "precision": 1.0,
+                "recall": 0.0199,
+                "f1": 0.039
+              },
+              "Impact": {
+                "mode_id": 4,
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              }
+            },
+            "absent_modes_note": "Modes 5 (Jamming) and 6 (Release) have 0 examples in Stage 3.3 data."
+          },
+          "ood_auroc": 0.6934,
+          "uncertainty_error_corr": {
+            "pearson_r": 0.633,
+            "spearman_rho": 0.2756
+          }
+        }
+      },
+      "reference_dt01": {
+        "task": "compliant_prelift",
+        "dt_s": 0.01,
+        "strict_windows_only": true,
+        "persistence": {
+          "H_1": {
+            "physical_time_s": 0.01,
+            "n_windows": 2356,
+            "state_mse": 0.000414
+          },
+          "H_3": {
+            "physical_time_s": 0.03,
+            "n_windows": 2204,
+            "state_mse": 0.002982
+          },
+          "H_5": {
+            "physical_time_s": 0.05,
+            "n_windows": 2052,
+            "state_mse": 0.008007
+          },
+          "H_10": {
+            "physical_time_s": 0.1,
+            "n_windows": 1672,
+            "state_mse": 0.031608
+          },
+          "H_20": {
+            "physical_time_s": 0.2,
+            "n_windows": 912,
+            "state_mse": 0.125484
+          }
+        },
+        "constant_velocity": {
+          "H_1": {
+            "physical_time_s": 0.01,
+            "n_windows": 2356,
+            "state_mse": 0.000266
+          },
+          "H_3": {
+            "physical_time_s": 0.03,
+            "n_windows": 2204,
+            "state_mse": 0.001335
+          },
+          "H_5": {
+            "physical_time_s": 0.05,
+            "n_windows": 2052,
+            "state_mse": 0.003397
+          },
+          "H_10": {
+            "physical_time_s": 0.1,
+            "n_windows": 1672,
+            "state_mse": 0.013967
+          },
+          "H_20": {
+            "physical_time_s": 0.2,
+            "n_windows": 912,
+            "state_mse": 0.075635
+          }
+        }
+      }
+    },
+    "peg_in_hole_dt01_reference_val": {
+      "task": "peg_in_hole",
+      "dt_s": 0.01,
+      "strict_windows_only": true,
+      "persistence": {
+        "H_1": {
+          "physical_time_s": 0.01,
+          "n_windows": 1050,
+          "state_mse": 33.143792
+        },
+        "H_3": {
+          "physical_time_s": 0.03,
+          "n_windows": 950,
+          "state_mse": 51.725002
+        },
+        "H_5": {
+          "physical_time_s": 0.05,
+          "n_windows": 850,
+          "state_mse": 70.042198
+        },
+        "H_10": {
+          "physical_time_s": 0.1,
+          "n_windows": 600,
+          "state_mse": 113.143995
+        },
+        "H_20": {
+          "physical_time_s": 0.2,
+          "n_windows": 100,
+          "state_mse": 128.561058
+        }
+      },
+      "constant_velocity": {
+        "H_1": {
+          "physical_time_s": 0.01,
+          "n_windows": 1050,
+          "state_mse": 91.384201
+        },
+        "H_3": {
+          "physical_time_s": 0.03,
+          "n_windows": 950,
+          "state_mse": 468.02118
+        },
+        "H_5": {
+          "physical_time_s": 0.05,
+          "n_windows": 850,
+          "state_mse": 1247.695032
+        },
+        "H_10": {
+          "physical_time_s": 0.1,
+          "n_windows": 600,
+          "state_mse": 5592.462518
+        },
+        "H_20": {
+          "physical_time_s": 0.2,
+          "n_windows": 100,
+          "state_mse": 108.314691
+        }
+      }
+    },
+    "peg_in_hole_frozen_baselines_native_dt02": {
+      "dt_s": 0.02,
+      "seed_pool": "PHASE3_SEED_POOLS['offline_test_peg_in_hole'] (3080..3119)",
+      "num_episodes": 40,
+      "architectures": {
+        "b1_deterministic": {
+          "T_0.02s_k1": {
+            "physical_time_s": 0.02,
+            "step_horizon_dt02": 1,
+            "equivalent_dt01_steps": 2,
+            "n_rollouts": 440,
+            "state_mse": 158.842181
+          },
+          "T_0.06s_k3": {
+            "physical_time_s": 0.06,
+            "step_horizon_dt02": 3,
+            "equivalent_dt01_steps": 6,
+            "n_rollouts": 440,
+            "state_mse": 502.024961
+          },
+          "T_0.10s_k5": {
+            "physical_time_s": 0.1,
+            "step_horizon_dt02": 5,
+            "equivalent_dt01_steps": 10,
+            "n_rollouts": 440,
+            "state_mse": 709.104705
+          },
+          "T_0.20s_k10": {
+            "physical_time_s": 0.2,
+            "step_horizon_dt02": 10,
+            "equivalent_dt01_steps": 20,
+            "n_rollouts": 440,
+            "state_mse": 2842.395016
+          }
+        },
+        "b2_probabilistic": {
+          "T_0.02s_k1": {
+            "physical_time_s": 0.02,
+            "step_horizon_dt02": 1,
+            "equivalent_dt01_steps": 2,
+            "n_rollouts": 440,
+            "state_mse": 47.752002
+          },
+          "T_0.06s_k3": {
+            "physical_time_s": 0.06,
+            "step_horizon_dt02": 3,
+            "equivalent_dt01_steps": 6,
+            "n_rollouts": 440,
+            "state_mse": 76.359341
+          },
+          "T_0.10s_k5": {
+            "physical_time_s": 0.1,
+            "step_horizon_dt02": 5,
+            "equivalent_dt01_steps": 10,
+            "n_rollouts": 440,
+            "state_mse": 130.616633
+          },
+          "T_0.20s_k10": {
+            "physical_time_s": 0.2,
+            "step_horizon_dt02": 10,
+            "equivalent_dt01_steps": 20,
+            "n_rollouts": 440,
+            "state_mse": 192.101448
+          }
+        },
+        "b3_ensemble": {
+          "T_0.02s_k1": {
+            "physical_time_s": 0.02,
+            "step_horizon_dt02": 1,
+            "equivalent_dt01_steps": 2,
+            "n_rollouts": 440,
+            "state_mse": 25.208478
+          },
+          "T_0.06s_k3": {
+            "physical_time_s": 0.06,
+            "step_horizon_dt02": 3,
+            "equivalent_dt01_steps": 6,
+            "n_rollouts": 440,
+            "state_mse": 19.053606
+          },
+          "T_0.10s_k5": {
+            "physical_time_s": 0.1,
+            "step_horizon_dt02": 5,
+            "equivalent_dt01_steps": 10,
+            "n_rollouts": 440,
+            "state_mse": 14.360045
+          },
+          "T_0.20s_k10": {
+            "physical_time_s": 0.2,
+            "step_horizon_dt02": 10,
+            "equivalent_dt01_steps": 20,
+            "n_rollouts": 440,
+            "state_mse": 113.168681
+          }
+        }
+      }
+    }
+  }
+}

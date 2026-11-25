@@ -70,6 +70,7 @@ from world_model_vnext import (  # noqa: E402
     HCTTReadOnlyEvaluator,
     HCTTTemporalDataset,
     HCTTTrainingRunner,
+    HoldoutIneligibleError,
     LOCKED_HCTT_CONFIG,
     STAGE35_PROTECTED_EXTRA_RANGES,
     TRAINING_PERMITTED,
@@ -363,12 +364,18 @@ def test_privileged_isolation_and_live_csprng_hmac_provenance(tmp_path: Path) ->
     with pytest.raises(ContractViolationError):
         AuditTargetLoader(live_root, audit_salt=os.urandom(32))
 
-    # Verify both generated Stage 3.5 roots have self-consistent salt SHA-256 distinct from Stage 3.3 salt
+    # Verify generated Stage 3.5 root S35_PRELIFT_LONG has self-consistent salt SHA-256 distinct from Stage 3.3 salt
     s33_salt_sha = hashlib.sha256(STAGE3_DETERMINISTIC_AUDIT_SALT).hexdigest()
-    for root in (S35_PRELIFT_LONG, S35_FINAL_HOLDOUT):
-        loader = AuditTargetLoader(root)
-        manifest_sha = loader.audit_manifest["audit_salt_sha256"]
-        assert len(manifest_sha) == 64 and manifest_sha != s33_salt_sha
+    loader = AuditTargetLoader(S35_PRELIFT_LONG)
+    manifest_sha = loader.audit_manifest["audit_salt_sha256"]
+    assert len(manifest_sha) == 64 and manifest_sha != s33_salt_sha
+
+    # Verify quarantined S35_FINAL_HOLDOUT is strictly rejected by AuditTargetLoader
+    with pytest.raises(HoldoutIneligibleError):
+        AuditTargetLoader(S35_FINAL_HOLDOUT)
+    holdout_manifest = json.loads((S35_FINAL_HOLDOUT / "audit" / "stage35_audit_manifest.json").read_text(encoding="utf-8"))
+    holdout_manifest_sha = holdout_manifest["audit_salt_sha256"]
+    assert len(holdout_manifest_sha) == 64 and holdout_manifest_sha != s33_salt_sha
 
     with pytest.raises(ContractViolationError):
         assert_no_privileged_keys_in_inputs({"step_mu_true": torch.zeros(1)})

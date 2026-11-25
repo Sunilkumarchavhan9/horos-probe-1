@@ -18,12 +18,18 @@ import numpy as np
 import torch
 
 from .contracts import (
+    COMPROMISED_HOLDOUT_ID,
+    COMPROMISED_HOLDOUT_STATUS,
+    CompromisedHoldoutError,
     ContractViolationError,
     LOCKED_HCTT_CONFIG,
     MODEL_VISIBLE_NPZ_KEYS,
     TASK_INTERFACES,
     assert_no_privileged_keys_in_inputs,
     get_task_interface,
+    is_compromised_holdout_file_content,
+    is_compromised_holdout_path,
+    is_compromised_holdout_sample_id,
 )
 
 
@@ -54,6 +60,11 @@ class EpisodeArrayRecord:
 
 
 def _refuse_colocated_audit_files(training_dir: Path) -> None:
+    if is_compromised_holdout_path(training_dir):
+        raise CompromisedHoldoutError(
+            f"Training directory '{training_dir}' matches quarantined dataset '{COMPROMISED_HOLDOUT_ID}' "
+            f"(status: {COMPROMISED_HOLDOUT_STATUS}). Access prohibited."
+        )
     if not training_dir.is_dir():
         raise ContractViolationError(f"Training directory does not exist: {training_dir}")
     for entry in training_dir.iterdir():
@@ -79,6 +90,21 @@ def _scalar_str(val: Any) -> str:
 
 def load_clean_training_episode(npz_path: Path) -> EpisodeArrayRecord:
     """Loads and validates one model-visible .npz archive without modifying it."""
+    # Pre-load path validation
+    if is_compromised_holdout_path(npz_path):
+        raise CompromisedHoldoutError(
+            f"Archive '{npz_path.name}' matches quarantined dataset '{COMPROMISED_HOLDOUT_ID}' "
+            f"(status: {COMPROMISED_HOLDOUT_STATUS}). Pre-load path rejection enforced."
+        )
+
+    # Pre-load content-digest validation using streaming SHA-256 (rejection before np.load)
+    if npz_path.is_file() and is_compromised_holdout_file_content(npz_path):
+        raise CompromisedHoldoutError(
+            f"Archive '{npz_path.name}' matches quarantined holdout SHA-256 content digest "
+            f"from dataset '{COMPROMISED_HOLDOUT_ID}' (status: {COMPROMISED_HOLDOUT_STATUS}). "
+            "Pre-load digest rejection enforced."
+        )
+
     with np.load(npz_path, allow_pickle=False) as data:
         keys = set(data.files)
         if keys != set(MODEL_VISIBLE_NPZ_KEYS):
@@ -87,6 +113,11 @@ def load_clean_training_episode(npz_path: Path) -> EpisodeArrayRecord:
             )
         task = _scalar_str(data["task"])
         sample_id = _scalar_str(data["sample_id"])
+        if is_compromised_holdout_sample_id(sample_id):
+            raise CompromisedHoldoutError(
+                f"Sample ID '{sample_id}' belongs to quarantined dataset '{COMPROMISED_HOLDOUT_ID}' "
+                f"(status: {COMPROMISED_HOLDOUT_STATUS}). Ingestion prohibited."
+            )
         spec = get_task_interface(task)
 
         states = np.asarray(data["states"], dtype=np.float32)
@@ -164,6 +195,11 @@ class HCTTTemporalDataset:
         if not dirs:
             raise ContractViolationError("At least one training directory must be supplied.")
         for d in dirs:
+            if is_compromised_holdout_path(d):
+                raise CompromisedHoldoutError(
+                    f"Training directory '{d}' matches quarantined dataset '{COMPROMISED_HOLDOUT_ID}' "
+                    f"(status: {COMPROMISED_HOLDOUT_STATUS}). Access prohibited."
+                )
             _refuse_colocated_audit_files(d)
 
         self.training_dirs: List[Path] = dirs
@@ -176,6 +212,13 @@ class HCTTTemporalDataset:
 
         self.task_filter = task_filter
         self.allowed_sample_ids: Optional[Set[str]] = set(allowed_sample_ids) if allowed_sample_ids is not None else None
+        if self.allowed_sample_ids is not None:
+            for sid in self.allowed_sample_ids:
+                if is_compromised_holdout_sample_id(sid):
+                    raise CompromisedHoldoutError(
+                        f"allowed_sample_ids contains quarantined sample ID '{sid}' from "
+                        f"dataset '{COMPROMISED_HOLDOUT_ID}' (status: {COMPROMISED_HOLDOUT_STATUS})."
+                    )
         self.history_horizon = int(history_horizon)
         self.future_horizon = int(future_horizon)
         self.window_mode = window_mode

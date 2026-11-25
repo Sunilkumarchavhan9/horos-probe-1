@@ -16,7 +16,15 @@ from typing import Any, Dict, Optional
 
 import torch
 
-from .contracts import ContractViolationError, HCTTArchitectureConfig, LOCKED_HCTT_CONFIG
+from .contracts import (
+    COMPROMISED_HOLDOUT_ID,
+    COMPROMISED_HOLDOUT_STATUS,
+    CompromisedHoldoutError,
+    ContractViolationError,
+    HCTTArchitectureConfig,
+    LOCKED_HCTT_CONFIG,
+    is_compromised_holdout_sample_id,
+)
 from .hctt import HCTTWorldModel
 from .losses import HCTTMultiObjectiveLoss
 
@@ -82,6 +90,30 @@ class HCTTTrainingRunner:
     ) -> Dict[str, Any]:
         """Executes forward pass and multi-objective loss strictly under torch.no_grad()."""
         self.assert_training_locked()
+
+        # Reject quarantined holdout data from forward/loss verification
+        if "sample_id" in model_inputs:
+            raw_sids = model_inputs["sample_id"]
+            if isinstance(raw_sids, str):
+                check_sids = [raw_sids]
+            elif isinstance(raw_sids, (list, tuple, set)):
+                check_sids = [str(s) for s in raw_sids]
+            else:
+                check_sids = []
+            for sid in check_sids:
+                if is_compromised_holdout_sample_id(sid):
+                    raise CompromisedHoldoutError(
+                        f"Sample ID '{sid}' belongs to quarantined holdout '{COMPROMISED_HOLDOUT_ID}' "
+                        f"(status: {COMPROMISED_HOLDOUT_STATUS}). Consumption in runner is prohibited."
+                    )
+        if audit_targets and isinstance(audit_targets, dict):
+            for sid in audit_targets.keys():
+                if is_compromised_holdout_sample_id(str(sid)):
+                    raise CompromisedHoldoutError(
+                        f"Audit target '{sid}' belongs to quarantined holdout '{COMPROMISED_HOLDOUT_ID}' "
+                        f"(status: {COMPROMISED_HOLDOUT_STATUS}). Consumption in runner is prohibited."
+                    )
+
         self.model.eval()
 
         # Snapshot weight checksum before verification to prove zero parameter mutation

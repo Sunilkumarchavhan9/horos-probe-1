@@ -24,9 +24,15 @@ from scipy import stats as scipy_stats
 
 from .contracts import (
     BENCHMARK_ACCEPTANCE_TARGETS,
+    COMPROMISED_HOLDOUT_ID,
+    COMPROMISED_HOLDOUT_STATUS,
+    CompromisedHoldoutError,
+    HoldoutIneligibleError,
     LOCKED_HCTT_CONFIG,
     OPERATIONAL_MODE_NAMES,
     SUPPORTED_OPERATIONAL_MODE_IDS,
+    is_compromised_holdout_path,
+    is_compromised_holdout_sample_id,
 )
 from .dataset import HCTTTemporalDataset, split_batch_inputs_and_targets
 from .hctt import HCTTWorldModel
@@ -143,6 +149,86 @@ class HCTTReadOnlyEvaluator:
     def __init__(self, target_loader: AuditTargetLoader):
         self.target_loader = target_loader
 
+    def verify_dataset_eligibility(
+        self,
+        dataset: HCTTTemporalDataset,
+        target_loader: Optional[AuditTargetLoader] = None,
+    ) -> None:
+        """Asserts dataset and optional target_loader are eligible for scientific evaluation."""
+        for d in getattr(dataset, "training_dirs", []):
+            if is_compromised_holdout_path(d):
+                raise CompromisedHoldoutError(
+                    f"Dataset directory '{d}' belongs to quarantined holdout '{COMPROMISED_HOLDOUT_ID}' "
+                    f"(status: {COMPROMISED_HOLDOUT_STATUS}). Evaluation strictly blocked."
+                )
+        if getattr(dataset, "allowed_sample_ids", None) is not None:
+            for sid in dataset.allowed_sample_ids:
+                if is_compromised_holdout_sample_id(sid):
+                    raise CompromisedHoldoutError(
+                        f"Dataset contains quarantined sample ID '{sid}' "
+                        f"(status: {COMPROMISED_HOLDOUT_STATUS}). Evaluation strictly blocked."
+                    )
+        for ep in getattr(dataset, "episodes", []):
+            if is_compromised_holdout_sample_id(ep.sample_id):
+                raise CompromisedHoldoutError(
+                    f"Episode '{ep.sample_id}' belongs to quarantined holdout '{COMPROMISED_HOLDOUT_ID}'. "
+                    f"Evaluation strictly blocked."
+                )
+        if target_loader is not None:
+            target_loader.assert_evaluation_eligible()
+
+    def verify_holdout_eligibility(
+        self,
+        holdout_identifier: str,
+        authorization_artifact: Optional[Any] = None,
+    ) -> None:
+        """Verifies eligibility of a dataset for final benchmark evaluation."""
+        h_id_clean = str(holdout_identifier).lower()
+        if (
+            holdout_identifier == COMPROMISED_HOLDOUT_ID
+            or "final_holdout" in h_id_clean
+            or "stage35_final_holdout" in h_id_clean
+            or "stage35" in h_id_clean
+        ):
+            raise HoldoutIneligibleError(
+                f"Holdout '{holdout_identifier}' is quarantined under status '{COMPROMISED_HOLDOUT_STATUS}'. "
+                "Final benchmark evaluation is permanently blocked."
+            )
+
+        # Reject caller-supplied boolean credentials
+        if isinstance(authorization_artifact, dict) and "certified_private_holdout" in authorization_artifact:
+            raise HoldoutIneligibleError(
+                "Caller-supplied boolean credentials ('certified_private_holdout') are strictly rejected. "
+                "Final holdout evaluation requires an independently authorized, cryptographically validated provenance artifact."
+            )
+
+        # In current stage, no replacement private holdout has been authorized or created
+        raise HoldoutIneligibleError(
+            "No authorized private holdout currently exists (NEW_PRIVATE_HOLDOUT = NOT_CREATED). "
+            "Final benchmark evaluation is permanently blocked until an independent private holdout is authorized and generated."
+        )
+
+    def evaluate_final_holdout(
+        self,
+        model: HCTTWorldModel,
+        dataset: HCTTTemporalDataset,
+        target_loader: AuditTargetLoader,
+        holdout_credentials: Any = None,
+        device: str = "cpu",
+    ) -> Dict[str, Any]:
+        """Authorized final benchmark evaluation on an independently certified private holdout."""
+        holdout_id = (
+            holdout_credentials.get("holdout_id", "")
+            if isinstance(holdout_credentials, dict)
+            else str(holdout_credentials or "")
+        )
+        self.verify_holdout_eligibility(holdout_id, authorization_artifact=holdout_credentials)
+        self.verify_dataset_eligibility(dataset, target_loader)
+        return self.evaluate_hctt(
+            model=model,
+            dataset=dataset,
+        )
+
     def evaluate_hctt(
         self,
         model: HCTTWorldModel,
@@ -151,6 +237,7 @@ class HCTTReadOnlyEvaluator:
         nominal_alpha: float = 0.10,
     ) -> Dict[str, Any]:
         """Executes full strictly read-only evaluation (torch.no_grad(), zero weight updates)."""
+        self.verify_dataset_eligibility(dataset, self.target_loader)
         model.eval()
         horizons = LOCKED_HCTT_CONFIG.prediction_horizons
 
@@ -308,6 +395,7 @@ class HCTTReadOnlyEvaluator:
         batch_size: int = 64,
     ) -> Dict[str, Any]:
         """Evaluates frozen Phase 3.4 B1/B2/B3 HybridContactStateModel in read-only mode on Stage 3.4 windows."""
+        self.verify_dataset_eligibility(dataset, self.target_loader)
         hybrid_model.eval()
         horizons = LOCKED_HCTT_CONFIG.prediction_horizons
         state_sq_errs: Dict[int, List[float]] = {h: [] for h in horizons}
@@ -397,6 +485,7 @@ class HCTTReadOnlyEvaluator:
         batch_size: int = 32,
     ) -> Dict[str, Any]:
         """Evaluates Path 1 (strict 10-step history & complete horizon) separately from Path 2 (masked)."""
+        self.verify_dataset_eligibility(dataset, self.target_loader)
         model.eval()
         horizons = LOCKED_HCTT_CONFIG.prediction_horizons
 
@@ -485,6 +574,7 @@ class HCTTReadOnlyEvaluator:
         strict_only: bool = True,
     ) -> Dict[str, Any]:
         """Evaluates native dt=0.01s Persistence and Constant-Velocity baselines on exact strict/masked windows."""
+        self.verify_dataset_eligibility(dataset, None)
         horizons = LOCKED_HCTT_CONFIG.prediction_horizons
         pers_errs: Dict[int, List[float]] = {h: [] for h in horizons}
         cvel_errs: Dict[int, List[float]] = {h: [] for h in horizons}

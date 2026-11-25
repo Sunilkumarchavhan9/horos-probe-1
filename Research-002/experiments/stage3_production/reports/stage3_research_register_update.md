@@ -3,12 +3,12 @@
 
 **Program:** HOROS Physical Interaction Data Engine (PIDE)  
 **Research Program:** PROBE-1 — Autonomous Robotic Manipulation World Model  
-**Stage:** Stage 3.5 — Scientific Gate Closure & HCTT-256 Training Readiness  
+**Stage:** Stage 3.6 — Blind Holdout Quarantine & Evaluation Integrity Recovery  
 **Document Identifier:** `HOROS-P1-R002-STAGE3-REP-10-RESEARCH-REGISTER`  
 **Date:** 2026-11-25  
-**Current Milestone:** **Stage 3.5 Complete (Scientific & Data-Integrity Gates Closed; HCTT-256 Training-Ready, Untrained)**  
-**Next Milestone:** **HOROS Stage 4 — First Authorized HCTT-256 Training Experiment** *(Locked)*  
-**Governance Status:** **TRAINING LOCKED (`training_permitted = 0`, `execution_authorized = 0`, `gradient_steps = 0`, `optimizer_updates = 0`) — AWAITING FORMAL USER AUTHORIZATION**
+**Current Milestone:** **Stage 3.6 Complete (Compromised Holdout Quarantined; Fail-Closed Evaluation Guards Active; HCTT-256 Training-Ready, Untrained)**  
+**Next Milestone:** **HOROS Stage 4 — First Authorized HCTT-256 Training Experiment & Private Holdout Generation** *(Locked)*  
+**Governance Status:** **TRAINING LOCKED (`training_permitted = 0`, `execution_authorized = 0`, `gradient_steps = 0`, `optimizer_updates = 0`, `final_holdout_evaluation = BLOCKED`) — AWAITING FORMAL USER AUTHORIZATION**
 
 ---
 
@@ -24,7 +24,10 @@
 | **Stage 3.2** | **CERTIFIED** | `experiments/stage3_preflight/pilot/` | 40-episode physical pilot accepted with causal Regime A slip and event-aligned rim impact. |
 | **Stage 3.3 Production Dataset** | **COMPLETED (`022df85`)** | `experiments/stage3_production/` | 1,000 / 1,000 scenarios generated and 100% accepted (500 Prelift, 500 Peg-in-Hole). Zero rejections; HCTT code not yet present at `022df85`. |
 | **Stage 3.4 HCTT & Pipeline** | **COMPLETED (`6d890eb`, UNTRAINED)** | `src/world_model_vnext/`, `tests/test_p43_stage34_hctt_pipeline.py` | Implemented HCTT-256 (5,440,353 params, RoPE, causal mask), temporal dataset, `AuditTargetLoader`, 70/10/10/10 split manifest, locked losses, read-only evaluator, and barrier runner. |
-| **Stage 3.5 Scientific Gate Closure** | **COMPLETED (UNTRAINED)** | `experiments/stage35_production/`, `tests/test_p44_stage35_gate_closure.py` | Closed all Stage 3.4 gaps: generated `500` Prelift $T=40$ (`6,000` strict `H=20` windows) + `120` sealed `final_holdout`; separated Path 1 strict vs Path 2 masked windows; added unactivated 3-term objective config; benchmarked matched $\Delta t=0.01\text{ s}$ Persistence/Const-Vel & native-$\Delta t=0.02\text{ s}$ Peg B1–B3; quarantined Stage 3.4 `test`; enforced runtime CSPRNG HMAC salt (`63/63` regression tests passed). |
+| **Stage 3.5 Scientific Gate Closure** | **ENGINEERING COMPLETE (HOLDOUT COMPROMISED)** | `experiments/stage35_production/`, `tests/test_p44_stage35_gate_closure.py` | Generated `500` Prelift $T=40$ (`6,000` strict `H=20` windows); matched $\Delta t=0.01\text{ s}$ baselines; `63/63` regression tests historically passed. Final holdout (120 ep) committed to public GitHub in `6f0cae6`; **permanently compromised as a blind evaluation benchmark**. |
+| **Stage 3.6 Holdout Quarantine** | **COMPLETE (VERIFIED)** | `experiments/stage36_holdout_quarantine/`, `tests/test_p45_stage36_holdout_quarantine.py` | Formally quarantined `stage35_final_holdout` under status `COMPROMISED_PUBLIC_EXPOSURE`; implemented fail-closed code guards in 7 core modules; authored 13/13 passing security tests (`test_p45`); locked final evaluation until private holdout generation; preserved all train/val/calib splits intact. |
+| **Stage 3.6A Quarantine Hardening** | **CERTIFIED (92/92 PASS)** | `src/world_model_vnext/`, `tests/test_p46_stage36a_quarantine_hardening.py` | Hardened quarantine against renamed/relocated archives with streaming SHA-256 pre-deserialization checks; constructor fail-closed on compromised roots; hardened split and credential verifications; 16/16 adversarial tests passed (total 92/92 regression suite). |
+| **Stage 3.6B Fail-Closed Correction** | **ACCEPTED (102/102 PASS)** | `scripts/stage3_production_adapter.py`, `tests/test_p47_stage36b_fail_closed_quarantine.py` | Eliminated fail-open import in production dataloader; mandatory verifier import and registry checks fail closed with `SecurityViolationError`; `np.load()` never called on rejected archives; 10/10 security tests passed (total 102/102 regression suite). |
 | **Stage 4 Student Model Training** | **LOCKED (`0` STEPS)** | `src/world_model_vnext/runner.py` | `training_permitted = 0`, `execution_authorized = 0`, `gradient_steps = 0`, `optimizer_updates = 0`; awaiting explicit authorization for HOROS Stage 4 — First Authorized HCTT-256 Training Experiment. |
 
 ---
@@ -55,16 +58,48 @@
 
 #### Newly Produced Stage 3.5 Artifacts
 - `experiments/stage35_production/prelift_long/`: `500` Compliant Prelift ($T=40$, $\Delta t=0.01\text{ s}$) `.npz` + `.privileged.json` archives (`100%` accepted, runtime CSPRNG HMAC).
-- `experiments/stage35_production/final_holdout/`: `120` blind `final_test` (`60` Prelift $T=40$ + `60` Peg-in-Hole $T=30$) `.npz` + `.privileged.json` archives (sealed, untouched during verification).
+- `experiments/stage35_production/final_holdout/`: `120` blind `final_test` (`60` Prelift $T=40$ + `60` Peg-in-Hole $T=30$) `.npz` + `.privileged.json` archives (**QUARANTINED AS COMPROMISED BENCHMARK**).
 - `experiments/stage35_production/stage35_dataset_manifest.json`, `stage35_final_split_manifest.json` (`698/126/126/120/100/450` partition ledger), and `stage35_verification_metrics.json`.
 - `experiments/stage35_production/reports/stage35_*.md`: Complete Stage 3.5 window audit, dataset generation, objective resolution, matched-timestep benchmark, evaluation integrity, security/provenance audit, regression test, and pre-training readiness reports.
 - `scripts/run_stage35_pipeline.py` & `tests/test_p44_stage35_gate_closure.py`: Deterministic pipeline runner and 9-test Stage 3.5 gate-closure regression suite.
 
+#### Newly Produced Stage 3.6 Artifacts
+- `experiments/stage36_holdout_quarantine/holdout_quarantine_record.json`: Authoritative quarantine record registering `stage35_final_holdout` as `COMPROMISED_PUBLIC_EXPOSURE` with all eligibility flags set to `false`, populated with 120 `.npz` and 120 `.privileged.json` cryptographic SHA-256 digests.
+- `experiments/stage36_holdout_quarantine/stage36_data_flow_exposure_audit.md`: Comprehensive audit of all data-flow routes and references.
+- `experiments/stage36_holdout_quarantine/stage36_holdout_quarantine_report.md`: Technical and scientific quarantine report (including Stage 3.6A hardening).
+- `experiments/stage36_holdout_quarantine/stage36_stage4_readiness_assessment.md`: Architectural distinction matrix and Stage 4 pre-requisites.
+- `experiments/stage36_holdout_quarantine/stage36_historical_integrity_report.md`: Verification audit of preserved immutable checkpoints and partitions.
+- `tests/test_p45_stage36_holdout_quarantine.py`: 13-test regression and fail-closed security suite covering all quarantine invariants.
+- Fail-closed code guards in `src/world_model_vnext/` (`contracts.py`, `dataset.py`, `target_loader.py`, `evaluator.py`, `splits.py`, `runner.py`, `__init__.py`) and `scripts/stage3_production_adapter.py`.
+
+#### Newly Produced Stage 3.6A Artifacts
+- `tests/test_p46_stage36a_quarantine_hardening.py`: 16-test adversarial penetration and hardening test suite.
+- Hardened payload defenses in `src/world_model_vnext/contracts.py` (streaming SHA-256 content checking before file deserialization).
+- Pre-load rejection in `src/world_model_vnext/dataset.py` (checks file hash before `np.load`) and `target_loader.py` (pre-parse hash check on privileged JSON).
+- Fail-closed constructor enforcement in `src/world_model_vnext/target_loader.py` (`AuditTargetLoader` raises `HoldoutIneligibleError` during construction on compromised roots).
+- Manifest and credential hardening in `src/world_model_vnext/splits.py` (positive presence of sample IDs and seeds required) and `evaluator.py` (caller-supplied boolean credentials rejected).
+
+#### Newly Produced Stage 3.6B Artifacts
+- `tests/test_p47_stage36b_fail_closed_quarantine.py`: 10-test fail-closed quarantine and security exception verification suite.
+- Fail-closed archive loading in `scripts/stage3_production_adapter.py`: eliminated `ImportError` bypass, enforced mandatory verifier import, and wrapped all verification errors in `SecurityViolationError` before `np.load()`.
+- Fail-closed quarantine registry loading in `src/world_model_vnext/contracts.py`: `_load_quarantine_record_data`, `get_compromised_sample_ids`, `get_compromised_npz_sha256`, and `get_compromised_privileged_sha256` strictly raise `ContractViolationError` on missing or malformed registries (< 120 items).
+
 ---
 
-### 3. Open Decision & Next Immediate Action
+### 3. Current Scientific Governance Status
 
-All Stage 3.5 technical, scientific, security, and evaluation-integrity gates are closed and verified (`63/63` tests passed). The system stands in a fail-closed, untrained holding state:
+The official system status is explicitly partitioned across four dimensions:
+
+```text
+STAGE_3_5_IMPLEMENTATION = COMPLETE
+STAGE_3_5_REGRESSION = HISTORICALLY_PASSED
+STAGE_3_5_HOLDOUT_INTEGRITY = COMPROMISED
+STAGE_3_6_QUARANTINE = COMPLETE_ONLY_AFTER_TESTED
+NEW_PRIVATE_HOLDOUT = NOT_CREATED
+BLIND_FINAL_EVALUATION = BLOCKED
+STAGE_4_TRAINING = NOT_AUTHORIZED
+```
 
 - **Pending Decision:** Formal authorization from the USER to initiate **HOROS Stage 4 — First Authorized HCTT-256 Training Experiment**.
 - **Prohibition in Effect:** STRICTLY NO student model training, parameter optimization, or gradient backpropagation shall occur prior to receiving this explicit command.
+- **Holdout Evaluation Gate:** Final scientific validation is BLOCKED until an independently generated, private holdout dataset is created under a separate authorized protocol outside public repositories.

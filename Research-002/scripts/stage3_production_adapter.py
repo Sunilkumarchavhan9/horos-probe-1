@@ -840,6 +840,11 @@ class ProductionTrainingDataloader:
 
     def __init__(self, training_dir: Path):
         self.training_dir = Path(training_dir)
+        p_str = str(self.training_dir).replace("\\", "/").lower()
+        if "final_holdout" in p_str or "stage35_final_holdout" in p_str:
+            raise SecurityViolationError(
+                f"Quarantined compromised holdout directory rejected: {self.training_dir}"
+            )
         self._refuse_colocated_audit(self.training_dir)
         self.samples: List[Dict[str, Any]] = []
         for path in sorted(self.training_dir.glob("*.npz")):
@@ -864,11 +869,45 @@ class ProductionTrainingDataloader:
         return str(array.reshape(-1)[0])
 
     def _load_archive(self, path: Path) -> Dict[str, Any]:
+        p_str = str(path).replace("\\", "/").lower()
+        if "final_holdout" in p_str or "stage35_final_holdout" in p_str:
+            raise SecurityViolationError(f"Quarantined compromised holdout archive rejected: {path}")
+
+        # Mandatory quarantine verification - MUST FAIL CLOSED
+        try:
+            from world_model_vnext import (
+                is_compromised_holdout_file_content,
+                is_compromised_holdout_path,
+                is_compromised_holdout_sample_id,
+            )
+        except Exception as exc:
+            raise SecurityViolationError(
+                f"Quarantine verifier import failure blocks archive loading: {path} ({exc})"
+            ) from exc
+
+        try:
+            if is_compromised_holdout_path(path):
+                raise SecurityViolationError(f"Quarantined compromised holdout path rejected: {path}")
+            if path.is_file() and is_compromised_holdout_file_content(path):
+                raise SecurityViolationError(f"Quarantined compromised holdout archive digest rejected: {path}")
+        except SecurityViolationError:
+            raise
+        except Exception as exc:
+            raise SecurityViolationError(
+                f"Quarantine verification failed closed for archive: {path} ({exc})"
+            ) from exc
+
         with np.load(path, allow_pickle=False) as data:
             package = {
                 key: self._scalar_text(data[key]) if key in {"sample_id", "task"} else np.asarray(data[key])
                 for key in data.files
             }
+
+        # Post-load verification of sample_id
+        if is_compromised_holdout_sample_id(package.get("sample_id", "")):
+            raise SecurityViolationError(
+                f"Quarantined compromised holdout sample ID rejected: {package.get('sample_id')}"
+            )
         validate_model_visible_package(package)
         assert_tensor_channels_clean(str(package["task"]), package["states"], package["wrenches"], {})
         assert_tensor_channels_clean(str(package["task"]), package["next_states"], package["next_wrenches"], {})

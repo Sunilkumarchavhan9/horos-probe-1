@@ -17,7 +17,15 @@ from typing import Any, Dict, List, Set
 
 import numpy as np
 
-from .contracts import ContractViolationError
+from .contracts import (
+    COMPROMISED_HOLDOUT_ID,
+    COMPROMISED_HOLDOUT_PROTOCOL,
+    COMPROMISED_HOLDOUT_STATUS,
+    CompromisedHoldoutError,
+    ContractViolationError,
+    is_compromised_holdout_sample_id,
+    is_compromised_holdout_seed,
+)
 
 
 # Locked protected seed pools that MUST NEVER overlap production splits
@@ -183,6 +191,71 @@ def verify_split_manifest_disjointness(manifest: Dict[str, Any]) -> bool:
     if total != expected_total:
         raise ContractViolationError(f"Split total {total} != manifest total {manifest['total_episodes']}")
     return True
+
+
+def assert_split_eligible_for_evaluation(manifest: Dict[str, Any], split_name: str) -> None:
+    """Verifies that a split within a manifest is eligible for scientific evaluation.
+
+    Fails closed if the split is the quarantined Stage 3.5 final_test, if any of its
+    sample_ids or seeds belong to the compromised holdout pool, or if required positive
+    metadata is missing.
+    """
+    if not isinstance(manifest, dict):
+        raise ContractViolationError("Split manifest must be a dictionary.")
+
+    # Reject quarantined manifest protocols
+    manifest_protocol = str(manifest.get("protocol", "")).upper()
+    if manifest_protocol == COMPROMISED_HOLDOUT_PROTOCOL or "FINAL_HOLDOUT" in manifest_protocol:
+        raise CompromisedHoldoutError(
+            f"Manifest protocol '{manifest.get('protocol')}' belongs to quarantined dataset "
+            f"'{COMPROMISED_HOLDOUT_ID}' (status: {COMPROMISED_HOLDOUT_STATUS}). Evaluation prohibited."
+        )
+
+    # Reject known holdout split aliases
+    if split_name in ("final_test", "stage35_final_holdout", "final_holdout", "stage35_final_test", "holdout"):
+        raise CompromisedHoldoutError(
+            f"Split '{split_name}' belongs to quarantined holdout '{COMPROMISED_HOLDOUT_ID}' "
+            f"(status: {COMPROMISED_HOLDOUT_STATUS}) and is permanently ineligible for evaluation."
+        )
+
+    if "splits" not in manifest or not isinstance(manifest["splits"], dict):
+        raise ContractViolationError("Manifest missing 'splits' dictionary.")
+
+    if split_name not in manifest["splits"]:
+        raise ContractViolationError(f"Split '{split_name}' not found in manifest splits.")
+
+    split = manifest["splits"][split_name]
+    if not isinstance(split, dict):
+        raise ContractViolationError(f"Split '{split_name}' must be a dictionary.")
+
+    # Positive presence requirements: cannot be empty or missing
+    sample_ids = split.get("sample_ids")
+    if sample_ids is None or len(sample_ids) == 0:
+        raise ContractViolationError(
+            f"Split '{split_name}' lacks required non-empty 'sample_ids'. "
+            "Silently granting eligibility to unindexed splits is prohibited."
+        )
+
+    seeds = split.get("seeds")
+    if seeds is None or len(seeds) == 0:
+        raise ContractViolationError(
+            f"Split '{split_name}' lacks required non-empty 'seeds'. "
+            "Silently granting eligibility to unindexed splits is prohibited."
+        )
+
+    for sid in sample_ids:
+        if is_compromised_holdout_sample_id(str(sid)):
+            raise CompromisedHoldoutError(
+                f"Split '{split_name}' contains quarantined sample ID '{sid}' "
+                f"(status: {COMPROMISED_HOLDOUT_STATUS}). Evaluation prohibited."
+            )
+
+    for seed in seeds:
+        if is_compromised_holdout_seed(int(seed)):
+            raise CompromisedHoldoutError(
+                f"Split '{split_name}' contains quarantined seed '{seed}' "
+                f"(status: {COMPROMISED_HOLDOUT_STATUS}). Evaluation prohibited."
+            )
 
 
 STAGE35_PROTECTED_EXTRA_RANGES: Dict[str, Set[int]] = {

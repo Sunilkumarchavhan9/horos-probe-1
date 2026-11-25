@@ -20,11 +20,19 @@ import numpy as np
 import torch
 
 from .contracts import (
+    COMPROMISED_HOLDOUT_ID,
+    COMPROMISED_HOLDOUT_PROTOCOL,
+    COMPROMISED_HOLDOUT_STATUS,
+    CompromisedHoldoutError,
     ContractViolationError,
+    HoldoutIneligibleError,
     LOCKED_HCTT_CONFIG,
     SUPPORTED_OPERATIONAL_MODE_IDS,
     UNSUPPORTED_DATASET_MODE_IDS,
     get_task_interface,
+    is_compromised_holdout_file_content,
+    is_compromised_holdout_path,
+    is_compromised_holdout_sample_id,
 )
 
 
@@ -67,6 +75,8 @@ class AuditTargetLoader:
         self.audit_manifests: List[Dict[str, Any]] = []
         self.targets_by_sample_id: Dict[str, AuditEpisodeTargets] = {}
         self.mode_histogram: Dict[int, int] = {m: 0 for m in SUPPORTED_OPERATIONAL_MODE_IDS}
+        self.is_compromised: bool = False
+        self.quarantine_status: str = "CLEAN"
 
         seen_sample_ids = set()
         seen_seeds = set()
@@ -74,6 +84,14 @@ class AuditTargetLoader:
 
         for root in self.production_roots:
             self._load_and_verify_root(root, seen_sample_ids, seen_seeds, seen_canon_ids)
+
+    def assert_evaluation_eligible(self) -> None:
+        """Asserts that targets are eligible for evaluation (not quarantined/compromised)."""
+        if getattr(self, "is_compromised", False):
+            raise HoldoutIneligibleError(
+                f"Target loader root is quarantined under status '{getattr(self, 'quarantine_status', COMPROMISED_HOLDOUT_STATUS)}'. "
+                "Supervised targets are permanently ineligible for evaluation."
+            )
 
     def _load_and_verify_root(
         self,
@@ -89,6 +107,14 @@ class AuditTargetLoader:
         if not audit_manifest_path.is_file():
             audit_manifest_path = audit_dir / "stage35_audit_manifest.json"
 
+        if is_compromised_holdout_path(root):
+            self.is_compromised = True
+            self.quarantine_status = COMPROMISED_HOLDOUT_STATUS
+            raise HoldoutIneligibleError(
+                f"Target loader root '{root}' matches quarantined dataset '{COMPROMISED_HOLDOUT_ID}' "
+                f"(status: {COMPROMISED_HOLDOUT_STATUS}). Ingestion of quarantined targets is strictly prohibited."
+            )
+
         if not audit_dir.is_dir():
             raise ContractViolationError(f"Audit directory missing: {audit_dir}")
         if not accepted_manifest_path.is_file():
@@ -97,6 +123,13 @@ class AuditTargetLoader:
             raise ContractViolationError(f"Master audit manifest missing in {audit_dir}")
 
         audit_manifest: Dict[str, Any] = json.loads(audit_manifest_path.read_text(encoding="utf-8"))
+        if audit_manifest.get("protocol") == COMPROMISED_HOLDOUT_PROTOCOL:
+            self.is_compromised = True
+            self.quarantine_status = COMPROMISED_HOLDOUT_STATUS
+            raise HoldoutIneligibleError(
+                f"Audit manifest protocol '{COMPROMISED_HOLDOUT_PROTOCOL}' belongs to quarantined dataset "
+                f"'{COMPROMISED_HOLDOUT_ID}' (status: {COMPROMISED_HOLDOUT_STATUS}). Ingestion strictly prohibited."
+            )
         self.audit_manifests.append(audit_manifest)
         if not hasattr(self, "audit_manifest"):
             self.audit_manifest = audit_manifest
@@ -142,6 +175,14 @@ class AuditTargetLoader:
             priv_path = audit_dir / f"{cid}.privileged.json"
             if not priv_path.is_file():
                 raise ContractViolationError(f"Missing privileged audit file: {priv_path}")
+
+            # Pre-parse content-digest check using streaming SHA-256
+            if is_compromised_holdout_file_content(priv_path):
+                raise CompromisedHoldoutError(
+                    f"Privileged audit file '{priv_path.name}' matches quarantined SHA-256 digest "
+                    f"from dataset '{COMPROMISED_HOLDOUT_ID}' (status: {COMPROMISED_HOLDOUT_STATUS}). "
+                    "Pre-parse rejection enforced."
+                )
 
             priv = json.loads(priv_path.read_text(encoding="utf-8"))
             if str(priv.get("sample_id")) != sid:
@@ -224,6 +265,18 @@ class AuditTargetLoader:
         horizon: int = LOCKED_HCTT_CONFIG.max_future_horizon,
     ) -> Dict[str, Any]:
         """Joins clean sample_ids to privileged supervised loss targets (NEVER model inputs)."""
+        if getattr(self, "is_compromised", False):
+            raise CompromisedHoldoutError(
+                f"Cannot extract supervised targets from quarantined dataset '{COMPROMISED_HOLDOUT_ID}' "
+                f"(status: {getattr(self, 'quarantine_status', COMPROMISED_HOLDOUT_STATUS)})."
+            )
+        for sid in sample_ids:
+            if is_compromised_holdout_sample_id(sid):
+                raise CompromisedHoldoutError(
+                    f"Sample ID '{sid}' belongs to quarantined holdout '{COMPROMISED_HOLDOUT_ID}'. "
+                    "Access to supervised ground-truth targets is strictly forbidden."
+                )
+
         if len(sample_ids) != len(anchor_steps) or future_mask.shape != (len(sample_ids), horizon):
             raise ContractViolationError("Batch target join dimension mismatch.")
 

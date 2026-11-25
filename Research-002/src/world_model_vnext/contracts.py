@@ -568,3 +568,133 @@ def assert_no_privileged_keys_in_inputs(inputs: Dict[str, object]) -> None:
                 raise ContractViolationError(
                     f"Input key '{key}' matches forbidden privileged token '{token}'."
                 )
+
+
+# ---------------------------------------------------------------------------
+# Stage 3.7 Independent Blind Evaluation Protocol Contracts
+# ---------------------------------------------------------------------------
+
+class ManifestSignatureError(ContractViolationError):
+    """Raised when an evaluation manifest digital signature fails cryptographic verification."""
+
+
+class EvaluationAlreadyExecutedError(ContractViolationError):
+    """Raised when an evaluation is attempted against a previously consumed blind holdout."""
+
+
+def strip_forbidden_model_input_keys(inputs: Dict[str, Any]) -> Dict[str, Any]:
+    """Strips all privileged, target, seed, and metadata keys, returning a sanitized copy.
+    
+    Verifies that the returned dictionary satisfies assert_no_privileged_keys_in_inputs.
+    """
+    sanitized: Dict[str, Any] = {}
+    for k, v in inputs.items():
+        lowered = str(k).lower()
+        if lowered in FORBIDDEN_MODEL_INPUT_KEYS:
+            continue
+        is_forbidden_token = False
+        for token in (
+            "mu_true",
+            "mass_kg",
+            "clearance",
+            "contact_mode",
+            "step_mu",
+            "step_object_mass",
+            "step_contact_stratum",
+            "privileged",
+        ):
+            if token in lowered:
+                is_forbidden_token = True
+                break
+        if not is_forbidden_token:
+            sanitized[k] = v
+            
+    assert_no_privileged_keys_in_inputs(sanitized)
+    return sanitized
+
+
+def compute_manifest_signature(manifest_bytes: bytes, secret_key: bytes) -> str:
+    """Generates deterministic HMAC-SHA256 signature string for a manifest byte sequence."""
+    import hmac
+    return hmac.new(secret_key, manifest_bytes, hashlib.sha256).hexdigest()
+
+
+def verify_signed_manifest_signature(
+    manifest_bytes: bytes,
+    signature_hex: str,
+    verification_key: bytes,
+) -> bool:
+    """Cryptographically verifies manifest signature against verification key in constant time."""
+    import hmac
+    try:
+        expected_sig = compute_manifest_signature(manifest_bytes, verification_key)
+        return hmac.compare_digest(expected_sig.lower(), signature_hex.lower())
+    except Exception as exc:
+        raise ManifestSignatureError(f"Signature verification failed due to cryptographic error: {exc}") from exc
+
+
+def verify_holdout_archive_digests(
+    manifest_data: Dict[str, Any],
+    archives_by_name: Dict[str, bytes],
+) -> None:
+    """Verifies that all archives in manifest match exact streaming SHA-256 digests."""
+    if not isinstance(manifest_data, dict) or "archives" not in manifest_data:
+        raise ContractViolationError("Manifest missing 'archives' digest table.")
+    
+    expected_archives = manifest_data["archives"]
+    if not isinstance(expected_archives, dict):
+        raise ContractViolationError("'archives' entry in manifest must be a dictionary.")
+
+    if len(expected_archives) != len(archives_by_name):
+        raise ContractViolationError(
+            f"Archive count mismatch: manifest expects {len(expected_archives)}, received {len(archives_by_name)}."
+        )
+
+    for name, expected_sha in expected_archives.items():
+        if name not in archives_by_name:
+            raise ContractViolationError(f"Expected archive '{name}' missing from provided archives.")
+        actual_sha = hashlib.sha256(archives_by_name[name]).hexdigest().lower()
+        if actual_sha != expected_sha.lower():
+            raise ContractViolationError(
+                f"Archive digest mismatch for '{name}': expected {expected_sha}, got {actual_sha}."
+            )
+
+
+def enforce_one_time_evaluation_lock(
+    consumed_ledger: Set[Tuple[str, str]],
+    checkpoint_sha: str,
+    manifest_sha: str,
+) -> None:
+    """Enforces the one-time evaluation rule, blocking repeated evaluation on the same holdout."""
+    pair = (str(checkpoint_sha).strip().lower(), str(manifest_sha).strip().lower())
+    if pair in consumed_ledger:
+        raise EvaluationAlreadyExecutedError(
+            f"Evaluation pair (checkpoint: {checkpoint_sha[:8]}..., manifest: {manifest_sha[:8]}...) "
+            "has already been evaluated. Repeated querying of a blind holdout is strictly prohibited."
+        )
+
+
+def verify_redacted_benchmark_output(output_report: Dict[str, Any]) -> None:
+    """Validates that a benchmark summary report contains only aggregate data and zero privileged leakage."""
+    if not isinstance(output_report, dict):
+        raise ContractViolationError("Benchmark output must be a dictionary.")
+
+    forbidden_output_tokens = (
+        "step_mu_true",
+        "step_mass_kg",
+        "raw_trajectories",
+        "per_episode_targets",
+        "seeds",
+        "episode_seeds",
+        "private_identifiers",
+    )
+    for k in output_report.keys():
+        for token in forbidden_output_tokens:
+            if token in str(k).lower():
+                raise ContractViolationError(
+                    f"Redacted benchmark output contains forbidden detailed ground truth token '{k}'."
+                )
+
+    if "per_episode_errors" in output_report:
+        raise ContractViolationError("Per-episode errors must not be exposed in public benchmark output.")
+

@@ -107,3 +107,17 @@ On 2026-11-25, Stage 3.6D closed the remaining quarantine integrity blocker:
 4. **Regression Verification:** Full suite P40–P48 (122 tests) passed with zero failures.
 5. **Governance Invariance:** Model training remains strictly locked (`TRAINING_PERMITTED = 0`, `EXECUTION_AUTHORIZED = 0`). Final holdout evaluation remains blocked.
 
+---
+
+### 5. Stage 3.7 Addendum: Independent Blind Evaluation Protocol Design
+
+On 2026-11-25, Stage 3.7 completed the formal protocol and implementation specification for the future private blind evaluation system (Deliverables 01–08 in `experiments/stage37_blind_evaluation/`):
+1. **Research & Benchmark Audit (`stage37_research_audit.md`):** Audited HCTT-256 architecture, 5 operational contact modes, unpadded vs masked evaluation, and frozen B1–B4 baselines.
+2. **Process-Isolated Evaluator Architecture (`stage37_blind_evaluation_protocol.md`):** Specified dual-process architecture separating the parent Evaluator (restricted access to encrypted private holdout) from the sandboxed child inference worker (zero filesystem/target access; standard stream IPC). Enforced strict key stripping and the one-time evaluation rule.
+3. **Holdout Generation Specification (`stage37_holdout_generation_spec.md`):** Designed future replacement holdout ($N = 240$ episodes across 8 balanced strata) with power-justified sample size ($1-\beta \ge 0.90$ at $\alpha=0.05$) and CSPRNG seed derivation excluding all historical/compromised seeds. Zero real seeds generated.
+4. **Security & Data Custody Architecture (`stage37_security_and_custody_model.md`):** Established three-role separation (Model Developer, Dataset Custodian, Blind Evaluator), permission matrix, solo-developer conflict-of-interest mitigations, air-gapped private storage root, and Ed25519 digital signature scheme.
+5. **Pre-Registered Statistical Analysis Plan (`stage37_statistical_analysis_plan.md`):** Defined episode as primary independent sampling unit, multi-horizon MSE, Macro-F1, SysID $R^2$, OOD AUROC, and stratified cluster bootstrap CIs ($B=10,000$). Flagged candidate thresholds (Macro-F1 0.80/0.85 and dynamic mass $R^2$) for human sign-off.
+6. **Operational Runbook & Gates (`stage37_evaluation_runbook.md`, `stage37_stage4_gate_matrix.md`):** Codified the 10-point pre-evaluation freeze checklist, step-by-step Stage 4 execution sequence, fail-closed aborts, and progression gates 4.1 through 4.10.
+7. **Acceptance & Governance Invariance (`stage37_acceptance_report.md`):** Confirmed `TRAINING_PERMITTED = 0`, `EXECUTION_AUTHORIZED = 0`, `NEW_HOLDOUT_GENERATION = NOT_AUTHORIZED`, `FINAL_HOLDOUT_EVALUATION = BLOCKED`. Full synthetic test suite P49 passed with 100% success.
+
+

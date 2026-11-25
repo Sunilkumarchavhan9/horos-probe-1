@@ -91,6 +91,17 @@
 - `tests/test_p48_stage36d_registry_integrity.py`: 20-test comprehensive suite covering fingerprint, single-byte tampering, substituted values, path redirection, atomic single-read verification, and governance locks.
 - `experiments/stage36_holdout_quarantine/stage36d_registry_integrity_report.md`: full technical report establishing registry authenticity and cryptographic anchoring.
 
+#### Newly Produced Stage 3.7 Artifacts
+- `experiments/stage37_blind_evaluation/stage37_research_audit.md`: comprehensive audit of HCTT-256 architecture, task interfaces, 5 operational modes, and frozen B1–B4 baselines.
+- `experiments/stage37_blind_evaluation/stage37_blind_evaluation_protocol.md`: air-gapped, process-isolated evaluation protocol with parent Evaluator and sandboxed child inference worker.
+- `experiments/stage37_blind_evaluation/stage37_holdout_generation_spec.md`: specification for future replacement holdout ($N = 240$ episodes across 8 balanced strata) with power analysis ($1-\beta \ge 0.90$) and CSPRNG seed derivation excluding all historical/compromised seeds.
+- `experiments/stage37_blind_evaluation/stage37_security_and_custody_model.md`: three-party role separation, permission matrix, solo-developer mitigations, air-gapped private storage, and Ed25519 signed manifest scheme.
+- `experiments/stage37_blind_evaluation/stage37_statistical_analysis_plan.md`: pre-registered SAP establishing the episode as primary unit, multi-horizon MSE, Macro-F1, SysID $R^2$, and stratified cluster bootstrap CIs ($B=10,000$).
+- `experiments/stage37_blind_evaluation/stage37_evaluation_runbook.md`: 10-point pre-evaluation freeze checklist, step-by-step Stage 4 execution sequence, fail-closed aborts, and memory purging.
+- `experiments/stage37_blind_evaluation/stage37_stage4_gate_matrix.md`: progression gate matrix (Gates 4.1 through 4.10) defining explicit prerequisites, mathematical targets, threshold dispositions, and human sign-off checkpoints.
+- `experiments/stage37_blind_evaluation/stage37_acceptance_report.md`: formal milestone acceptance audit report establishing completion, governance invariance, and public repository protection.
+- `tests/test_p49_stage37_evaluation_protocol.py`: synthetic protocol verification test suite (manifest validation, tampering rejection, key stripping, aggregate reporting, one-time lock, governance assertions).
+
 ---
 
 ### 3. Current Scientific Governance Status
@@ -101,7 +112,8 @@ The official system status is explicitly partitioned across four dimensions:
 STAGE_3_5_IMPLEMENTATION = COMPLETE
 STAGE_3_5_REGRESSION = HISTORICALLY_PASSED
 STAGE_3_5_HOLDOUT_INTEGRITY = COMPROMISED
-STAGE_3_6_QUARANTINE = COMPLETE_ONLY_AFTER_TESTED
+STAGE_3_6_QUARANTINE = COMPLETE_AND_VERIFIED
+STAGE_3_7_PROTOCOL_DESIGN = COMPLETE_AND_ACCEPTED
 NEW_PRIVATE_HOLDOUT = NOT_CREATED
 BLIND_FINAL_EVALUATION = BLOCKED
 STAGE_4_TRAINING = NOT_AUTHORIZED
@@ -109,4 +121,4 @@ STAGE_4_TRAINING = NOT_AUTHORIZED
 
 - **Pending Decision:** Formal authorization from the USER to initiate **HOROS Stage 4 — First Authorized HCTT-256 Training Experiment**.
 - **Prohibition in Effect:** STRICTLY NO student model training, parameter optimization, or gradient backpropagation shall occur prior to receiving this explicit command.
-- **Holdout Evaluation Gate:** Final scientific validation is BLOCKED until an independently generated, private holdout dataset is created under a separate authorized protocol outside public repositories.
+- **Holdout Evaluation Gate:** Final scientific validation is BLOCKED until an independently generated, private holdout dataset is created under the Stage 3.7 authorized protocol outside public repositories.

@@ -94,3 +94,16 @@ flowchart TD
   A new blind holdout dataset must be generated using an uncommitted seed pool, independent CSPRNG salt, and strictly private offline storage.
 - **Gate 4 (Scientific Validation):**  
   Evaluation must be executed strictly through `HCTTReadOnlyEvaluator.evaluate_final_holdout()`, comparing against locked spec thresholds (e.g., Multi-horizon MSE reduction $\ge 40\%$, Mode Macro-F1 $\ge 0.85$, SysID $R^2 \ge 0.60$).
+
+---
+
+### 4. Stage 3.6D Addendum: Quarantine Registry Integrity Anchoring
+
+On 2026-11-25, Stage 3.6D closed the remaining quarantine integrity blocker:
+1. **Authenticated Ground Truth:** All 120 archive digests, 120 privileged target digests, 120 sample IDs, and 120 seeds in `holdout_quarantine_record.json` were cross-verified against disk artifacts and the canonical manifest with 100% agreement.
+2. **Cryptographic Fingerprint Pinned:** The canonical registry byte sequence was hashed and pinned in source code:
+   `EXPECTED_QUARANTINE_REGISTRY_SHA256 = "f46319f0dcbf37ccb336807287ff7ea7cfae25f96150f0e747c32cd9d61a3f8c"`.
+3. **Atomic Fail-Closed Verification:** `read_and_verify_quarantine_registry()` reads registry bytes once, hashes prior to JSON parsing, validates complete schema invariants, and rejects path redirection.
+4. **Regression Verification:** Full suite P40–P48 (122 tests) passed with zero failures.
+5. **Governance Invariance:** Model training remains strictly locked (`TRAINING_PERMITTED = 0`, `EXECUTION_AUTHORIZED = 0`). Final holdout evaluation remains blocked.
+

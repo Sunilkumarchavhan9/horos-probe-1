@@ -176,9 +176,26 @@ class HoldoutIneligibleError(ContractViolationError):
     """Raised when an uncertified or ineligible holdout dataset is submitted for benchmark evaluation."""
 
 
+class QuarantineRegistryCorruptedError(ContractViolationError):
+    """Raised when quarantine registry digest, schema, path, or content fails atomic integrity verification."""
+
+
 COMPROMISED_HOLDOUT_ID: str = "stage35_final_holdout"
 COMPROMISED_HOLDOUT_STATUS: str = "COMPROMISED_PUBLIC_EXPOSURE"
 COMPROMISED_HOLDOUT_PROTOCOL: str = "HOROS-P1-R002-STAGE3.5-FINAL_HOLDOUT"
+
+# Cryptographically pinned SHA-256 fingerprint of the canonical quarantine registry.
+# Calculated over exact canonical bytes of experiments/stage36_holdout_quarantine/holdout_quarantine_record.json.
+# Trust assumption: Pinned in source code and guarded by repository version control.
+EXPECTED_QUARANTINE_REGISTRY_SHA256: str = "f46319f0dcbf37ccb336807287ff7ea7cfae25f96150f0e747c32cd9d61a3f8c"
+EXPECTED_QUARANTINE_EPISODE_COUNT: int = 120
+
+CANONICAL_QUARANTINE_REGISTRY_PATH: Path = (
+    Path(__file__).resolve().parent.parent.parent
+    / "experiments"
+    / "stage36_holdout_quarantine"
+    / "holdout_quarantine_record.json"
+)
 
 COMPROMISED_HOLDOUT_SEED_RANGES: Dict[str, Tuple[int, int]] = {
     "compliant_prelift_nominal": (3531000, 3531029),
@@ -205,6 +222,7 @@ _COMPROMISED_SEEDS_SET: FrozenSet[int] = frozenset(
 _COMPROMISED_SAMPLE_IDS_CACHE: Optional[FrozenSet[str]] = None
 _COMPROMISED_NPZ_SHA256_CACHE: Optional[FrozenSet[str]] = None
 _COMPROMISED_PRIV_SHA256_CACHE: Optional[FrozenSet[str]] = None
+_CACHED_QUARANTINE_RECORD: Optional[Dict[str, Any]] = None
 
 
 def compute_file_sha256(path: Path | str, chunk_size: int = 65536) -> str:
@@ -219,23 +237,190 @@ def compute_file_sha256(path: Path | str, chunk_size: int = 65536) -> str:
     return h.hexdigest()
 
 
-def _load_quarantine_record_data() -> Dict[str, Any]:
-    base_dir = Path(__file__).resolve().parent.parent.parent
-    qrec_path = base_dir / "experiments" / "stage36_holdout_quarantine" / "holdout_quarantine_record.json"
-    if not qrec_path.is_file():
-        raise ContractViolationError(f"Mandatory quarantine record missing: {qrec_path}")
+def validate_quarantine_registry_schema(data: Any) -> None:
+    """Validates the complete quarantine registry schema, exact counts, formats, and non-duplication."""
+    if not isinstance(data, dict):
+        raise QuarantineRegistryCorruptedError("Quarantine registry root must be a JSON object")
+
+    required_root_keys = {
+        "quarantine_id",
+        "status",
+        "timestamp",
+        "holdout_id",
+        "protocol",
+        "exposure_incident",
+        "affected_episodes",
+        "eligibility_flags",
+        "historical_validation_state",
+        "quarantine_enforcement",
+        "remediation_requirements",
+    }
+    missing_root = required_root_keys - set(data.keys())
+    if missing_root:
+        raise QuarantineRegistryCorruptedError(
+            f"Quarantine registry missing required root keys: {sorted(missing_root)}"
+        )
+
+    if data.get("status") != COMPROMISED_HOLDOUT_STATUS:
+        raise QuarantineRegistryCorruptedError(
+            f"Quarantine registry status mismatch: '{data.get('status')}' != '{COMPROMISED_HOLDOUT_STATUS}'"
+        )
+    if data.get("holdout_id") != COMPROMISED_HOLDOUT_ID:
+        raise QuarantineRegistryCorruptedError(
+            f"Quarantine registry holdout_id mismatch: '{data.get('holdout_id')}' != '{COMPROMISED_HOLDOUT_ID}'"
+        )
+    if data.get("protocol") != COMPROMISED_HOLDOUT_PROTOCOL:
+        raise QuarantineRegistryCorruptedError(
+            f"Quarantine registry protocol mismatch: '{data.get('protocol')}' != '{COMPROMISED_HOLDOUT_PROTOCOL}'"
+        )
+
+    affected = data.get("affected_episodes")
+    if not isinstance(affected, dict):
+        raise QuarantineRegistryCorruptedError("affected_episodes must be a JSON object")
+
+    required_affected_keys = {
+        "total_count",
+        "compliant_prelift_count",
+        "peg_in_hole_count",
+        "horizon_distribution",
+        "seed_ranges",
+        "sample_ids",
+        "canonical_episode_ids",
+        "npz_sha256_digests",
+        "privileged_json_sha256_digests",
+    }
+    missing_affected = required_affected_keys - set(affected.keys())
+    if missing_affected:
+        raise QuarantineRegistryCorruptedError(
+            f"affected_episodes missing required keys: {sorted(missing_affected)}"
+        )
+
+    if affected.get("total_count") != EXPECTED_QUARANTINE_EPISODE_COUNT:
+        raise QuarantineRegistryCorruptedError(
+            f"affected_episodes.total_count mismatch: {affected.get('total_count')} != {EXPECTED_QUARANTINE_EPISODE_COUNT}"
+        )
+    if affected.get("compliant_prelift_count") != 60:
+        raise QuarantineRegistryCorruptedError("compliant_prelift_count must be 60")
+    if affected.get("peg_in_hole_count") != 60:
+        raise QuarantineRegistryCorruptedError("peg_in_hole_count must be 60")
+
+    def _validate_string_list(field: str, expected_len: int, check_hex: bool = False) -> None:
+        val = affected.get(field)
+        if not isinstance(val, list):
+            raise QuarantineRegistryCorruptedError(f"{field} must be a JSON list")
+        if len(val) != expected_len:
+            raise QuarantineRegistryCorruptedError(
+                f"{field} count mismatch: {len(val)} != {expected_len}"
+            )
+        if len(set(val)) != len(val):
+            raise QuarantineRegistryCorruptedError(f"{field} contains duplicate entries")
+        for item in val:
+            if not isinstance(item, str) or not item.strip():
+                raise QuarantineRegistryCorruptedError(f"{field} contains invalid non-string or empty item")
+            if check_hex:
+                if len(item) != 64 or not all(c in "0123456789abcdef" for c in item):
+                    raise QuarantineRegistryCorruptedError(
+                        f"{field} contains malformed SHA-256 digest: '{item}'"
+                    )
+
+    _validate_string_list("npz_sha256_digests", EXPECTED_QUARANTINE_EPISODE_COUNT, check_hex=True)
+    _validate_string_list("privileged_json_sha256_digests", EXPECTED_QUARANTINE_EPISODE_COUNT, check_hex=True)
+    _validate_string_list("sample_ids", EXPECTED_QUARANTINE_EPISODE_COUNT, check_hex=True)
+    _validate_string_list("canonical_episode_ids", EXPECTED_QUARANTINE_EPISODE_COUNT, check_hex=False)
+
+    ranges = affected.get("seed_ranges")
+    if not isinstance(ranges, dict):
+        raise QuarantineRegistryCorruptedError("seed_ranges must be a JSON object")
+    for r_name, r_bounds in ranges.items():
+        if not isinstance(r_bounds, (list, tuple)) or len(r_bounds) != 2:
+            raise QuarantineRegistryCorruptedError(f"seed_range '{r_name}' must be a 2-element sequence")
+        start, end = r_bounds
+        if not isinstance(start, int) or not isinstance(end, int) or start > end:
+            raise QuarantineRegistryCorruptedError(f"seed_range '{r_name}' has invalid bounds: {r_bounds}")
+
+
+def read_and_verify_quarantine_registry(
+    registry_path: Optional[Path | str] = None,
+) -> Dict[str, Any]:
+    """Atomic fail-closed reading, hashing, verification, and schema validation of quarantine registry.
+    Reads file bytes exactly ONCE and parses those exact verified bytes.
+    Prevents TOCTOU vulnerabilities and rejects path redirection.
+    The expected SHA-256 fingerprint is strictly pinned to EXPECTED_QUARANTINE_REGISTRY_SHA256
+    and cannot be overridden by callers, parameters, or environment variables.
+    """
+    canonical_path = CANONICAL_QUARANTINE_REGISTRY_PATH.resolve()
+    if registry_path is not None:
+        resolved_path = Path(registry_path).resolve()
+        if resolved_path != canonical_path:
+            raise QuarantineRegistryCorruptedError(
+                f"Quarantine registry path redirection rejected: '{registry_path}' != canonical '{canonical_path}'"
+            )
+        target_path = resolved_path
+    else:
+        target_path = canonical_path
+
+    if not target_path.is_file():
+        raise QuarantineRegistryCorruptedError(f"Mandatory quarantine record missing: {target_path}")
+
+    # 1. Read bytes exactly once
     try:
-        return json.loads(qrec_path.read_text(encoding="utf-8"))
+        raw_bytes = target_path.read_bytes()
     except Exception as exc:
-        raise ContractViolationError(f"Mandatory quarantine record malformed JSON: {qrec_path} ({exc})") from exc
+        raise QuarantineRegistryCorruptedError(
+            f"Unreadable quarantine registry at '{target_path}': {exc}"
+        ) from exc
+
+    # 2. Hash exact bytes and verify against pinned constant BEFORE json parsing
+    actual_sha256 = hashlib.sha256(raw_bytes).hexdigest()
+    if actual_sha256 != EXPECTED_QUARANTINE_REGISTRY_SHA256:
+        raise QuarantineRegistryCorruptedError(
+            f"Quarantine registry SHA-256 mismatch: calculated {actual_sha256} != expected {EXPECTED_QUARANTINE_REGISTRY_SHA256}. "
+            "Registry integrity compromised; parsing rejected."
+        )
+
+    # 3. Parse the verified byte sequence (atomic, TOCTOU-free)
+    try:
+        parsed = json.loads(raw_bytes.decode("utf-8"))
+    except Exception as exc:
+        raise QuarantineRegistryCorruptedError(
+            f"Quarantine registry contains invalid JSON: {exc}"
+        ) from exc
+
+    # 4. Strict schema validation
+    validate_quarantine_registry_schema(parsed)
+
+    return parsed
+
+
+def _load_quarantine_record_data(registry_path: Optional[Path | str] = None) -> Dict[str, Any]:
+    """Internal loader enforcing atomic verification with in-memory caching."""
+    global _CACHED_QUARANTINE_RECORD
+    if registry_path is None and _CACHED_QUARANTINE_RECORD is not None:
+        return _CACHED_QUARANTINE_RECORD
+    record = read_and_verify_quarantine_registry(registry_path=registry_path)
+    if registry_path is None:
+        _CACHED_QUARANTINE_RECORD = record
+    return record
+
+
+def load_quarantine_record(registry_path: Optional[Path | str] = None) -> Dict[str, Any]:
+    """Public entrypoint to load and verify the quarantine registry record."""
+    return _load_quarantine_record_data(registry_path=registry_path)
+
+
+def verify_quarantine_registry_integrity() -> str:
+    """Verifies quarantine registry integrity and returns the verified SHA-256 fingerprint."""
+    _load_quarantine_record_data()
+    return EXPECTED_QUARANTINE_REGISTRY_SHA256
 
 
 def reset_quarantine_caches() -> None:
     """Resets the in-memory quarantine digest caches (for testing and verification)."""
-    global _COMPROMISED_SAMPLE_IDS_CACHE, _COMPROMISED_NPZ_SHA256_CACHE, _COMPROMISED_PRIV_SHA256_CACHE
+    global _COMPROMISED_SAMPLE_IDS_CACHE, _COMPROMISED_NPZ_SHA256_CACHE, _COMPROMISED_PRIV_SHA256_CACHE, _CACHED_QUARANTINE_RECORD
     _COMPROMISED_SAMPLE_IDS_CACHE = None
     _COMPROMISED_NPZ_SHA256_CACHE = None
     _COMPROMISED_PRIV_SHA256_CACHE = None
+    _CACHED_QUARANTINE_RECORD = None
 
 
 def get_compromised_sample_ids() -> FrozenSet[str]:
@@ -248,9 +433,9 @@ def get_compromised_sample_ids() -> FrozenSet[str]:
 
     qrec = _load_quarantine_record_data()
     ids = set(qrec.get("affected_episodes", {}).get("sample_ids", []))
-    if len(ids) != 120:
+    if len(ids) != EXPECTED_QUARANTINE_EPISODE_COUNT:
         raise ContractViolationError(
-            f"Mandatory quarantine record has invalid sample_ids count ({len(ids)} != 120)"
+            f"Mandatory quarantine record has invalid sample_ids count ({len(ids)} != {EXPECTED_QUARANTINE_EPISODE_COUNT})"
         )
     _COMPROMISED_SAMPLE_IDS_CACHE = frozenset(ids)
     return _COMPROMISED_SAMPLE_IDS_CACHE
@@ -266,9 +451,9 @@ def get_compromised_npz_sha256() -> FrozenSet[str]:
 
     qrec = _load_quarantine_record_data()
     shas = set(qrec.get("affected_episodes", {}).get("npz_sha256_digests", []))
-    if len(shas) != 120:
+    if len(shas) != EXPECTED_QUARANTINE_EPISODE_COUNT:
         raise ContractViolationError(
-            f"Mandatory quarantine record has invalid npz_sha256_digests count ({len(shas)} != 120)"
+            f"Mandatory quarantine record has invalid npz_sha256_digests count ({len(shas)} != {EXPECTED_QUARANTINE_EPISODE_COUNT})"
         )
     _COMPROMISED_NPZ_SHA256_CACHE = frozenset(shas)
     return _COMPROMISED_NPZ_SHA256_CACHE
@@ -284,9 +469,9 @@ def get_compromised_privileged_sha256() -> FrozenSet[str]:
 
     qrec = _load_quarantine_record_data()
     shas = set(qrec.get("affected_episodes", {}).get("privileged_json_sha256_digests", []))
-    if len(shas) != 120:
+    if len(shas) != EXPECTED_QUARANTINE_EPISODE_COUNT:
         raise ContractViolationError(
-            f"Mandatory quarantine record has invalid privileged_json_sha256_digests count ({len(shas)} != 120)"
+            f"Mandatory quarantine record has invalid privileged_json_sha256_digests count ({len(shas)} != {EXPECTED_QUARANTINE_EPISODE_COUNT})"
         )
     _COMPROMISED_PRIV_SHA256_CACHE = frozenset(shas)
     return _COMPROMISED_PRIV_SHA256_CACHE

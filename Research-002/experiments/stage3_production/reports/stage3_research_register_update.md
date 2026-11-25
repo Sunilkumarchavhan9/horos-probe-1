@@ -28,6 +28,8 @@
 | **Stage 3.6 Holdout Quarantine** | **COMPLETE (VERIFIED)** | `experiments/stage36_holdout_quarantine/`, `tests/test_p45_stage36_holdout_quarantine.py` | Formally quarantined `stage35_final_holdout` under status `COMPROMISED_PUBLIC_EXPOSURE`; implemented fail-closed code guards in 7 core modules; authored 13/13 passing security tests (`test_p45`); locked final evaluation until private holdout generation; preserved all train/val/calib splits intact. |
 | **Stage 3.6A Quarantine Hardening** | **CERTIFIED (92/92 PASS)** | `src/world_model_vnext/`, `tests/test_p46_stage36a_quarantine_hardening.py` | Hardened quarantine against renamed/relocated archives with streaming SHA-256 pre-deserialization checks; constructor fail-closed on compromised roots; hardened split and credential verifications; 16/16 adversarial tests passed (total 92/92 regression suite). |
 | **Stage 3.6B Fail-Closed Correction** | **ACCEPTED (102/102 PASS)** | `scripts/stage3_production_adapter.py`, `tests/test_p47_stage36b_fail_closed_quarantine.py` | Eliminated fail-open import in production dataloader; mandatory verifier import and registry checks fail closed with `SecurityViolationError`; `np.load()` never called on rejected archives; 10/10 security tests passed (total 102/102 regression suite). |
+| **Stage 3.6C Final Evidence Audit** | **CONDITIONALLY ACCEPTED** | Audit Report `STAGE_3_6C` | Full independent read-only audit; reconciled partition counts (348/350 train, 76/50 val/calib); verified immutable manifests; flagged unanchored registry JSON on disk as blocker. |
+| **Stage 3.6D Registry Anchoring** | **ACCEPTED (122/122 PASS)** | `experiments/stage36_holdout_quarantine/stage36d_registry_integrity_report.md`, `tests/test_p48_stage36d_registry_integrity.py` | Authenticated 120 archives/targets against disk/manifest; pinned canonical SHA-256 (`f46319f0...`) in `contracts.py`; atomic single-read, TOCTOU-free schema and hash verification; 20/20 new tests passed (122/122 full regression suite). |
 | **Stage 4 Student Model Training** | **LOCKED (`0` STEPS)** | `src/world_model_vnext/runner.py` | `training_permitted = 0`, `execution_authorized = 0`, `gradient_steps = 0`, `optimizer_updates = 0`; awaiting explicit authorization for HOROS Stage 4 — First Authorized HCTT-256 Training Experiment. |
 
 ---
@@ -83,6 +85,11 @@
 - `tests/test_p47_stage36b_fail_closed_quarantine.py`: 10-test fail-closed quarantine and security exception verification suite.
 - Fail-closed archive loading in `scripts/stage3_production_adapter.py`: eliminated `ImportError` bypass, enforced mandatory verifier import, and wrapped all verification errors in `SecurityViolationError` before `np.load()`.
 - Fail-closed quarantine registry loading in `src/world_model_vnext/contracts.py`: `_load_quarantine_record_data`, `get_compromised_sample_ids`, `get_compromised_npz_sha256`, and `get_compromised_privileged_sha256` strictly raise `ContractViolationError` on missing or malformed registries (< 120 items).
+
+#### Newly Produced Stage 3.6D Artifacts
+- `src/world_model_vnext/contracts.py`: pinned `EXPECTED_QUARANTINE_REGISTRY_SHA256 = "f46319f0dcbf37ccb336807287ff7ea7cfae25f96150f0e747c32cd9d61a3f8c"`; implemented `read_and_verify_quarantine_registry()`, `validate_quarantine_registry_schema()`, and `QuarantineRegistryCorruptedError`.
+- `tests/test_p48_stage36d_registry_integrity.py`: 20-test comprehensive suite covering fingerprint, single-byte tampering, substituted values, path redirection, atomic single-read verification, and governance locks.
+- `experiments/stage36_holdout_quarantine/stage36d_registry_integrity_report.md`: full technical report establishing registry authenticity and cryptographic anchoring.
 
 ---
 

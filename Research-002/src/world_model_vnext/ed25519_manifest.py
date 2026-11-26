@@ -15,6 +15,7 @@ import datetime
 import hashlib
 import hmac
 import json
+import os
 from typing import Any, Dict, FrozenSet, Optional, Tuple, Union
 
 try:
@@ -37,11 +38,24 @@ REVOKED_ED25519_KEY_IDS: FrozenSet[str] = frozenset({
 })
 
 # Independent Trusted Evaluation Key Registry (mapping key_id -> trusted public key hex / bytes)
+# In production, keys are independently provisioned and immutable.
+# Production keys remain NOT_GENERATED under research governance restrictions.
+_PRODUCTION_TRUSTED_KEYS: Dict[str, Union[str, bytes]] = {}
 _TRUSTED_EVALUATION_PUBLIC_KEYS: Dict[str, Union[str, bytes]] = {}
 
 
-def register_trusted_evaluation_key(key_id: str, public_key: Union[str, bytes, Any]) -> None:
-    """Registers an independently pinned trusted evaluation public key."""
+def _assert_trust_registry_mutable() -> None:
+    """Fails closed if trust registry mutation is attempted in production mode."""
+    if os.environ.get("HOROS_ENVIRONMENT", "").lower() == "production" or os.environ.get("HOROS_PRODUCTION_MODE", "0") == "1":
+        raise ContractViolationError(
+            "Trust registry mutation is strictly prohibited in production mode. "
+            "Production evaluation requires independently provisioned, immutable trust roots."
+        )
+
+
+def _test_register_evaluation_key(key_id: str, public_key: Union[str, bytes, Any]) -> None:
+    """Internal test-only fixture to register an ephemeral synthetic public key."""
+    _assert_trust_registry_mutable()
     if not isinstance(key_id, str) or not key_id.strip():
         raise ContractViolationError("Key ID must be a non-empty string.")
     
@@ -58,24 +72,43 @@ def register_trusted_evaluation_key(key_id: str, public_key: Union[str, bytes, A
         raise ContractViolationError(f"Unsupported public key type: {type(public_key)}")
 
 
-def unregister_trusted_evaluation_key(key_id: str) -> None:
-    """Unregisters a key from the trusted evaluation registry."""
+def _test_unregister_evaluation_key(key_id: str) -> None:
+    """Internal test-only fixture to remove an ephemeral test key."""
+    _assert_trust_registry_mutable()
     _TRUSTED_EVALUATION_PUBLIC_KEYS.pop(key_id, None)
 
 
-def reset_trusted_evaluation_keys() -> None:
-    """Clears all ephemeral registered evaluation keys."""
+def _test_reset_evaluation_keys() -> None:
+    """Internal test-only fixture to clear ephemeral registered test evaluation keys."""
+    _assert_trust_registry_mutable()
     _TRUSTED_EVALUATION_PUBLIC_KEYS.clear()
+
+
+# Non-exported aliases for historical test compatibility; strictly test fixtures only
+register_trusted_evaluation_key = _test_register_evaluation_key
+unregister_trusted_evaluation_key = _test_unregister_evaluation_key
+reset_trusted_evaluation_keys = _test_reset_evaluation_keys
 
 
 def get_trusted_evaluation_public_key(key_id: str) -> Union[str, bytes]:
     """Retrieves the independently pinned public key for key_id, failing closed if untrusted/unknown."""
-    if key_id not in _TRUSTED_EVALUATION_PUBLIC_KEYS:
-        raise ManifestSignatureError(
-            f"Signing key '{key_id}' is not in the trusted evaluation key registry. "
-            "Evaluator cannot accept untrusted, unregistered, or caller-supplied keys."
-        )
-    return _TRUSTED_EVALUATION_PUBLIC_KEYS[key_id]
+    if os.environ.get("HOROS_ENVIRONMENT", "").lower() == "production" or os.environ.get("HOROS_PRODUCTION_MODE", "0") == "1":
+        if key_id not in _PRODUCTION_TRUSTED_KEYS:
+            raise ManifestSignatureError(
+                f"Signing key '{key_id}' is not in the production trusted evaluation key registry. "
+                "Production evaluation rejects unpinned, caller-supplied, or untrusted keys."
+            )
+        return _PRODUCTION_TRUSTED_KEYS[key_id]
+
+    if key_id in _PRODUCTION_TRUSTED_KEYS:
+        return _PRODUCTION_TRUSTED_KEYS[key_id]
+    if key_id in _TRUSTED_EVALUATION_PUBLIC_KEYS:
+        return _TRUSTED_EVALUATION_PUBLIC_KEYS[key_id]
+
+    raise ManifestSignatureError(
+        f"Signing key '{key_id}' is not in the trusted evaluation key registry. "
+        "Evaluator cannot accept untrusted, unregistered, or caller-supplied keys."
+    )
 
 
 def verify_signed_evaluation_manifest(

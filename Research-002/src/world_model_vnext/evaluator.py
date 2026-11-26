@@ -261,6 +261,34 @@ class HCTTReadOnlyEvaluator:
                 "Production blind evaluation requires OS-isolated inference worker."
             )
 
+        # Stage 3.7C.1: Mandatory Checkpoint Availability & SHA-256 Digest Verification BEFORE Release Reservation
+        if checkpoint_path is None or (isinstance(checkpoint_path, str) and not checkpoint_path.strip()):
+            raise ContractViolationError(
+                "Mandatory 'checkpoint_path' is missing or empty. "
+                "Blind holdout evaluation requires a verified candidate model checkpoint."
+            )
+        if not isinstance(checkpoint_sha256, str) or len(checkpoint_sha256.strip()) != 64:
+            raise ContractViolationError(
+                f"Mandatory 'checkpoint_sha256' is invalid: '{checkpoint_sha256}'. "
+                "Must be a 64-character SHA-256 hex digest."
+            )
+
+        ckpt_file = Path(checkpoint_path).resolve()
+        if not ckpt_file.exists() or not ckpt_file.is_file():
+            raise ContractViolationError(
+                f"Mandatory candidate checkpoint file missing or inaccessible at '{ckpt_file}'. "
+                "Verification failed before reserving release."
+            )
+
+        ckpt_bytes = ckpt_file.read_bytes()
+        actual_sha256 = hashlib.sha256(ckpt_bytes).hexdigest()
+        if actual_sha256.lower() != checkpoint_sha256.strip().lower():
+            raise ContractViolationError(
+                f"Candidate checkpoint SHA-256 mismatch for '{ckpt_file}'! "
+                f"Expected: {checkpoint_sha256.strip().lower()}, Actual: {actual_sha256.lower()}. "
+                "Holdout release reservation aborted."
+            )
+
         # Gate 1: Signed Evaluation Manifest & Independent Key Verification
         manifest_payload = verify_signed_evaluation_manifest(
             signed_envelope=signed_manifest_envelope,
@@ -280,10 +308,10 @@ class HCTTReadOnlyEvaluator:
                 f"Evaluation is permanently blocked under status '{COMPROMISED_HOLDOUT_STATUS}'."
             )
 
-        # Gate 3: Durable One-Time Reservation
+        # Gate 3: Durable One-Time Reservation (records exact verified checkpoint SHA-256)
         ledger.reserve_release(
             holdout_release_id=release_id,
-            checkpoint_sha256=checkpoint_sha256,
+            checkpoint_sha256=actual_sha256,
         )
 
         # Gate 4: Private Data Access Authorization
@@ -321,10 +349,10 @@ class HCTTReadOnlyEvaluator:
             all_ood_labels: List[np.ndarray] = []
             all_finite = True
 
-            # Production blind evaluation always uses the isolated worker
+            # Production blind evaluation always uses the isolated worker with verified checkpoint
             worker = IsolatedInferenceWorker(
-                checkpoint_path=checkpoint_path,
-                expected_checkpoint_sha256=checkpoint_sha256 if checkpoint_path else None,
+                checkpoint_path=ckpt_file,
+                expected_checkpoint_sha256=actual_sha256,
             )
 
             batches = dataset.iter_homogeneous_batches(batch_size=batch_size, shuffle=False)

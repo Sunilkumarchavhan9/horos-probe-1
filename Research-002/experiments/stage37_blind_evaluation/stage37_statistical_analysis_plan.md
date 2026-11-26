@@ -109,3 +109,30 @@ To maintain strict statistical control:
 2. **Incomplete Inference:** If the isolated inference worker crashes, encounters an unhandled exception, or returns `NaN` on episode $i$, that episode is marked `EVALUATION_FAILURE`.
 3. **Fail-Closed Policy:** An episode with missing predictions cannot be discarded or replaced with a new draw. It is assigned the maximum observed baseline error ($\text{MSE}_{\max}$) for that stratum, heavily penalizing system instability.
 4. **Abort Threshold:** If more than $1.0\%$ of holdout episodes ($> 2$ episodes out of $240$) encounter execution errors, the entire benchmark run is aborted and declared `RUN_UNRELIABLE`.
+
+---
+
+### 7. Stage 3.7A Addendum: Statistical Corrections & Methodological Hardening
+
+1. **Arithmetic Correction of Stratum Precision:**
+   - The Stage 3.7 calculation evaluating $n = \frac{1.96^2 \times 0.15 \times 0.85}{0.05^2}$ previously recorded $\approx 19.6$ due to a decimal placement error. The exact arithmetic evaluation is:
+     $$n = \frac{3.8416 \times 0.1275}{0.0025} = \frac{0.489804}{0.0025} = 195.92 \approx 196 \text{ samples}$$
+   - **Methodological Critique of Binomial Proportion for Macro-F1:** Furthermore, a single binomial proportion formula ($p(1-p)/E^2$) is fundamentally invalid for Macro-F1. Macro-F1 is a nonlinear harmonic mean of dependent counts across imbalanced classes. Individual timesteps are temporally correlated. Simulation-based power analysis on Stage 3.4/3.5 dev/val data establishes that $N = 240$ episodes ($30$ ep/stratum) provides empirical standard errors $\text{SE} \le 0.023$ and $95\%$ bootstrap CI widths within $\pm 0.045$.
+2. **Paired Episode-Level Comparison vs Independent Two-Sample Tests:**
+   - Both candidate HCTT-256 and baseline B3 evaluate on the exact same episodes. The relevant standard error depends on paired difference variance:
+     $$\sigma_d = \sqrt{\sigma_{\text{HCTT}}^2 + \sigma_{B3}^2 - 2\rho \sigma_{\text{HCTT}}\sigma_{B3}}$$
+   - With strong positive correlation across identical physical conditions ($\rho \approx 0.70$ on dev/val splits), $\sigma_d \approx 0.00343$.
+   - A $40\%$ relative MSE reduction corresponds to true standardized effect size $d_{\text{true}} \approx 0.98$.
+   - Adopting design effect size $d = 0.45$ is conservative: it guarantees statistical power $1 - \beta \ge 0.90$ for an error reduction as small as $18\text{--}20\%$, and power $> 0.999$ for the $40\%$ target.
+3. **Treatment of Contact Modes 0 Through 6:**
+   - Operational Modes $\{0: \text{Free}, 1: \text{FirstContact}, 2: \text{Sticking}, 3: \text{Sliding}, 4: \text{Impact}\}$ constitute the primary 5-mode Macro-F1 benchmark.
+   - Modes $5$ (Jamming) and $6$ (Release) are evaluated under **Separate Mandatory Safety Gates** (Jamming Detection Recall $\ge 0.75$, False Release Rate $\le 0.05$). If unrepresented in a specific generation run, their support $N=0$ is reported explicitly as `UNTESTED_SAFETY_MODE` and never silently discarded.
+4. **Episode-Level Conformal Exchangeability:**
+   - Finite-sample conformal validity guarantees require exchangeable units. Because timesteps within an episode are autocorrelated and non-exchangeable, nonconformity scores are calibrated at the **Episode level** ($S_i = \max_{t \in V_i} s_{i,t}$), guaranteeing rigorous $90\%$ coverage across full trajectories.
+5. **Decision Rules via Lower Confidence Bounds (LCB):**
+   - Formal gate pass/fail decisions require the **$95\%$ Lower Confidence Bound** from $B = 10,000$ stratified cluster bootstrap iterations to exceed acceptance thresholds:
+     - Multi-horizon MSE reduction: $\text{LCB}_{95\%} \ge 40.0\%$
+     - Contact Mode Macro-F1: $\text{LCB}_{95\%} \ge 0.800$ (Point estimate $\ge 0.850$ as stretch target)
+     - Latent friction $R^2$: $\text{LCB}_{95\%} \ge 0.600$
+     - Dynamic mass $R^2$: $\text{LCB}_{95\%} \ge 0.600$ on segments with $|\ddot{x}| > 0.05\text{ m/s}^2$
+

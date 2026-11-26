@@ -60,3 +60,21 @@ flowchart TD
 | **Latent Mass $R^2$** | $\ge 0.600$ | Mass is physically unobservable during stationary dwells ($\ddot{x} \approx 0$). Recommending segment conditioning ($|\ddot{x}| > 0.05\text{ m/s}^2$). | **FLAGGED** | **Requires human approval** to apply acceleration conditioning to mass $R^2$. |
 | **OOD AUROC** | $\ge 0.850$ | Large predictive residuals on friction collapse make this highly achievable. | **CONFIRMED** | Locked in evaluation runner. |
 | **Conformal Coverage** | $\ge 90.0\%$ | Theoretically guaranteed under exchangeability on calibration split. | **CONFIRMED** | Locked in evaluation runner. |
+
+---
+
+### 4. Stage 3.7A Addendum: Hardened Gate Decision Rules & Safety Mode Separation
+
+1. **Lower Confidence Bound (LCB) Pass Criteria:**
+   - Formal gate passage is evaluated on the **$95\%$ Lower Confidence Bound** computed via $B = 10,000$ stratified cluster bootstrap resamples at the episode level.
+   - Point estimates alone are insufficient to pass gates: $\text{LCB}_{95\%}(\text{MSE Reduction}) \ge 40.0\%$, $\text{LCB}_{95\%}(\text{Macro-F1}) \ge 0.800$.
+2. **Gate 4.7A (Jamming & Release Safety Gates):**
+   - Contact Mode 5 (Jamming) and Mode 6 (Release) are separated from the primary 5-mode Macro-F1 metric.
+   - If present in the evaluated holdout strata:
+     - Jamming Detection Recall: $\ge 0.750$.
+     - False Release Rate: $\le 0.050$.
+   - If absent ($N=0$): reported transparently as `UNTESTED_SAFETY_MODE`.
+3. **Hardened Gate 4.5 (Cryptographic Release Authentication):**
+   - Private holdout manifest must be verified via asymmetric **Ed25519** digital signature against pinned public key.
+   - Release reservation must be logged atomically in `DurableHoldoutLock` before private data decryption begins.
+

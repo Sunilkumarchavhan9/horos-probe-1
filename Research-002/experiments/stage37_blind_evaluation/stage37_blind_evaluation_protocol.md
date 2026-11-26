@@ -145,3 +145,24 @@ stateDiagram-v2
 ```
 
 Any exception during execution triggers immediate process termination, deletion of decrypted in-memory artifacts, and issuance of an unredacted incident log for security review.
+
+---
+
+### 6. Stage 3.7A Addendum: Hardened Release Locking & Windows Process Isolation
+
+Following the Stage 3.7A technical audit, the evaluation protocol incorporates the following enforced security controls:
+
+1. **Durable Holdout Release Lock (`DurableHoldoutLock`):**
+   - The lock is keyed on the **Holdout Release ID** (`holdout_release_id` or `manifest_sha256`), not on candidate model hashes.
+   - A holdout release may be reserved and evaluated **exactly once**. Subsequent requests using a different checkpoint or after a process restart are strictly rejected with `HoldoutReleaseAlreadyConsumedError`.
+   - **Burn-on-Access Rule:** As soon as private data decryption begins, the release transitions to `DATA_ACCESSED`. A worker crash or unhandled exception permanently consumes/burns the release, preventing silent retries.
+   - Atomic concurrency locking is enforced via OS-level file creation locks (`os.O_CREAT | os.O_EXCL`).
+2. **Strict IPC Allowlist Schema (`validate_inference_ipc_payload`):**
+   - Payload dictionary permits ONLY four keys: `{"states", "actions", "wrenches", "task"}`. Unknown keys are rejected with `ContractViolationError`.
+   - Deep recursive traversal inspects nested structures, immediately blocking any forbidden keys or substrings (`mu_true`, `mass_kg`, `contact_mode`, `clearance`, `seed`, `episode_id`, `step_contact_stratum`, `privileged`).
+   - Tensor ranks, task-specific channel dimensions, and finite numerical values ($\text{NaN} = 0, \text{Inf} = 0$) are strictly validated before IPC dispatch.
+3. **Windows Security Isolation Boundary:**
+   - Worker subprocess runs under a restricted security token or Windows AppContainer with the local Administrator SID disabled.
+   - The private holdout vault (`C:\projects\horos_private_vault\`) is secured with explicit Windows ACL denial rules denying access to the worker SID.
+   - Windows Defender Firewall rules block outbound network connections from the worker binary. Communication occurs exclusively over restricted local named pipes (`\\.\pipe\horos_eval_*`).
+

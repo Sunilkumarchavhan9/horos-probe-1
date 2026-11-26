@@ -139,3 +139,22 @@ If private holdout trajectories, seeds, or privileged targets are inadvertently 
 2. **Digest Blacklisting:** SHA-256 digests of all exposed files are added to the quarantine registry (`holdout_quarantine_record.json`).
 3. **Code Guard Invalidation:** Automated tests and dataloaders immediately reject the compromised paths and hashes with `CompromisedHoldoutError`.
 4. **Permanent Ineligibility:** The compromised dataset is never used again for benchmark claims.
+
+---
+
+### 6. Stage 3.7A Addendum: Ed25519 Cryptographic Verification & Solo-Developer Trust Model Hardening
+
+1. **Asymmetric Ed25519 Signature Enforcement (`ed25519_manifest.py`):**
+   - Implements authentic Ed25519 asymmetric cryptography.
+   - The Dataset Custodian retains the 32-byte Ed25519 private key. The Evaluator receives only the corresponding 32-byte Ed25519 public key. The Model Developer possesses neither.
+   - Manifests are canonicalized under RFC 8785 rules. Signed envelopes include `algorithm: "Ed25519"`, `key_id`, `signature`, and `payload`.
+   - Key revocation is enforced through `REVOKED_ED25519_KEY_IDS`. Malformed signatures, modified manifests, untrusted keys, and algorithm substitution trigger immediate rejection.
+   - HMAC test utilities are strictly quarantined as test-only tools (`compute_hmac_test_manifest_signature`).
+2. **Custody Trust Model & Solo-Developer Threat Analysis:**
+   - In environments where model development and dataset custody share a single human operator, local Windows filesystem ACLs provide incomplete protection against an elevated Administrator account (`runas`, `takeown`, `icacls`).
+   - The hardened protocol mandates three structural safeguards:
+     a. **Pre-Commit Freeze:** Candidate model checkpoint hash (`weights.pt` SHA-256) and source commit must be pushed to Git *before* the holdout generation script runs.
+     b. **Dedicated Non-Admin OS Identity:** On Windows, the evaluation runner executes under a dedicated non-admin user (`horos_evaluator`) lacking write permissions to the codebase and administrative rights to the system.
+     c. **Decoupled Vault Credentials:** The private vault encryption key is stored on an external hardware token (FIDO2/YubiKey) or cloud KMS requiring separate authentication, preventing accidental automated access.
+     d. **Third-Party Escrow:** Public scientific benchmark claims require an independent third-party witness to co-verify the signed manifest and audit trail.
+

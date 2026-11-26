@@ -143,3 +143,34 @@ If any of the following events occur during evaluation:
 2. Delete all decrypted temporary files in scratch or RAM.
 3. Write incident log `experiments/stage4_evaluation/EVALUATION_ABORT_INCIDENT.log`.
 4. Lock the evaluation pipeline; require manual developer review before any retry.
+
+---
+
+### 5. Stage 3.7A Addendum: Hardened Runbook Sequence
+
+1. **Pre-Evaluation Holdout Release Reservation:**
+   ```python
+   lock = DurableHoldoutLock(ledger_path=VAULT_LEDGER_PATH)
+   lock.reserve_release(
+       holdout_release_id=signed_envelope["payload"]["holdout_id"],
+       checkpoint_sha256=checkpoint_hash,
+       protocol_version="HOROS-P1-STAGE37-EVAL-V1",
+   )
+   ```
+2. **Burn-on-Access Lock Transition:**
+   Before decrypting the first archive, invoke:
+   ```python
+   lock.record_private_data_access(holdout_release_id)
+   ```
+   *Note: If the process aborts or crashes after this point, the release is permanently burned and cannot be evaluated again.*
+3. **Strict IPC Tensor Validation:**
+   Before every transmission over the pipe, execute:
+   ```python
+   validate_inference_ipc_payload(batch_payload)
+   ```
+4. **Final Consumption:**
+   Upon successful report generation, invoke:
+   ```python
+   lock.mark_consumed(holdout_release_id, report_digest=report_sha256)
+   ```
+

@@ -120,4 +120,17 @@ On 2026-11-25, Stage 3.7 completed the formal protocol and implementation specif
 6. **Operational Runbook & Gates (`stage37_evaluation_runbook.md`, `stage37_stage4_gate_matrix.md`):** Codified the 10-point pre-evaluation freeze checklist, step-by-step Stage 4 execution sequence, fail-closed aborts, and progression gates 4.1 through 4.10.
 7. **Acceptance & Governance Invariance (`stage37_acceptance_report.md`):** Confirmed `TRAINING_PERMITTED = 0`, `EXECUTION_AUTHORIZED = 0`, `NEW_HOLDOUT_GENERATION = NOT_AUTHORIZED`, `FINAL_HOLDOUT_EVALUATION = BLOCKED`. Full synthetic test suite P49 passed with 100% success.
 
+---
+
+### 6. Stage 3.7A Addendum: Blind Evaluation Protocol Hardening & Asymmetric Verification
+
+On 2026-11-26, Stage 3.7A hardened and validated the blind evaluation protocol across four critical security and statistical dimensions:
+1. **Durable Holdout Release Lock (`DurableHoldoutLock`):** Keyed on the holdout release ID (or manifest hash) rather than checkpoint hashes. Enforces single-use reservation, atomic concurrency locking (`os.O_CREAT | os.O_EXCL`), burn-on-access semantics, and fail-closed corrupt ledger handling.
+2. **Asymmetric Ed25519 Signatures (`ed25519_manifest.py`):** Replaced symmetric HMAC helper with authentic Ed25519 asymmetric cryptography. Manifests are canonicalized (RFC 8785) and verified against public keys with key revocation enforcement (`REVOKED_ED25519_KEY_IDS`).
+3. **Windows Security Isolation & Strict IPC Allowlist (`ipc_filter.py`):** Established Windows AppContainer / restricted token security architecture, ACL denial on vault paths, and firewall blocking. Enforced strict 4-field allowlist schema (`states, actions, wrenches, task`) with deep recursive inspection rejecting nested privileged keys.
+4. **Statistical Methodology & Arithmetic Correction:** Corrected precision formula arithmetic ($n \approx 196$, not $19.6$), grounded sample size on empirical simulation of autocorrelated episodes, formulated paired comparisons with positive correlation ($\rho \approx 0.70$), and separated Modes 5 and 6 into dedicated safety gates.
+5. **Synthetic Security Regression Suite (P50):** 20 dedicated security and protocol tests passed (P40–P50 total: 164/164 passed, 100%).
+6. **Governance Invariance:** Model training remains strictly locked (`TRAINING_PERMITTED = 0`, `EXECUTION_AUTHORIZED = 0`). No replacement holdout or seeds were generated.
+
+
 

@@ -102,6 +102,13 @@
 - `experiments/stage37_blind_evaluation/stage37_acceptance_report.md`: formal milestone acceptance audit report establishing completion, governance invariance, and public repository protection.
 - `tests/test_p49_stage37_evaluation_protocol.py`: synthetic protocol verification test suite (manifest validation, tampering rejection, key stripping, aggregate reporting, one-time lock, governance assertions).
 
+#### Newly Produced Stage 3.7A Artifacts
+- `src/world_model_vnext/evaluation_lock.py`: `DurableHoldoutLock` implementing release-centric single-use locking, atomic OS lockfiles, burn-on-access semantics, and durable ledger management.
+- `src/world_model_vnext/ed25519_manifest.py`: asymmetric Ed25519 digital signature signing and verification (`sign_manifest_ed25519`, `verify_manifest_ed25519`), key revocation registry (`REVOKED_ED25519_KEY_IDS`), and isolated HMAC test utilities.
+- `src/world_model_vnext/ipc_filter.py`: strict 4-field allowlist schema validation (`validate_inference_ipc_payload`), deep recursive key checking (`recursive_assert_no_privileged_keys`), and Windows isolation assertions.
+- `experiments/stage37_blind_evaluation/stage37a_protocol_hardening_report.md`: comprehensive technical report detailing resolutions for release locking, Ed25519 cryptography, Windows isolation, and statistical methodology.
+- `tests/test_p50_stage37a_protocol_hardening.py`: 20-test security hardening regression suite.
+
 ---
 
 ### 3. Current Scientific Governance Status
@@ -114,6 +121,7 @@ STAGE_3_5_REGRESSION = HISTORICALLY_PASSED
 STAGE_3_5_HOLDOUT_INTEGRITY = COMPROMISED
 STAGE_3_6_QUARANTINE = COMPLETE_AND_VERIFIED
 STAGE_3_7_PROTOCOL_DESIGN = COMPLETE_AND_ACCEPTED
+STAGE_3_7A_HARDENING = COMPLETE_AND_VERIFIED
 NEW_PRIVATE_HOLDOUT = NOT_CREATED
 BLIND_FINAL_EVALUATION = BLOCKED
 STAGE_4_TRAINING = NOT_AUTHORIZED
@@ -121,4 +129,4 @@ STAGE_4_TRAINING = NOT_AUTHORIZED
 
 - **Pending Decision:** Formal authorization from the USER to initiate **HOROS Stage 4 — First Authorized HCTT-256 Training Experiment**.
 - **Prohibition in Effect:** STRICTLY NO student model training, parameter optimization, or gradient backpropagation shall occur prior to receiving this explicit command.
-- **Holdout Evaluation Gate:** Final scientific validation is BLOCKED until an independently generated, private holdout dataset is created under the Stage 3.7 authorized protocol outside public repositories.
+- **Holdout Evaluation Gate:** Final scientific validation is BLOCKED until an independently generated, private holdout dataset is created under the Stage 3.7A authorized protocol outside public repositories.

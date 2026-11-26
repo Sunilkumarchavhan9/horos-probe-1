@@ -1,21 +1,24 @@
 """Durable, atomic evaluation-consumption ledger and holdout release lock.
 
-Implements Stage 3.7A Workstream A:
+Implements Stage 3.7C Workstream H:
 - Holdout releases are identified by canonical release ID or manifest SHA-256.
 - A release may be reserved/consumed exactly ONCE across all checkpoints, architectures, and retries.
-- Persists state in a durable, atomic JSON ledger with OS-level concurrency locking.
-- State transitions: AVAILABLE -> RESERVED -> PRIVATE_DATA_ACCESS -> CONSUMED (or ABORTED).
-- Once private data access begins, the release is permanently burned.
-- Fails closed if the ledger is corrupted, unreadable, or tampered with.
+- Persists state in a durable, atomic JSON ledger with OS-level concurrency locking and fsync persistence.
+- Authenticates ledger state with HMAC-SHA256 to detect structurally valid status tampering.
+- Maintains a cryptographic hash-chain and HMAC authentication over append-only audit trail events.
+- Detects deletion, insertion, or reordering of historical evaluation events.
+- Fails closed if the ledger is missing, corrupted, unreadable, or tampered with.
 """
 
 from __future__ import annotations
 
 import datetime
+import hashlib
+import hmac
 import json
 import os
 from pathlib import Path
-from typing import Any, Dict, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 from .contracts import ContractViolationError
 
@@ -36,6 +39,13 @@ class LedgerMissingError(ContractViolationError):
     """Raised when an expected production evaluation ledger is missing."""
 
 
+_DEFAULT_LEDGER_AUTH_KEY = b"HOROS-LEDGER-AUTHENTICATED-STATE-KEY-V1"
+
+
+def _canonical_json_bytes(obj: Any) -> bytes:
+    return json.dumps(obj, sort_keys=True, separators=(",", ":")).encode("utf-8")
+
+
 class DurableHoldoutLock:
     """Manages atomic reservation, state transitions, and audit trails for blind holdout releases."""
 
@@ -44,33 +54,35 @@ class DurableHoldoutLock:
         cls,
         ledger_path: Path | str,
         audit_trail_path: Optional[Path | str] = None,
+        auth_key: Optional[bytes] = None,
     ) -> "DurableHoldoutLock":
         """Explicitly initializes a new empty ledger file. Synthetic tests and administrative setups call this."""
-        return cls(ledger_path, audit_trail_path=audit_trail_path, allow_create=True)
+        return cls(ledger_path, audit_trail_path=audit_trail_path, allow_create=True, auth_key=auth_key)
 
     @classmethod
     def open_production_ledger(
         cls,
         ledger_path: Path | str,
         audit_trail_path: Optional[Path | str] = None,
+        auth_key: Optional[bytes] = None,
     ) -> "DurableHoldoutLock":
         """Opens and verifies an existing production ledger. Fails closed if missing, corrupt, or unreadable."""
-        return cls(ledger_path, audit_trail_path=audit_trail_path, allow_create=False)
+        return cls(ledger_path, audit_trail_path=audit_trail_path, allow_create=False, auth_key=auth_key)
 
     def __init__(
         self,
         ledger_path: Path | str,
         audit_trail_path: Optional[Path | str] = None,
         allow_create: bool = False,
+        auth_key: Optional[bytes] = None,
     ):
         self.ledger_path = Path(ledger_path)
         self.audit_trail_path = Path(audit_trail_path) if audit_trail_path else self.ledger_path.with_name("evaluation_audit_trail.jsonl")
         self._lock_path = self.ledger_path.with_suffix(".lock")
+        self.auth_key = auth_key or os.environ.get("HOROS_LEDGER_AUTH_KEY", "").encode("utf-8") or _DEFAULT_LEDGER_AUTH_KEY
         
-        # Ensure parent directory exists
         self.ledger_path.parent.mkdir(parents=True, exist_ok=True)
         
-        # Fail closed on missing production ledger unless explicitly authorized for creation
         if not self.ledger_path.exists():
             if not allow_create:
                 raise LedgerMissingError(
@@ -82,8 +94,73 @@ class DurableHoldoutLock:
         else:
             self._verify_ledger_integrity()
 
+    def _compute_state_hmac(self, releases: Dict[str, Any]) -> str:
+        """Computes HMAC-SHA256 across canonical bytes of the releases dictionary."""
+        raw_bytes = _canonical_json_bytes(releases)
+        return hmac.new(self.auth_key, raw_bytes, hashlib.sha256).hexdigest()
+
+    def _compute_event_hmac(self, event_data: Dict[str, Any]) -> str:
+        """Computes HMAC-SHA256 across the canonical fields of an audit event."""
+        raw = f"{event_data.get('event_seq', 0)}:{event_data.get('action')}:{event_data.get('release_id')}:{event_data.get('prev_hash')}:{event_data.get('timestamp')}"
+        return hmac.new(self.auth_key, raw.encode("utf-8"), hashlib.sha256).hexdigest()
+
+    def _verify_audit_trail(self, expected_chain_head: Optional[str]) -> None:
+        """Verifies sequential integrity, hash linking, and HMAC signatures of the audit event log."""
+        if not self.audit_trail_path.exists():
+            if expected_chain_head is not None:
+                raise LedgerCorruptedError("Audit trail file missing but ledger specifies audit_chain_head.")
+            return
+
+        with open(self.audit_trail_path, "r", encoding="utf-8") as f:
+            lines = [l.strip() for l in f if l.strip()]
+
+        if not lines:
+            if expected_chain_head is not None:
+                raise LedgerCorruptedError("Empty audit trail file with non-null ledger audit_chain_head.")
+            return
+
+        prev_hash = "0" * 64
+        for idx, line in enumerate(lines):
+            try:
+                ev = json.loads(line)
+            except Exception as exc:
+                raise LedgerCorruptedError(f"Corrupt JSON at audit event {idx}: {exc}") from exc
+
+            # Verify sequence continuity (detects event deletion or insertion)
+            seq = ev.get("event_seq")
+            if seq != idx:
+                raise LedgerCorruptedError(
+                    f"Audit event sequence violation at index {idx}: expected {idx}, got {seq}. "
+                    "Event deletion or reordering detected!"
+                )
+
+            # Verify cryptographic hash linking (detects reordering, tampering, or deletion)
+            ev_prev = ev.get("prev_hash")
+            if ev_prev != prev_hash:
+                raise LedgerCorruptedError(
+                    f"Audit event hash chain broken at index {idx}: expected prev_hash '{prev_hash}', got '{ev_prev}'. "
+                    "Audit event reordering or tampering detected!"
+                )
+
+            # Verify event HMAC signature
+            ev_hmac = ev.get("event_hmac")
+            expected_hmac = self._compute_event_hmac(ev)
+            if not hmac.compare_digest(str(ev_hmac), expected_hmac):
+                raise LedgerCorruptedError(
+                    f"Audit event HMAC validation failed at index {idx}. Event content has been tampered with!"
+                )
+
+            # Compute SHA-256 of the exact line bytes as prev_hash for next event
+            line_bytes = line.encode("utf-8")
+            prev_hash = hashlib.sha256(line_bytes).hexdigest()
+
+        if expected_chain_head is not None and prev_hash != expected_chain_head:
+            raise LedgerCorruptedError(
+                f"Audit chain head mismatch: ledger recorded '{expected_chain_head}', audit log ended at '{prev_hash}'."
+            )
+
     def _verify_ledger_integrity(self) -> Dict[str, Any]:
-        """Reads and validates the ledger schema, failing closed on corruption."""
+        """Reads and validates schema, HMAC authentication, and audit chain integrity."""
         try:
             with open(self.ledger_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
@@ -97,6 +174,7 @@ class DurableHoldoutLock:
         if not isinstance(data["releases"], dict):
             raise LedgerCorruptedError("Ledger 'releases' must be a dictionary.")
 
+        # Validate entries and allowed statuses
         for release_id, entry in data["releases"].items():
             if not isinstance(entry, dict) or "status" not in entry:
                 raise LedgerCorruptedError(f"Malformed release entry for '{release_id}'.")
@@ -104,18 +182,42 @@ class DurableHoldoutLock:
             if entry["status"] not in valid_statuses:
                 raise LedgerCorruptedError(f"Invalid release status '{entry['status']}' for '{release_id}'.")
 
+        # Verify state HMAC authentication (detects structurally valid status modifications)
+        recorded_hmac = data.get("state_hmac")
+        if not recorded_hmac:
+            raise LedgerCorruptedError("Ledger missing mandatory 'state_hmac' authentication anchor.")
+        expected_hmac = self._compute_state_hmac(data["releases"])
+        if not hmac.compare_digest(recorded_hmac, expected_hmac):
+            raise LedgerCorruptedError(
+                "Evaluation ledger state HMAC verification failed! "
+                "Unauthorized modification or schema-valid tampering detected."
+            )
+
+        # Verify audit trail hash chain
+        self._verify_audit_trail(data.get("audit_chain_head"))
+
         return data
 
     def _write_fresh_ledger(self) -> None:
-        """Initializes a new empty ledger."""
+        """Initializes a new empty authenticated ledger and audit log."""
+        releases: Dict[str, Any] = {}
+        state_hmac = self._compute_state_hmac(releases)
         fresh_data = {
-            "ledger_version": "HOROS-HOLDOUT-LEDGER-V1",
+            "ledger_version": "HOROS-HOLDOUT-LEDGER-V2",
             "created_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-            "releases": {},
+            "releases": releases,
+            "state_hmac": state_hmac,
+            "audit_chain_head": None,
         }
+        self._persist_atomic_ledger(fresh_data)
+
+    def _persist_atomic_ledger(self, data: Dict[str, Any]) -> None:
+        """Atomically writes ledger to disk with flush, fsync, and replace to prevent partial writes."""
         temp_path = self.ledger_path.with_suffix(".tmp")
         with open(temp_path, "w", encoding="utf-8") as f:
-            json.dump(fresh_data, f, indent=2)
+            json.dump(data, f, indent=2)
+            f.flush()
+            os.fsync(f.fileno())
         os.replace(temp_path, self.ledger_path)
 
     def _acquire_file_lock(self) -> Any:
@@ -124,7 +226,6 @@ class DurableHoldoutLock:
         max_attempts = 100
         for _ in range(max_attempts):
             try:
-                # O_CREAT | O_EXCL provides atomic lock creation across Windows and POSIX
                 fd = os.open(str(self._lock_path), os.O_CREAT | os.O_EXCL | os.O_RDWR)
                 try:
                     if os.name == "nt":
@@ -168,12 +269,32 @@ class DurableHoldoutLock:
         except Exception:
             pass
 
-    def _append_audit_event(self, event: Dict[str, Any]) -> None:
-        """Appends an immutable event entry to the audit log."""
-        event["timestamp"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
-        line = json.dumps(event, sort_keys=True) + "\n"
+    def _append_audit_event(self, event: Dict[str, Any]) -> str:
+        """Appends an authenticated, hash-chained event entry to the audit log, returning its hash."""
+        event_copy = dict(event)
+        event_copy["timestamp"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
+        
+        # Determine current chain head and next sequence
+        prev_hash = "0" * 64
+        seq = 0
+        if self.audit_trail_path.exists():
+            with open(self.audit_trail_path, "r", encoding="utf-8") as f:
+                lines = [l.strip() for l in f if l.strip()]
+            if lines:
+                seq = len(lines)
+                prev_hash = hashlib.sha256(lines[-1].encode("utf-8")).hexdigest()
+
+        event_copy["event_seq"] = seq
+        event_copy["prev_hash"] = prev_hash
+        event_copy["event_hmac"] = self._compute_event_hmac(event_copy)
+
+        line = json.dumps(event_copy, sort_keys=True) + "\n"
         with open(self.audit_trail_path, "a", encoding="utf-8") as f:
             f.write(line)
+            f.flush()
+            os.fsync(f.fileno())
+
+        return hashlib.sha256(line.strip().encode("utf-8")).hexdigest()
 
     def reserve_release(
         self,
@@ -216,19 +337,17 @@ class DurableHoldoutLock:
                 "private_data_accessed": False,
             }
 
-            # Atomic file update
-            temp_path = self.ledger_path.with_suffix(".tmp")
-            with open(temp_path, "w", encoding="utf-8") as f:
-                json.dump(data, f, indent=2)
-            os.replace(temp_path, self.ledger_path)
-
-            self._append_audit_event({
+            chain_head = self._append_audit_event({
                 "action": "RELEASE_RESERVED",
                 "release_id": norm_release_id,
                 "checkpoint_sha256": norm_ckpt_sha,
                 "protocol_version": protocol_version,
                 "operator_id": operator_id,
             })
+
+            data["state_hmac"] = self._compute_state_hmac(releases)
+            data["audit_chain_head"] = chain_head
+            self._persist_atomic_ledger(data)
         finally:
             self._release_file_lock(fd)
 
@@ -251,16 +370,15 @@ class DurableHoldoutLock:
             entry["status"] = "DATA_ACCESS_AUTHORIZED"
             entry["data_access_authorized_at"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
-            temp_path = self.ledger_path.with_suffix(".tmp")
-            with open(temp_path, "w", encoding="utf-8") as f:
-                json.dump(data, f, indent=2)
-            os.replace(temp_path, self.ledger_path)
-
-            self._append_audit_event({
+            chain_head = self._append_audit_event({
                 "action": "DATA_ACCESS_AUTHORIZED",
                 "release_id": norm_release_id,
                 "checkpoint_sha256": entry.get("checkpoint_sha256"),
             })
+
+            data["state_hmac"] = self._compute_state_hmac(releases)
+            data["audit_chain_head"] = chain_head
+            self._persist_atomic_ledger(data)
         finally:
             self._release_file_lock(fd)
 
@@ -284,16 +402,15 @@ class DurableHoldoutLock:
             entry["private_data_accessed"] = True
             entry["data_accessed_at"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
-            temp_path = self.ledger_path.with_suffix(".tmp")
-            with open(temp_path, "w", encoding="utf-8") as f:
-                json.dump(data, f, indent=2)
-            os.replace(temp_path, self.ledger_path)
-
-            self._append_audit_event({
+            chain_head = self._append_audit_event({
                 "action": "PRIVATE_DATA_ACCESS_BEGUN",
                 "release_id": norm_release_id,
                 "checkpoint_sha256": entry.get("checkpoint_sha256"),
             })
+
+            data["state_hmac"] = self._compute_state_hmac(releases)
+            data["audit_chain_head"] = chain_head
+            self._persist_atomic_ledger(data)
         finally:
             self._release_file_lock(fd)
 
@@ -312,16 +429,15 @@ class DurableHoldoutLock:
             entry["report_digest"] = str(report_digest)
             entry["consumed_at"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
-            temp_path = self.ledger_path.with_suffix(".tmp")
-            with open(temp_path, "w", encoding="utf-8") as f:
-                json.dump(data, f, indent=2)
-            os.replace(temp_path, self.ledger_path)
-
-            self._append_audit_event({
+            chain_head = self._append_audit_event({
                 "action": "RELEASE_CONSUMED",
                 "release_id": norm_release_id,
                 "report_digest": report_digest,
             })
+
+            data["state_hmac"] = self._compute_state_hmac(releases)
+            data["audit_chain_head"] = chain_head
+            self._persist_atomic_ledger(data)
         finally:
             self._release_file_lock(fd)
 
@@ -340,17 +456,16 @@ class DurableHoldoutLock:
             entry["abort_reason"] = str(reason)
             entry["aborted_at"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
-            temp_path = self.ledger_path.with_suffix(".tmp")
-            with open(temp_path, "w", encoding="utf-8") as f:
-                json.dump(data, f, indent=2)
-            os.replace(temp_path, self.ledger_path)
-
-            self._append_audit_event({
+            chain_head = self._append_audit_event({
                 "action": "RELEASE_ABORTED",
                 "release_id": norm_release_id,
                 "reason": reason,
                 "data_was_accessed": entry.get("private_data_accessed", False),
             })
+
+            data["state_hmac"] = self._compute_state_hmac(releases)
+            data["audit_chain_head"] = chain_head
+            self._persist_atomic_ledger(data)
         finally:
             self._release_file_lock(fd)
 

@@ -211,7 +211,6 @@ def test_01_valid_signed_synthetic_manifest_reaches_eligibility(tmp_path: Path) 
             checkpoint_sha256="aa" * 32,
             ledger=ledger,
             synthetic_dataset_loader_fn=synthetic_loader,
-            use_isolated_worker=False,
         )
         assert report["release_status"] == "CONSUMED"
         assert report["release_id"] == "synth_rel_001"

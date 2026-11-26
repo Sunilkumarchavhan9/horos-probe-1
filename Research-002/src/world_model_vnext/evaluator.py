@@ -225,31 +225,45 @@ class HCTTReadOnlyEvaluator:
         checkpoint_sha256: str,
         ledger: DurableHoldoutLock,
         synthetic_dataset_loader_fn: Callable[[], Tuple[HCTTTemporalDataset, AuditTargetLoader]],
-        trusted_keys: Optional[Dict[str, Any]] = None,
-        use_isolated_worker: bool = False,
+        checkpoint_path: Optional[Path | str] = None,
         vault_path: Optional[Path | str] = None,
         batch_size: int = 32,
+        **kwargs: Any,
     ) -> Dict[str, Any]:
         """Executes full end-to-end blind holdout evaluation following the 13-stage security architecture.
         
-        1. Verifies signed evaluation manifest using Ed25519 and trusted public keys.
-        2. Asserts holdout is eligible (rejects quarantined Stage 3.5 holdout).
+        Implements Stage 3.7C Workstreams A, D, E, F:
+        1. Verifies signed evaluation manifest using Ed25519 and trusted registry (rejects caller-provided trusted_keys).
+        2. Asserts holdout is eligible (permanently rejects quarantined Stage 3.5 holdout).
         3. Atomically reserves release in durable ledger (fails closed if already reserved or consumed).
         4. Authorizes private data access in durable ledger.
-        5. Applies OS-level vault isolation (NTFS deny ACL on Windows, chmod 000 on POSIX).
-        6. Decrypts / loads private holdout data (synthetic test fixtures) and records DATA_ACCESSED (burn-on-access).
+        5. Applies OS-level vault isolation (if vault path specified).
+        6. Persists DATA_ACCESSED state BEFORE calling private dataset loader (strict burn-on-access).
         7. Separates privileged targets: AuditTargetLoader stays in privileged evaluator process.
-        8. Strict IPC validation: validates input tensors before IPC transmission.
-        9. Spawns and delegates to OS-isolated inference worker.
-        10. Receives prediction outputs via IPC pipe.
+        8. Strict IPC validation: validates input tensors before IPC transmission with zero pickle deserialization.
+        9. Spawns and delegates strictly to OS-isolated inference worker (in-process bypass prohibited).
+        10. Receives prediction outputs via typed safe IPC pipe.
         11. Computes evaluation metrics in evaluator process without leaking targets.
         12. Verifies redacted benchmark output schema (no per-episode targets or seeds).
         13. Marks release permanently CONSUMED with final report digest in durable ledger.
         """
-        # Gate 1: Signed Evaluation Manifest & Trusted Key Verification
+        # Workstream F: Reject caller-supplied trusted key overrides
+        if "trusted_keys" in kwargs:
+            raise ContractViolationError(
+                "Caller-supplied 'trusted_keys' override is strictly prohibited in production blind evaluation. "
+                "Keys must be resolved solely from independent trust registry."
+            )
+
+        # Workstream D: Reject in-process evaluation bypass attempts
+        if kwargs.get("use_isolated_worker") is False or kwargs.get("in_process") is True:
+            raise ContractViolationError(
+                "In-process evaluation bypass is strictly prohibited for blind holdout releases. "
+                "Production blind evaluation requires OS-isolated inference worker."
+            )
+
+        # Gate 1: Signed Evaluation Manifest & Independent Key Verification
         manifest_payload = verify_signed_evaluation_manifest(
             signed_envelope=signed_manifest_envelope,
-            trusted_keys=trusted_keys,
         )
         release_id = str(manifest_payload.get("release_id", manifest_payload.get("holdout_id", "")))
         if not release_id:
@@ -279,18 +293,19 @@ class HCTTReadOnlyEvaluator:
         if vault_path:
             apply_os_vault_isolation(vault_path)
 
-        data_accessed = False
+        # Gate 6: Persist DATA_ACCESSED state BEFORE calling private loader (Burn-on-access ordering)
+        ledger.record_private_data_access(release_id)
+        data_accessed = True
+
         worker: Optional[IsolatedInferenceWorker] = None
         try:
-            # Gate 6: Data Access & Decryption (release burned on access)
+            # Private data loader invoked ONLY AFTER durable burn is persisted
             dataset, audit_target_loader = synthetic_dataset_loader_fn()
-            ledger.record_private_data_access(release_id)
-            data_accessed = True
 
             # Gate 7: Privileged Target Separation
             self.verify_dataset_eligibility(dataset, audit_target_loader)
 
-            # Gate 8 & 9: Strict IPC Validation & OS-Isolated Inference Worker
+            # Gate 8 & 9: Strict IPC Validation & Mandatory OS-Isolated Inference Worker
             horizons = LOCKED_HCTT_CONFIG.prediction_horizons
             state_sq_errs: Dict[int, List[float]] = {h: [] for h in horizons}
             wrench_sq_errs: Dict[int, List[float]] = {h: [] for h in horizons}
@@ -306,8 +321,11 @@ class HCTTReadOnlyEvaluator:
             all_ood_labels: List[np.ndarray] = []
             all_finite = True
 
-            if use_isolated_worker:
-                worker = IsolatedInferenceWorker()
+            # Production blind evaluation always uses the isolated worker
+            worker = IsolatedInferenceWorker(
+                checkpoint_path=checkpoint_path,
+                expected_checkpoint_sha256=checkpoint_sha256 if checkpoint_path else None,
+            )
 
             batches = dataset.iter_homogeneous_batches(batch_size=batch_size, shuffle=False)
             with torch.no_grad():
@@ -319,24 +337,19 @@ class HCTTReadOnlyEvaluator:
                         batch["future_mask"],
                     )
 
-                    if worker is not None:
-                        # Construct allowlisted model-visible IPC payload
-                        states = model_inputs["hist_states"]
-                        actions = torch.cat([model_inputs["hist_prev_actions"], model_inputs["future_actions"]], dim=1)
-                        wrenches = model_inputs["hist_wrenches"]
-                        task = model_inputs["task"]
+                    # Construct allowlisted model-visible IPC payload
+                    states = model_inputs["hist_states"]
+                    actions = model_inputs["hist_prev_actions"]
+                    wrenches = model_inputs["hist_wrenches"]
+                    task = model_inputs["task"]
 
-                        ipc_payload = {
-                            "states": states,
-                            "actions": actions,
-                            "wrenches": wrenches,
-                            "task": task,
-                        }
-                        out = worker.predict(ipc_payload)
-                    else:
-                        model = HCTTWorldModel(LOCKED_HCTT_CONFIG)
-                        model.eval()
-                        out = model(**model_inputs)
+                    ipc_payload = {
+                        "states": states,
+                        "actions": actions,
+                        "wrenches": wrenches,
+                        "task": task,
+                    }
+                    out = worker.predict(ipc_payload)
 
                     for v in out.values():
                         if isinstance(v, torch.Tensor) and not torch.isfinite(v).all():

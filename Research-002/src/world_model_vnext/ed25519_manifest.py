@@ -29,6 +29,8 @@ except ImportError:
 from .contracts import ContractViolationError, ManifestSignatureError
 
 
+CANONICALIZATION_STANDARD: str = "HOROS-CANONICAL-JSON-V1"
+
 # List of revoked Ed25519 key identifiers
 REVOKED_ED25519_KEY_IDS: FrozenSet[str] = frozenset({
     "HOROS-REVOKED-TEST-KEY-000",
@@ -79,21 +81,27 @@ def get_trusted_evaluation_public_key(key_id: str) -> Union[str, bytes]:
 def verify_signed_evaluation_manifest(
     signed_envelope: Dict[str, Any],
     expected_release_id: Optional[str] = None,
-    trusted_keys: Optional[Dict[str, Union[str, bytes]]] = None,
+    **kwargs: Any,
 ) -> Dict[str, Any]:
     """Verifies a signed evaluation manifest envelope against independently configured trust material.
     
-    Enforces all Stage 3.7B verification requirements:
+    Enforces all Stage 3.7C verification requirements:
     1. Rejects non-dictionary envelopes or missing keys.
     2. Rejects unsupported signature algorithms (must be 'Ed25519').
     3. Rejects revoked key IDs.
-    4. Looks up public key from independent trust registry (rejects unknown/caller-supplied arbitrary keys).
+    4. Looks up public key ONLY from independent trust registry; strictly rejects caller-supplied trusted_keys overrides.
     5. Verifies canonical manifest payload bytes against Ed25519 digital signature.
     6. Rejects tampered payloads or substituted signatures.
     7. Validates holdout/release identifier matching expected_release_id if specified.
     
     Returns the verified payload dict. Fails closed on any discrepancy.
     """
+    if "trusted_keys" in kwargs:
+        raise ContractViolationError(
+            "Caller-supplied 'trusted_keys' override is strictly prohibited in production verification. "
+            "Keys must be resolved solely from independent trust material."
+        )
+
     if not isinstance(signed_envelope, dict):
         raise ManifestSignatureError("Manifest envelope must be a dictionary. Unsigned manifests are strictly prohibited.")
 
@@ -111,16 +119,13 @@ def verify_signed_evaluation_manifest(
     if key_id in REVOKED_ED25519_KEY_IDS:
         raise ManifestSignatureError(f"Key identifier '{key_id}' has been formally revoked.")
 
-    # Trusted key lookup from independent trust material
-    if trusted_keys is not None and key_id in trusted_keys:
-        pub_key = trusted_keys[key_id]
-    elif key_id in _TRUSTED_EVALUATION_PUBLIC_KEYS:
-        pub_key = _TRUSTED_EVALUATION_PUBLIC_KEYS[key_id]
-    else:
+    # Trusted key lookup solely from independent trust material (registry)
+    if key_id not in _TRUSTED_EVALUATION_PUBLIC_KEYS:
         raise ManifestSignatureError(
             f"Key '{key_id}' is not in the trusted evaluation key registry. "
-            "Acceptance of unpinned or caller-provided arbitrary public keys is strictly prohibited."
+            "Acceptance of unpinned, arbitrary, or caller-provided public keys is strictly prohibited."
         )
+    pub_key = _TRUSTED_EVALUATION_PUBLIC_KEYS[key_id]
 
     # Cryptographic verification
     is_valid = verify_manifest_ed25519(
@@ -147,8 +152,26 @@ def verify_signed_evaluation_manifest(
 
 
 def canonicalize_manifest_bytes(manifest_data: Dict[str, Any]) -> bytes:
-    """Produces deterministic canonical UTF-8 bytes for a JSON object."""
-    return json.dumps(manifest_data, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    """Produces deterministic canonical UTF-8 bytes for a JSON object under HOROS-CANONICAL-JSON-V1.
+    
+    Standard specification:
+    - Deterministic lexicographic key ordering across all nested objects.
+    - Compact separators (',' between elements, ':' between key and value with zero whitespace).
+    - Direct UTF-8 byte encoding for non-ASCII characters (ensure_ascii=False).
+    - Disallows NaN and Infinity (fails closed per strict JSON standard).
+    """
+    if not isinstance(manifest_data, (dict, list)):
+        raise ContractViolationError("Manifest data to canonicalize must be a JSON dictionary or list.")
+    try:
+        return json.dumps(
+            manifest_data,
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
+            allow_nan=False,
+        ).encode("utf-8")
+    except (ValueError, TypeError) as exc:
+        raise ContractViolationError(f"Canonical manifest serialization failed: {exc}") from exc
 
 
 def generate_ed25519_keypair() -> Tuple[Any, Any]:

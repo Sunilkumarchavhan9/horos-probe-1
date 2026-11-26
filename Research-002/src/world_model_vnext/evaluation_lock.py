@@ -32,13 +32,36 @@ class LedgerCorruptedError(ContractViolationError):
     """Raised when the evaluation ledger schema, format, or content is invalid or corrupted."""
 
 
+class LedgerMissingError(ContractViolationError):
+    """Raised when an expected production evaluation ledger is missing."""
+
+
 class DurableHoldoutLock:
     """Manages atomic reservation, state transitions, and audit trails for blind holdout releases."""
+
+    @classmethod
+    def initialize_fresh_ledger(
+        cls,
+        ledger_path: Path | str,
+        audit_trail_path: Optional[Path | str] = None,
+    ) -> "DurableHoldoutLock":
+        """Explicitly initializes a new empty ledger file. Synthetic tests and administrative setups call this."""
+        return cls(ledger_path, audit_trail_path=audit_trail_path, allow_create=True)
+
+    @classmethod
+    def open_production_ledger(
+        cls,
+        ledger_path: Path | str,
+        audit_trail_path: Optional[Path | str] = None,
+    ) -> "DurableHoldoutLock":
+        """Opens and verifies an existing production ledger. Fails closed if missing, corrupt, or unreadable."""
+        return cls(ledger_path, audit_trail_path=audit_trail_path, allow_create=False)
 
     def __init__(
         self,
         ledger_path: Path | str,
         audit_trail_path: Optional[Path | str] = None,
+        allow_create: bool = False,
     ):
         self.ledger_path = Path(ledger_path)
         self.audit_trail_path = Path(audit_trail_path) if audit_trail_path else self.ledger_path.with_name("evaluation_audit_trail.jsonl")
@@ -47,8 +70,14 @@ class DurableHoldoutLock:
         # Ensure parent directory exists
         self.ledger_path.parent.mkdir(parents=True, exist_ok=True)
         
-        # Initialize ledger if it does not exist
+        # Fail closed on missing production ledger unless explicitly authorized for creation
         if not self.ledger_path.exists():
+            if not allow_create:
+                raise LedgerMissingError(
+                    f"Evaluation ledger missing at '{self.ledger_path}'. "
+                    "Normal evaluator startup requires an existing verified production ledger. "
+                    "Automatic empty ledger creation is prohibited to prevent forgetting consumed releases."
+                )
             self._write_fresh_ledger()
         else:
             self._verify_ledger_integrity()
@@ -71,7 +100,7 @@ class DurableHoldoutLock:
         for release_id, entry in data["releases"].items():
             if not isinstance(entry, dict) or "status" not in entry:
                 raise LedgerCorruptedError(f"Malformed release entry for '{release_id}'.")
-            valid_statuses = {"RESERVED", "DATA_ACCESSED", "CONSUMED", "ABORTED"}
+            valid_statuses = {"RESERVED", "DATA_ACCESS_AUTHORIZED", "DATA_ACCESSED", "CONSUMED", "ABORTED"}
             if entry["status"] not in valid_statuses:
                 raise LedgerCorruptedError(f"Invalid release status '{entry['status']}' for '{release_id}'.")
 
@@ -92,13 +121,27 @@ class DurableHoldoutLock:
     def _acquire_file_lock(self) -> Any:
         """Acquires an atomic OS-level file lock, preventing concurrent evaluators from racing."""
         import time
-        max_attempts = 50
+        max_attempts = 100
         for _ in range(max_attempts):
             try:
                 # O_CREAT | O_EXCL provides atomic lock creation across Windows and POSIX
                 fd = os.open(str(self._lock_path), os.O_CREAT | os.O_EXCL | os.O_RDWR)
+                try:
+                    if os.name == "nt":
+                        import msvcrt
+                        msvcrt.locking(fd, msvcrt.LK_NBLCK, 1)
+                    else:
+                        import fcntl
+                        fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                except Exception:
+                    os.close(fd)
+                    try:
+                        os.remove(self._lock_path)
+                    except Exception:
+                        pass
+                    raise FileExistsError("Lock acquisition collided")
                 return fd
-            except FileExistsError:
+            except (FileExistsError, OSError):
                 time.sleep(0.05)
             except Exception as exc:
                 raise LedgerCorruptedError(f"Failed to acquire lockfile '{self._lock_path}': {exc}") from exc
@@ -107,6 +150,18 @@ class DurableHoldoutLock:
     def _release_file_lock(self, fd: Any) -> None:
         """Releases the atomic file lock."""
         try:
+            if os.name == "nt":
+                import msvcrt
+                try:
+                    msvcrt.locking(fd, msvcrt.LK_UNLCK, 1)
+                except Exception:
+                    pass
+            else:
+                import fcntl
+                try:
+                    fcntl.flock(fd, fcntl.LOCK_UN)
+                except Exception:
+                    pass
             os.close(fd)
             if self._lock_path.exists():
                 os.remove(self._lock_path)
@@ -139,7 +194,7 @@ class DurableHoldoutLock:
             if norm_release_id in releases:
                 existing = releases[norm_release_id]
                 status = existing.get("status")
-                if status in {"DATA_ACCESSED", "CONSUMED", "ABORTED"}:
+                if status in {"DATA_ACCESS_AUTHORIZED", "DATA_ACCESSED", "CONSUMED", "ABORTED"}:
                     raise HoldoutReleaseAlreadyConsumedError(
                         f"Holdout release '{holdout_release_id}' has already been {status.lower()} "
                         f"(initial checkpoint: {existing.get('checkpoint_sha256', '')[:8]}...). "
@@ -177,6 +232,38 @@ class DurableHoldoutLock:
         finally:
             self._release_file_lock(fd)
 
+    def authorize_data_access(self, holdout_release_id: str) -> None:
+        """Transitions status from RESERVED to DATA_ACCESS_AUTHORIZED."""
+        norm_release_id = str(holdout_release_id).strip().lower()
+        fd = self._acquire_file_lock()
+        try:
+            data = self._verify_ledger_integrity()
+            releases = data["releases"]
+            if norm_release_id not in releases:
+                raise ContractViolationError(f"Cannot authorize data access for unreserved release '{holdout_release_id}'.")
+            
+            entry = releases[norm_release_id]
+            status = entry.get("status")
+            if status != "RESERVED":
+                raise ContractViolationError(
+                    f"Cannot authorize data access for release '{holdout_release_id}' in state '{status}'. Expected 'RESERVED'."
+                )
+            entry["status"] = "DATA_ACCESS_AUTHORIZED"
+            entry["data_access_authorized_at"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+            temp_path = self.ledger_path.with_suffix(".tmp")
+            with open(temp_path, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=2)
+            os.replace(temp_path, self.ledger_path)
+
+            self._append_audit_event({
+                "action": "DATA_ACCESS_AUTHORIZED",
+                "release_id": norm_release_id,
+                "checkpoint_sha256": entry.get("checkpoint_sha256"),
+            })
+        finally:
+            self._release_file_lock(fd)
+
     def record_private_data_access(self, holdout_release_id: str) -> None:
         """Transitions status to DATA_ACCESSED. Once called, release is burned and cannot be reset."""
         norm_release_id = str(holdout_release_id).strip().lower()
@@ -188,6 +275,11 @@ class DurableHoldoutLock:
                 raise ContractViolationError(f"Cannot record data access for unreserved release '{holdout_release_id}'.")
             
             entry = releases[norm_release_id]
+            status = entry.get("status")
+            if status not in {"RESERVED", "DATA_ACCESS_AUTHORIZED"}:
+                raise ContractViolationError(
+                    f"Cannot record data access for release '{holdout_release_id}' in state '{status}'."
+                )
             entry["status"] = "DATA_ACCESSED"
             entry["private_data_accessed"] = True
             entry["data_accessed_at"] = datetime.datetime.now(datetime.timezone.utc).isoformat()

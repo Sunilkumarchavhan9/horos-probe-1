@@ -158,3 +158,17 @@ If private holdout trajectories, seeds, or privileged targets are inadvertently 
      c. **Decoupled Vault Credentials:** The private vault encryption key is stored on an external hardware token (FIDO2/YubiKey) or cloud KMS requiring separate authentication, preventing accidental automated access.
      d. **Third-Party Escrow:** Public scientific benchmark claims require an independent third-party witness to co-verify the signed manifest and audit trail.
 
+
+---
+
+### 7. Stage 3.7B Addendum: Integrated Security Architecture & Real OS Enforcement
+
+1. **Cryptographic Trust Anchoring:**
+   - Evaluator loads trusted public keys strictly from independent configuration (_TRUSTED_EVALUATION_PUBLIC_KEYS), permanently disallowing caller-supplied arbitrary keys.
+2. **Deterministic Ledger Durability:**
+   - Production ledger verification strictly requires pre-existing files (LedgerMissingError), preventing silent loss of historical consumption state.
+   - Cross-process concurrency is enforced via OS-level file locking (msvcrt.locking on Windows, fcntl on POSIX).
+3. **OS-Level Vault Denial:**
+   - apply_os_vault_isolation enforces real Windows NTFS Deny ACLs (icacls /deny <user>:(OI)(CI)(RD)) on private holdout vaults during inference execution, verified by external child-process access rejection.
+4. **Target Air-Gap & Zero-Canary Leakage:**
+   - Synthetic canary token tests verify zero leakage into worker arguments, environment variables, or prediction outputs. All privileged ground truth remains inside the privileged evaluator.

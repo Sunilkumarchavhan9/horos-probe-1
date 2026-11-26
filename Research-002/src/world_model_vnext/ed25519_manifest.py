@@ -34,6 +34,117 @@ REVOKED_ED25519_KEY_IDS: FrozenSet[str] = frozenset({
     "HOROS-REVOKED-TEST-KEY-000",
 })
 
+# Independent Trusted Evaluation Key Registry (mapping key_id -> trusted public key hex / bytes)
+_TRUSTED_EVALUATION_PUBLIC_KEYS: Dict[str, Union[str, bytes]] = {}
+
+
+def register_trusted_evaluation_key(key_id: str, public_key: Union[str, bytes, Any]) -> None:
+    """Registers an independently pinned trusted evaluation public key."""
+    if not isinstance(key_id, str) or not key_id.strip():
+        raise ContractViolationError("Key ID must be a non-empty string.")
+    
+    if _CRYPTOGRAPHY_AVAILABLE and ed25519 is not None and isinstance(public_key, ed25519.Ed25519PublicKey):
+        from cryptography.hazmat.primitives import serialization
+        raw_bytes = public_key.public_bytes(
+            encoding=serialization.Encoding.Raw,
+            format=serialization.PublicFormat.Raw,
+        )
+        _TRUSTED_EVALUATION_PUBLIC_KEYS[key_id] = raw_bytes.hex()
+    elif isinstance(public_key, (str, bytes)):
+        _TRUSTED_EVALUATION_PUBLIC_KEYS[key_id] = public_key
+    else:
+        raise ContractViolationError(f"Unsupported public key type: {type(public_key)}")
+
+
+def unregister_trusted_evaluation_key(key_id: str) -> None:
+    """Unregisters a key from the trusted evaluation registry."""
+    _TRUSTED_EVALUATION_PUBLIC_KEYS.pop(key_id, None)
+
+
+def reset_trusted_evaluation_keys() -> None:
+    """Clears all ephemeral registered evaluation keys."""
+    _TRUSTED_EVALUATION_PUBLIC_KEYS.clear()
+
+
+def get_trusted_evaluation_public_key(key_id: str) -> Union[str, bytes]:
+    """Retrieves the independently pinned public key for key_id, failing closed if untrusted/unknown."""
+    if key_id not in _TRUSTED_EVALUATION_PUBLIC_KEYS:
+        raise ManifestSignatureError(
+            f"Signing key '{key_id}' is not in the trusted evaluation key registry. "
+            "Evaluator cannot accept untrusted, unregistered, or caller-supplied keys."
+        )
+    return _TRUSTED_EVALUATION_PUBLIC_KEYS[key_id]
+
+
+def verify_signed_evaluation_manifest(
+    signed_envelope: Dict[str, Any],
+    expected_release_id: Optional[str] = None,
+    trusted_keys: Optional[Dict[str, Union[str, bytes]]] = None,
+) -> Dict[str, Any]:
+    """Verifies a signed evaluation manifest envelope against independently configured trust material.
+    
+    Enforces all Stage 3.7B verification requirements:
+    1. Rejects non-dictionary envelopes or missing keys.
+    2. Rejects unsupported signature algorithms (must be 'Ed25519').
+    3. Rejects revoked key IDs.
+    4. Looks up public key from independent trust registry (rejects unknown/caller-supplied arbitrary keys).
+    5. Verifies canonical manifest payload bytes against Ed25519 digital signature.
+    6. Rejects tampered payloads or substituted signatures.
+    7. Validates holdout/release identifier matching expected_release_id if specified.
+    
+    Returns the verified payload dict. Fails closed on any discrepancy.
+    """
+    if not isinstance(signed_envelope, dict):
+        raise ManifestSignatureError("Manifest envelope must be a dictionary. Unsigned manifests are strictly prohibited.")
+
+    required_keys = {"algorithm", "key_id", "signature", "payload"}
+    if not required_keys.issubset(signed_envelope.keys()):
+        raise ManifestSignatureError(f"Manifest envelope missing required fields. Expected {required_keys}.")
+
+    # Algorithm check
+    algo = signed_envelope["algorithm"]
+    if algo != "Ed25519":
+        raise ManifestSignatureError(f"Unsupported manifest signature algorithm '{algo}'. Expected 'Ed25519'.")
+
+    # Key revocation check
+    key_id = signed_envelope["key_id"]
+    if key_id in REVOKED_ED25519_KEY_IDS:
+        raise ManifestSignatureError(f"Key identifier '{key_id}' has been formally revoked.")
+
+    # Trusted key lookup from independent trust material
+    if trusted_keys is not None and key_id in trusted_keys:
+        pub_key = trusted_keys[key_id]
+    elif key_id in _TRUSTED_EVALUATION_PUBLIC_KEYS:
+        pub_key = _TRUSTED_EVALUATION_PUBLIC_KEYS[key_id]
+    else:
+        raise ManifestSignatureError(
+            f"Key '{key_id}' is not in the trusted evaluation key registry. "
+            "Acceptance of unpinned or caller-provided arbitrary public keys is strictly prohibited."
+        )
+
+    # Cryptographic verification
+    is_valid = verify_manifest_ed25519(
+        signed_envelope=signed_envelope,
+        public_key=pub_key,
+        expected_key_id=key_id,
+    )
+    if not is_valid:
+        raise ManifestSignatureError("Digital signature verification failed: invalid signature for manifest payload.")
+
+    payload = signed_envelope["payload"]
+    if not isinstance(payload, dict):
+        raise ManifestSignatureError("Envelope 'payload' must be a JSON dictionary.")
+
+    # Release ID check if specified
+    if expected_release_id is not None:
+        actual_id = str(payload.get("release_id", payload.get("holdout_id", ""))).strip().lower()
+        if actual_id != expected_release_id.strip().lower():
+            raise ManifestSignatureError(
+                f"Manifest release ID mismatch: expected '{expected_release_id}', got '{actual_id}'."
+            )
+
+    return payload
+
 
 def canonicalize_manifest_bytes(manifest_data: Dict[str, Any]) -> bytes:
     """Produces deterministic canonical UTF-8 bytes for a JSON object."""
@@ -78,16 +189,13 @@ def sign_manifest_ed25519(
 
 def verify_manifest_ed25519(
     signed_envelope: Dict[str, Any],
-    public_key: Union[Any, bytes, str],
+    public_key: Union[ed25519.Ed25519PublicKey, bytes, str],
     expected_key_id: Optional[str] = None,
 ) -> bool:
     """Verifies an Ed25519 signed manifest envelope against a trusted public key.
     
     Fails closed (returns False or raises ManifestSignatureError) on any discrepancy.
     """
-    if not _CRYPTOGRAPHY_AVAILABLE or ed25519 is None:
-        raise ManifestSignatureError("The 'cryptography' library is required for Ed25519 operations.")
-
     if not isinstance(signed_envelope, dict):
         raise ManifestSignatureError("Signed envelope must be a JSON object dictionary.")
 

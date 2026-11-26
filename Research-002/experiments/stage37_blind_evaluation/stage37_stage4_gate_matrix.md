@@ -78,3 +78,18 @@ flowchart TD
    - Private holdout manifest must be verified via asymmetric **Ed25519** digital signature against pinned public key.
    - Release reservation must be logged atomically in `DurableHoldoutLock` before private data decryption begins.
 
+---
+
+### 5. Stage 3.7B Addendum: Production Integration & OS Isolation Enforcement
+
+1. **Gate 4.5B (Integrated Manifest & Ledger Verification):**
+   - The evaluator executes `verify_signed_evaluation_manifest` against independently registered public keys in `_TRUSTED_EVALUATION_PUBLIC_KEYS`.
+   - Missing or tampered production ledgers raise `LedgerMissingError` or `LedgerCorruptedError` and block evaluation.
+2. **Gate 4.5C (Burn-on-Access State Machine):**
+   - The release transitions through `RESERVED` -> `DATA_ACCESS_AUTHORIZED` -> `DATA_ACCESSED` -> `CONSUMED`.
+   - Once data access begins, the release is permanently burned; any interruption or crash transitions state to `ABORTED` with `private_data_accessed=True`.
+3. **Gate 4.5D (Windows OS Worker Isolation):**
+   - The inference worker is spawned under OS-level isolation with stripped environment variables and network blackholing (`HTTP_PROXY=0.0.0.0:0`).
+   - Private holdout vault access is blocked by Windows NTFS Deny ACLs (`icacls /deny <user>:(OI)(CI)(RD)`).
+   - Bi-directional schema validation enforces strict model inputs (`states`, `actions`, `wrenches`, `task`) and prevents privileged leakage.
+

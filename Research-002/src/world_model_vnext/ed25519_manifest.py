@@ -17,8 +17,14 @@ import hmac
 import json
 from typing import Any, Dict, FrozenSet, Optional, Tuple, Union
 
-from cryptography.exceptions import InvalidSignature
-from cryptography.hazmat.primitives.asymmetric import ed25519
+try:
+    from cryptography.exceptions import InvalidSignature
+    from cryptography.hazmat.primitives.asymmetric import ed25519
+    _CRYPTOGRAPHY_AVAILABLE = True
+except ImportError:
+    _CRYPTOGRAPHY_AVAILABLE = False
+    ed25519 = None  # type: ignore
+    InvalidSignature = Exception  # type: ignore
 
 from .contracts import ContractViolationError, ManifestSignatureError
 
@@ -34,8 +40,10 @@ def canonicalize_manifest_bytes(manifest_data: Dict[str, Any]) -> bytes:
     return json.dumps(manifest_data, sort_keys=True, separators=(",", ":")).encode("utf-8")
 
 
-def generate_ed25519_keypair() -> Tuple[ed25519.Ed25519PrivateKey, ed25519.Ed25519PublicKey]:
+def generate_ed25519_keypair() -> Tuple[Any, Any]:
     """Generates an ephemeral Ed25519 keypair (for test fixture and custodian initialization only)."""
+    if not _CRYPTOGRAPHY_AVAILABLE or ed25519 is None:
+        raise ManifestSignatureError("The 'cryptography' library is required for Ed25519 operations.")
     priv = ed25519.Ed25519PrivateKey.generate()
     pub = priv.public_key()
     return priv, pub
@@ -43,10 +51,12 @@ def generate_ed25519_keypair() -> Tuple[ed25519.Ed25519PrivateKey, ed25519.Ed255
 
 def sign_manifest_ed25519(
     manifest_data: Dict[str, Any],
-    private_key: ed25519.Ed25519PrivateKey,
+    private_key: Any,
     key_id: str = "HOROS-EVAL-KEY-V1",
 ) -> Dict[str, Any]:
     """Signs a manifest dictionary with an Ed25519 private key, returning a signed envelope."""
+    if not _CRYPTOGRAPHY_AVAILABLE or ed25519 is None:
+        raise ManifestSignatureError("The 'cryptography' library is required for Ed25519 operations.")
     if not isinstance(manifest_data, dict):
         raise ContractViolationError("Manifest data to sign must be a dictionary.")
     if not isinstance(private_key, ed25519.Ed25519PrivateKey):
@@ -68,13 +78,16 @@ def sign_manifest_ed25519(
 
 def verify_manifest_ed25519(
     signed_envelope: Dict[str, Any],
-    public_key: Union[ed25519.Ed25519PublicKey, bytes, str],
+    public_key: Union[Any, bytes, str],
     expected_key_id: Optional[str] = None,
 ) -> bool:
     """Verifies an Ed25519 signed manifest envelope against a trusted public key.
     
     Fails closed (returns False or raises ManifestSignatureError) on any discrepancy.
     """
+    if not _CRYPTOGRAPHY_AVAILABLE or ed25519 is None:
+        raise ManifestSignatureError("The 'cryptography' library is required for Ed25519 operations.")
+
     if not isinstance(signed_envelope, dict):
         raise ManifestSignatureError("Signed envelope must be a JSON object dictionary.")
 

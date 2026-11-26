@@ -58,15 +58,21 @@ from .ed25519_manifest import (
     canonicalize_manifest_bytes,
     compute_hmac_test_manifest_signature,
     generate_ed25519_keypair,
+    get_trusted_evaluation_public_key,
+    register_trusted_evaluation_key,
+    reset_trusted_evaluation_keys,
     sign_manifest_ed25519,
+    unregister_trusted_evaluation_key,
     verify_hmac_test_manifest_signature,
     verify_manifest_ed25519,
+    verify_signed_evaluation_manifest,
 )
 from .evaluation_lock import (
     DurableHoldoutLock,
     HoldoutReleaseAlreadyConsumedError,
     HoldoutReleaseAlreadyReservedError,
     LedgerCorruptedError,
+    LedgerMissingError,
 )
 from .ipc_filter import (
     PERMITTED_INFERENCE_PAYLOAD_KEYS,
@@ -74,6 +80,11 @@ from .ipc_filter import (
     assert_worker_path_access_permitted,
     recursive_assert_no_privileged_keys,
     validate_inference_ipc_payload,
+)
+from .worker_isolation import (
+    IsolatedInferenceWorker,
+    apply_os_vault_isolation,
+    remove_os_vault_isolation,
 )
 from .dataset import (
     EpisodeArrayRecord,
@@ -135,8 +146,10 @@ __all__ = [
     "HoldoutIneligibleError",
     "HoldoutReleaseAlreadyConsumedError",
     "HoldoutReleaseAlreadyReservedError",
+    "IsolatedInferenceWorker",
     "LOCKED_HCTT_CONFIG",
     "LedgerCorruptedError",
+    "LedgerMissingError",
     "MODEL_VISIBLE_NPZ_KEYS",
     "ManifestSignatureError",
     "OPERATIONAL_MODE_NAMES",
@@ -152,6 +165,7 @@ __all__ = [
     "TaskInterfaceSpec",
     "TrainingAuthorizationError",
     "WindowSampleIndex",
+    "apply_os_vault_isolation",
     "assert_no_external_network_call",
     "assert_no_privileged_keys_in_inputs",
     "assert_not_compromised_holdout_data",
@@ -172,6 +186,7 @@ __all__ = [
     "get_compromised_privileged_sha256",
     "get_compromised_sample_ids",
     "get_task_interface",
+    "get_trusted_evaluation_public_key",
     "is_compromised_holdout_file_content",
     "is_compromised_holdout_path",
     "is_compromised_holdout_sample_id",
@@ -180,10 +195,14 @@ __all__ = [
     "load_quarantine_record",
     "read_and_verify_quarantine_registry",
     "recursive_assert_no_privileged_keys",
+    "register_trusted_evaluation_key",
+    "remove_os_vault_isolation",
     "reset_quarantine_caches",
+    "reset_trusted_evaluation_keys",
     "sign_manifest_ed25519",
     "split_batch_inputs_and_targets",
     "strip_forbidden_model_input_keys",
+    "unregister_trusted_evaluation_key",
     "validate_inference_ipc_payload",
     "validate_quarantine_registry_schema",
     "verify_holdout_archive_digests",
@@ -191,6 +210,7 @@ __all__ = [
     "verify_manifest_ed25519",
     "verify_quarantine_registry_integrity",
     "verify_redacted_benchmark_output",
+    "verify_signed_evaluation_manifest",
     "verify_signed_manifest_signature",
     "verify_split_manifest_disjointness",
 ]

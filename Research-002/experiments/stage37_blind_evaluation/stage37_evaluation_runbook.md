@@ -174,3 +174,19 @@ If any of the following events occur during evaluation:
    lock.mark_consumed(holdout_release_id, report_digest=report_sha256)
    ```
 
+
+---
+
+### 8. Stage 3.7B Addendum: Production Evaluator Execution Procedure
+
+1. **Pre-Flight Ledger Verification:**
+   - Evaluator verifies existing production ledger using DurableHoldoutLock.open_production_ledger(path).
+   - If missing, corrupt, or unreadable, execution aborts immediately with LedgerMissingError or LedgerCorruptedError.
+2. **One-Time Release Reservation:**
+   - Release is reserved atomically across OS processes prior to private data access.
+3. **OS Vault Isolation Activation:**
+   - Evaluator invokes apply_os_vault_isolation(vault_path) before spawning IsolatedInferenceWorker.
+4. **Strict Model Input IPC & Worker Inference:**
+   - Inputs are schema-validated with validate_inference_ipc_payload before serialization and again inside worker.
+5. **Consumption Finalization & Audit Appending:**
+   - Upon metric computation, verify_redacted_benchmark_output verifies the report, which is hashed and marked CONSUMED in the durable ledger.

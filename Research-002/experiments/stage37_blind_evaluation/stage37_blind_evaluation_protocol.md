@@ -166,3 +166,19 @@ Following the Stage 3.7A technical audit, the evaluation protocol incorporates t
    - The private holdout vault (`C:\projects\horos_private_vault\`) is secured with explicit Windows ACL denial rules denying access to the worker SID.
    - Windows Defender Firewall rules block outbound network connections from the worker binary. Communication occurs exclusively over restricted local named pipes (`\\.\pipe\horos_eval_*`).
 
+---
+
+### 7. Stage 3.7B Addendum: End-to-End Pipeline Integration & Production Verification
+
+1. **Integrated Manifest Verification Pipeline:**
+   - Evaluator invokes `verify_signed_evaluation_manifest` against independently provisioned trusted public keys (`_TRUSTED_EVALUATION_PUBLIC_KEYS`) before accessing any private holdout archives.
+   - Evaluator strictly rejects unsigned manifests, revoked keys, algorithm substitution, or tampered payloads.
+2. **Fail-Closed Missing Ledger Semantics:**
+   - Evaluator startup enforces `DurableHoldoutLock.open_production_ledger` which fails closed (`LedgerMissingError`) if an existing production ledger is missing. Silent creation of an empty ledger is prohibited.
+3. **Real OS Enforcement via Windows NTFS ACLs:**
+   - During holdout evaluation, `apply_os_vault_isolation` configures Windows NTFS Deny ACLs (`icacls <vault> /deny <user>:(OI)(CI)(RD)`) on private vault directories, confirmed by real child-process permission denial.
+4. **Bidirectional Strict IPC Validation:**
+   - Payloads are validated prior to serialization on the evaluator side and upon deserialization on the worker side (`validate_inference_ipc_payload`).
+5. **Privileged Target Air-Gap:**
+   - Ground-truth targets remain exclusively within `AuditTargetLoader` inside the evaluator process. The worker process receives allowlisted kinematics tensors and emits only model predictions.
+

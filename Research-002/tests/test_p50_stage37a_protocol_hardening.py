@@ -79,7 +79,7 @@ from world_model_vnext.runner import (
 
 def test_01_one_time_release_lockout(tmp_path: Path) -> None:
     ledger_file = tmp_path / "test_ledger.json"
-    lock = DurableHoldoutLock(ledger_path=ledger_file)
+    lock = DurableHoldoutLock.initialize_fresh_ledger(ledger_path=ledger_file)
     release_id = "release_alpha_001"
     ckpt_sha = "11" * 32
 
@@ -93,7 +93,7 @@ def test_01_one_time_release_lockout(tmp_path: Path) -> None:
 
 def test_02_different_checkpoint_on_consumed_holdout_rejected(tmp_path: Path) -> None:
     ledger_file = tmp_path / "test_ledger.json"
-    lock = DurableHoldoutLock(ledger_path=ledger_file)
+    lock = DurableHoldoutLock.initialize_fresh_ledger(ledger_path=ledger_file)
     release_id = "release_beta_002"
     ckpt_sha_1 = "11" * 32
     ckpt_sha_2 = "22" * 32
@@ -109,7 +109,7 @@ def test_02_different_checkpoint_on_consumed_holdout_rejected(tmp_path: Path) ->
 
 def test_03_concurrent_release_reservation_rejected(tmp_path: Path) -> None:
     ledger_file = tmp_path / "test_ledger.json"
-    lock1 = DurableHoldoutLock(ledger_path=ledger_file)
+    lock1 = DurableHoldoutLock.initialize_fresh_ledger(ledger_path=ledger_file)
     
     # Manually create the lockfile to simulate an active concurrent evaluator
     lockfile = ledger_file.with_suffix(".lock")
@@ -128,7 +128,7 @@ def test_04_durable_ledger_survives_restart(tmp_path: Path) -> None:
     ledger_file = tmp_path / "persistent_ledger.json"
     
     # Session 1: reserve and burn
-    lock1 = DurableHoldoutLock(ledger_path=ledger_file)
+    lock1 = DurableHoldoutLock.initialize_fresh_ledger(ledger_path=ledger_file)
     lock1.reserve_release("release_delta_004", "44" * 32)
     lock1.record_private_data_access("release_delta_004")
     lock1.mark_aborted("release_delta_004", reason="Simulated worker crash")

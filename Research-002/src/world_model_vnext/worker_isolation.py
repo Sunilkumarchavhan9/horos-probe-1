@@ -298,6 +298,9 @@ def recv_ipc_message(stream: Any) -> Dict[str, Any]:
         if offset < 0 or length < 0 or (offset + length) > len(body_bytes):
             raise ContractViolationError(f"Tensor buffer offset/length out of bounds for '{tensor_id}'.")
 
+        if not isinstance(shape, list) or any(not isinstance(dim, int) or dim < 0 for dim in shape):
+            raise ContractViolationError(f"Tensor shape {shape} contains invalid dimensions for '{tensor_id}'.")
+
         try:
             dt = np.dtype(dtype_str)
         except Exception as exc:
@@ -420,7 +423,11 @@ class IsolatedInferenceWorker:
                 )
 
         if self._closed or self.proc.poll() is not None:
-            raise ContractViolationError("Inference worker process is not running.")
+            stderr_out = self.proc.stderr.read().decode("utf-8", errors="replace") if self.proc.stderr else ""
+            raise ContractViolationError(
+                f"Inference worker process has terminated unexpectedly (exit code {self.proc.poll()}). "
+                f"Worker stderr: {stderr_out.strip()}"
+            )
 
         try:
             send_ipc_message(self.proc.stdin, {
@@ -440,15 +447,20 @@ class IsolatedInferenceWorker:
 
     def predict(self, payload: Dict[str, Any]) -> Dict[str, Any]:
         """Validates payload schema, transmits across IPC pipe, and returns verified model predictions."""
+        # 1. Evaluator-side pre-IPC schema and privileged-key validation
+        validate_inference_ipc_payload(payload)
+
+        if not self._model_verified_and_loaded:
+            raise ContractViolationError(
+                "IsolatedInferenceWorker cannot execute predict before candidate checkpoint weights are loaded and verified."
+            )
+
         if self._closed or self.proc.poll() is not None:
             stderr_out = self.proc.stderr.read().decode("utf-8", errors="replace") if self.proc.stderr else ""
             raise ContractViolationError(
                 f"Inference worker process has terminated unexpectedly (exit code {self.proc.poll()}). "
                 f"Worker stderr: {stderr_out.strip()}"
             )
-
-        # 1. Evaluator-side pre-IPC schema and privileged-key validation
-        validate_inference_ipc_payload(payload)
 
         # 2. Transmit payload across stdin pipe
         try:
@@ -481,6 +493,42 @@ class IsolatedInferenceWorker:
             raise ContractViolationError(f"Worker returned unauthorized output fields: {unknown_outputs}")
 
         return predictions
+
+    def test_vault_access(self, vault_path: Path | str) -> Dict[str, Any]:
+        """Commands worker to attempt direct filesystem access to a target vault path."""
+        if self._closed or self.proc.poll() is not None:
+            stderr_out = self.proc.stderr.read().decode("utf-8", errors="replace") if self.proc.stderr else ""
+            raise ContractViolationError(
+                f"Inference worker process has terminated unexpectedly (exit code {self.proc.poll()}). "
+                f"Worker stderr: {stderr_out.strip()}"
+            )
+        send_ipc_message(self.proc.stdin, {"command": "TEST_VAULT_ACCESS", "vault_path": str(vault_path)})
+        return recv_ipc_message(self.proc.stdout)
+
+    def test_outbound_network(self, host: str, port: int, timeout: float = 2.0) -> Dict[str, Any]:
+        """Commands worker to attempt direct socket network connection."""
+        if self._closed or self.proc.poll() is not None:
+            stderr_out = self.proc.stderr.read().decode("utf-8", errors="replace") if self.proc.stderr else ""
+            raise ContractViolationError(
+                f"Inference worker process has terminated unexpectedly (exit code {self.proc.poll()}). "
+                f"Worker stderr: {stderr_out.strip()}"
+            )
+        send_ipc_message(
+            self.proc.stdin,
+            {"command": "TEST_OUTBOUND_NETWORK", "host": str(host), "port": int(port), "timeout": float(timeout)}
+        )
+        return recv_ipc_message(self.proc.stdout)
+
+    def get_security_info(self) -> Dict[str, Any]:
+        """Queries process SID, PID, and security parameters from inside the worker process."""
+        if self._closed or self.proc.poll() is not None:
+            stderr_out = self.proc.stderr.read().decode("utf-8", errors="replace") if self.proc.stderr else ""
+            raise ContractViolationError(
+                f"Inference worker process has terminated unexpectedly (exit code {self.proc.poll()}). "
+                f"Worker stderr: {stderr_out.strip()}"
+            )
+        send_ipc_message(self.proc.stdin, {"command": "GET_SECURITY_INFO"})
+        return recv_ipc_message(self.proc.stdout)
 
     def close(self) -> None:
         """Terminates worker process and releases pipes cleanly."""
@@ -553,6 +601,9 @@ def worker_main() -> None:
             except Exception as exc:
                 send_ipc_message(stdout_stream, {"error": f"Failed loading checkpoint: {exc}"})
         elif cmd == "PREDICT":
+            if not checkpoint_loaded:
+                send_ipc_message(stdout_stream, {"error": "Inference worker cannot predict before verified checkpoint weights are loaded."})
+                continue
             payload = msg.get("payload")
             try:
                 # 1. In-worker validation of deserialized payload
@@ -609,6 +660,39 @@ def worker_main() -> None:
                 send_ipc_message(stdout_stream, {"status": "OK", "predictions": preds})
             except Exception as exc:
                 send_ipc_message(stdout_stream, {"error": str(exc)})
+        elif cmd == "TEST_VAULT_ACCESS":
+            target_path = Path(msg.get("vault_path", "")).resolve()
+            try:
+                if target_path.is_dir():
+                    files = list(target_path.iterdir())
+                    send_ipc_message(stdout_stream, {"status": "ACCESS_ALLOWED", "path": str(target_path), "file_count": len(files)})
+                else:
+                    data = target_path.read_bytes()
+                    send_ipc_message(stdout_stream, {"status": "ACCESS_ALLOWED", "path": str(target_path), "bytes_read": len(data)})
+            except PermissionError as pe:
+                send_ipc_message(stdout_stream, {"status": "ACCESS_DENIED", "error": str(pe), "path": str(target_path)})
+            except Exception as exc:
+                send_ipc_message(stdout_stream, {"status": "ERROR", "error": str(exc), "path": str(target_path)})
+        elif cmd == "TEST_OUTBOUND_NETWORK":
+            import socket
+            host = str(msg.get("host", "127.0.0.1"))
+            port = int(msg.get("port", 80))
+            timeout = float(msg.get("timeout", 2.0))
+            try:
+                sock = socket.create_connection((host, port), timeout=timeout)
+                sock.close()
+                send_ipc_message(stdout_stream, {"status": "NETWORK_ALLOWED", "host": host, "port": port})
+            except Exception as exc:
+                send_ipc_message(stdout_stream, {"status": "NETWORK_DENIED", "error": str(exc), "host": host, "port": port})
+        elif cmd == "GET_SECURITY_INFO":
+            send_ipc_message(stdout_stream, {
+                "status": "OK",
+                "pid": os.getpid(),
+                "sid": get_current_process_sid(),
+                "env_proxy": os.environ.get("HTTP_PROXY", ""),
+                "checkpoint_loaded": checkpoint_loaded,
+                "loaded_sha256": loaded_sha256,
+            })
         else:
             send_ipc_message(stdout_stream, {"error": f"Unknown command '{cmd}'"})
 

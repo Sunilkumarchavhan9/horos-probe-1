@@ -39,9 +39,6 @@ class LedgerMissingError(ContractViolationError):
     """Raised when an expected production evaluation ledger is missing."""
 
 
-_DEFAULT_LEDGER_AUTH_KEY = b"HOROS-LEDGER-AUTHENTICATED-STATE-KEY-V1"
-
-
 def _canonical_json_bytes(obj: Any) -> bytes:
     return json.dumps(obj, sort_keys=True, separators=(",", ":")).encode("utf-8")
 
@@ -79,7 +76,24 @@ class DurableHoldoutLock:
         self.ledger_path = Path(ledger_path)
         self.audit_trail_path = Path(audit_trail_path) if audit_trail_path else self.ledger_path.with_name("evaluation_audit_trail.jsonl")
         self._lock_path = self.ledger_path.with_suffix(".lock")
-        self.auth_key = auth_key or os.environ.get("HOROS_LEDGER_AUTH_KEY", "").encode("utf-8") or _DEFAULT_LEDGER_AUTH_KEY
+
+        if auth_key is not None:
+            if isinstance(auth_key, str):
+                self.auth_key = auth_key.encode("utf-8")
+            elif isinstance(auth_key, bytes):
+                self.auth_key = auth_key
+            else:
+                raise ContractViolationError(f"Unsupported auth_key type: {type(auth_key)}")
+        else:
+            env_key = os.environ.get("HOROS_LEDGER_AUTH_KEY", "").encode("utf-8")
+            self.auth_key = env_key if env_key else b""
+
+        if not self.auth_key:
+            raise ContractViolationError(
+                "Mandatory ledger authentication key is missing. Production ledger operations require an externally "
+                "provisioned secret via 'HOROS_LEDGER_AUTH_KEY' or an explicit ephemeral 'auth_key'. "
+                "Hardcoded secret fallback is prohibited."
+            )
         
         self.ledger_path.parent.mkdir(parents=True, exist_ok=True)
         

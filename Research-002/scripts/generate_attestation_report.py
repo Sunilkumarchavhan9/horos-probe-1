@@ -1,4 +1,4 @@
-"""Generates the official Stage 3.7C.3 machine-readable security attestation report from active in-worker probes."""
+"""Generates the official Stage 3.7C.4 machine-readable security attestation report from active in-worker probes."""
 
 import hashlib
 import io
@@ -74,6 +74,8 @@ def generate_report():
             ]
             fs_state = worker.test_filesystem_writability(candidate_paths=probe_candidates)
 
+            # Comprehensive vault isolation test across multiple routes
+            vault_iso = worker.test_vault_isolation(secret_vault)
             vault_state = worker.test_procfs_vault_inspection(vault_path=str(secret_vault))
             res_state = worker.test_resource_limits()
             net_state = worker.run_custom_command({"command": "TEST_FULL_NETWORK_DIAGNOSTICS"})
@@ -127,15 +129,29 @@ def generate_report():
                 and "unhandled" in unauth_resp["error"].lower()
             )
 
+            active_tier = worker.get_active_runtime_tier()
+
         finally:
             if worker is not None:
                 worker.close()
             remove_os_vault_isolation(secret_vault)
 
-        # 4. Construct attestation builder bound to real candidate hash and capabilities
+        # 4. Construct attestation builder bound to real candidate hash, capabilities, and runtime identity
+        active_identity = {
+            "active_runtime_tier": active_tier,
+            "uid": sec_state.get("uid"),
+            "gid": sec_state.get("gid"),
+            "no_new_privs": sec_state.get("no_new_privs"),
+            "caps": sec_state.get("caps", {}),
+            "configured_limits": res_state.get("configured_limits", {}),
+            "observed_limits": res_state.get("observed_limits", {}),
+            "limits_enforced": res_state.get("enforced", False),
+        }
+
         builder = SecurityAttestationBuilder(
             candidate_checkpoint_sha256=actual_sha256,
             runtime_capabilities=caps,
+            active_runtime_identity=active_identity,
         )
 
         # 1. Identity and Privilege Escalation
@@ -187,37 +203,29 @@ def generate_report():
         )
 
         # 3. Private Vault Invisibility
-        procfs_supported = vault_state.get("procfs_supported", False)
-        vault_conclusive_denial = (
-            procfs_supported
-            and vault_state.get("proc_1_root_denied") is True
-            and not vault_state.get("vault_visible_via_procfs")
-        )
+        routes = vault_iso.get("routes", {})
+        conclusive = bool(vault_iso.get("conclusive_isolation"))
         builder.record_control(
             control_id="ISO-VAULT-01",
             name="Private Vault Invisibility & Symlink / Procfs Traversal Denial",
-            status=STATUS_TESTED_AND_VERIFIED if vault_conclusive_denial else STATUS_PARTIALLY_VERIFIED,
+            status=STATUS_TESTED_AND_VERIFIED if (conclusive and not vault_iso.get("any_route_accessible")) else STATUS_PARTIALLY_VERIFIED,
             evidence={
-                "procfs_supported": procfs_supported,
-                "proc_1_root_accessible": vault_state.get("proc_1_root_accessible"),
-                "proc_1_root_denied": vault_state.get("proc_1_root_denied"),
-                "vault_visible_via_procfs": vault_state.get("vault_visible_via_procfs"),
-                "vault_direct_accessible": vault_state.get("vault_direct_accessible"),
-                "vault_direct_denied": vault_state.get("vault_direct_denied"),
-                "unsupported_routes": vault_state.get("unsupported_routes", []),
+                "routes": routes,
+                "conclusive_isolation": conclusive,
+                "any_route_accessible": vault_iso.get("any_route_accessible", False),
+                "procfs_supported": vault_state.get("procfs_supported", False),
                 "traversal_findings_count": len(vault_state.get("traversal_findings", [])),
             },
             rationale=(
-                "Active procfs and traversal probes confirmed vault invisibility with explicit root denial."
-                if vault_conclusive_denial
-                else "Direct filesystem vault isolation enforced; procfs route unsupported or partially verified on this platform."
+                "All supported traversal routes verified denied or not found; zero sensitive vault leaks observed."
+                if (conclusive and not vault_iso.get("any_route_accessible"))
+                else "Direct filesystem vault isolation enforced; procfs and alternate routes unsupported or partially verified on this platform."
             ),
         )
 
         # 4. Kernel Network Isolation
-        active_tier = "subprocess"
         raw_socket_denied = (net_state.get("raw_socket_status") == "RAW_SOCKET_DENIED")
-        netns_verified = (active_tier in ("container", "namespace", "docker", "unshare") and raw_socket_denied)
+        netns_verified = (active_tier in ("container", "namespace", "docker", "unshare", "docker_oci", "native_namespaces", "wsl2_namespaces") and raw_socket_denied)
         builder.record_control(
             control_id="ISO-NET-01",
             name="Kernel Network Namespace Isolation & Dropped Capabilities",
@@ -239,17 +247,23 @@ def generate_report():
         )
 
         # 5. Resource Limits Enforcement
+        limits_enforced = bool(res_state.get("enforced"))
+        limits_avail = bool(res_state.get("limits_available"))
         builder.record_control(
             control_id="ISO-RES-01",
             name="Resource Quota & Limit Enforcement Schema",
-            status=STATUS_TESTED_AND_VERIFIED,
+            status=STATUS_TESTED_AND_VERIFIED if (limits_avail and limits_enforced) else STATUS_PARTIALLY_VERIFIED,
             evidence={
-                "memory_max": res_state.get("memory_max"),
-                "pids_max": res_state.get("pids_max"),
-                "cpu_max": res_state.get("cpu_max"),
-                "rlimits_present": bool(res_state.get("rlimits")),
+                "configured_limits": res_state.get("configured_limits", {}),
+                "observed_limits": res_state.get("observed_limits", {}),
+                "limits_available": limits_avail,
+                "enforced": limits_enforced,
             },
-            rationale="Worker queried cgroups and rlimit interfaces successfully conforming to resource schema.",
+            rationale=(
+                "Cgroups v2 resource limits active and strictly enforced."
+                if (limits_avail and limits_enforced)
+                else "Cgroups v2 measurements unavailable or unenforced under standard subprocess fallback; active enforcement requires container or cgroup-bound execution."
+            ),
         )
 
         # 6. Safe Binary IPC & Protocol Hardening
@@ -311,10 +325,12 @@ def generate_report():
         )
 
         record = builder.build()
-        out_path = Path("Research-002/experiments/stage37_blind_evaluation/security_attestation_report.json")
+        repo_root = Path(__file__).resolve().parent.parent
+        out_path = repo_root / "experiments/stage37_blind_evaluation/security_attestation_report.json"
         save_security_attestation(record, out_path)
         print(f"Saved verified security attestation report to {out_path.resolve()}")
         print(f"Evidence Digest SHA-256: {record['evidence_digest_sha256']}")
+        print(f"Attestation Signature (Ed25519): {record['attestation_signature'][:32]}...")
 
 
 if __name__ == "__main__":

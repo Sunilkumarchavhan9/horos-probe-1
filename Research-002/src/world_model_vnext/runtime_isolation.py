@@ -64,27 +64,48 @@ def detect_runtime_capabilities() -> Dict[str, Any]:
     docker_path = shutil.which("docker")
     podman_path = shutil.which("podman")
     unshare_path = shutil.which("unshare")
-    
-    # On Windows, check for WSL with unshare
+
+    # Probe Docker daemon availability
+    docker_available = False
+    if docker_path:
+        try:
+            res = subprocess.run([docker_path, "info"], capture_output=True, timeout=3.0)
+            docker_available = res.returncode == 0
+        except Exception:
+            docker_available = False
+
+    # Probe Podman daemon availability
+    podman_available = False
+    if podman_path:
+        try:
+            res = subprocess.run([podman_path, "info"], capture_output=True, timeout=3.0)
+            podman_available = res.returncode == 0
+        except Exception:
+            podman_available = False
+
+    # Probe native unprivileged kernel namespaces on POSIX
+    native_unshare_available = False
+    if unshare_path and os.name != "nt":
+        try:
+            res = subprocess.run([unshare_path, "-n", "-r", "true"], capture_output=True, timeout=3.0)
+            native_unshare_available = res.returncode == 0
+        except Exception:
+            native_unshare_available = False
+
+    # On Windows, probe WSL2 with unshare
     wsl_unshare_available = False
     if os.name == "nt":
         wsl_path = shutil.which("wsl")
         if wsl_path:
             try:
                 res = subprocess.run(
-                    ["wsl", "which", "unshare"],
+                    ["wsl", "unshare", "-n", "-r", "true"],
                     capture_output=True,
-                    text=True,
                     timeout=5.0,
                 )
-                if res.returncode == 0 and res.stdout.strip():
-                    wsl_unshare_available = True
+                wsl_unshare_available = res.returncode == 0
             except Exception:
                 wsl_unshare_available = False
-
-    docker_available = docker_path is not None
-    podman_available = podman_path is not None
-    native_unshare_available = unshare_path is not None
 
     if docker_available or podman_available:
         runtime_type = RUNTIME_OCI_CONTAINER

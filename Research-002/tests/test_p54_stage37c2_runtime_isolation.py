@@ -293,7 +293,7 @@ def test_08_in_worker_network_egress_denial_evidence() -> None:
     """
     caps = detect_runtime_capabilities()
     
-    if caps["wsl_unshare_available"] or caps["native_unshare_available"]:
+    if caps["network_isolation_supported"]:
         # Execute in-worker network test inside actual Linux network namespace (native or WSL)
         script = """import socket, urllib.request, json
 tcp_denied = False
@@ -327,15 +327,14 @@ print(json.dumps({'tcp_denied': tcp_denied, 'dns_denied': dns_denied, 'http_deni
         assert out["dns_denied"] is True, "DNS resolution must be DENIED under unshare -n!"
         assert out["http_denied"] is True, "HTTP traffic must be DENIED under unshare -n!"
     else:
-        # When neither container nor unshare is available, report capability status
-        assert caps["runtime_type"] in [RUNTIME_SUBPROCESS_FALLBACK, RUNTIME_OCI_CONTAINER]
-        assert caps["network_isolation_supported"] in [True, False]
+        # Runtime or CI environment cannot enforce network isolation without root container privileges
+        pytest.skip("Control BLOCKED: Host/CI environment cannot enforce unprivileged kernel network namespaces.")
 
 
 def test_09_in_worker_raw_socket_denial_evidence() -> None:
     """Verifies that raw IP sockets are denied under dropped capabilities."""
     caps = detect_runtime_capabilities()
-    if caps["wsl_unshare_available"] or (caps["native_unshare_available"] and shutil.which("capsh")):
+    if caps["dropped_caps_supported"] and (caps["wsl_unshare_available"] or (caps["native_unshare_available"] and shutil.which("capsh"))):
         raw_script = """import socket, json
 raw_denied = False
 try:
@@ -357,7 +356,7 @@ print(json.dumps({'raw_denied': raw_denied}))
         out = json.loads(res.stdout.strip())
         assert out["raw_denied"] is True, "Raw socket creation must be DENIED when CAP_NET_RAW is dropped!"
     else:
-        assert caps["dropped_caps_supported"] in [True, False]
+        pytest.skip("Control BLOCKED: Host/CI environment cannot enforce dropped capabilities without root container privileges.")
 
 
 # ===========================================================================

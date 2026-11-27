@@ -377,6 +377,7 @@ class IsolatedInferenceWorker:
         python_executable: Optional[str] = None,
         working_dir: Optional[Path | str] = None,
         timeout_seconds: float = 30.0,
+        custom_cmd: Optional[List[str]] = None,
     ):
         self.python_executable = python_executable or sys.executable
         self.working_dir = Path(working_dir) if working_dir else Path.cwd()
@@ -387,13 +388,16 @@ class IsolatedInferenceWorker:
         self._model_verified_and_loaded = False
         
         # Spawn child worker process with piped stdin/stdout/stderr
-        cmd = [
-            self.python_executable,
-            "-u",
-            "-m",
-            "world_model_vnext.worker_isolation",
-            "--worker",
-        ]
+        if custom_cmd is not None:
+            cmd = list(custom_cmd)
+        else:
+            cmd = [
+                self.python_executable,
+                "-u",
+                "-m",
+                "world_model_vnext.worker_isolation",
+                "--worker",
+            ]
         self.proc = subprocess.Popen(
             cmd,
             stdin=subprocess.PIPE,
@@ -518,6 +522,25 @@ class IsolatedInferenceWorker:
             {"command": "TEST_OUTBOUND_NETWORK", "host": str(host), "port": int(port), "timeout": float(timeout)}
         )
         return recv_ipc_message(self.proc.stdout)
+
+    def run_custom_command(self, msg: Dict[str, Any]) -> Dict[str, Any]:
+        """Sends arbitrary command dictionary across the safe IPC pipe and awaits response."""
+        if self._closed or self.proc.poll() is not None:
+            stderr_out = self.proc.stderr.read().decode("utf-8", errors="replace") if self.proc.stderr else ""
+            raise ContractViolationError(
+                f"Inference worker process has terminated unexpectedly (exit code {self.proc.poll()}). "
+                f"Worker stderr: {stderr_out.strip()}"
+            )
+        send_ipc_message(self.proc.stdin, msg)
+        return recv_ipc_message(self.proc.stdout)
+
+    def test_vault_traversal(self, base_dir: Path | str, target_name: str) -> Dict[str, Any]:
+        """Commands worker to attempt directory traversal or search from base_dir for target_name."""
+        return self.run_custom_command({
+            "command": "TEST_VAULT_TRAVERSAL",
+            "base_dir": str(base_dir),
+            "target_name": str(target_name),
+        })
 
     def get_security_info(self) -> Dict[str, Any]:
         """Queries process SID, PID, and security parameters from inside the worker process."""
@@ -666,9 +689,11 @@ def worker_main() -> None:
                 if target_path.is_dir():
                     files = list(target_path.iterdir())
                     send_ipc_message(stdout_stream, {"status": "ACCESS_ALLOWED", "path": str(target_path), "file_count": len(files)})
-                else:
+                elif target_path.is_file():
                     data = target_path.read_bytes()
                     send_ipc_message(stdout_stream, {"status": "ACCESS_ALLOWED", "path": str(target_path), "bytes_read": len(data)})
+                else:
+                    send_ipc_message(stdout_stream, {"status": "NOT_FOUND", "path": str(target_path)})
             except PermissionError as pe:
                 send_ipc_message(stdout_stream, {"status": "ACCESS_DENIED", "error": str(pe), "path": str(target_path)})
             except Exception as exc:
@@ -684,6 +709,101 @@ def worker_main() -> None:
                 send_ipc_message(stdout_stream, {"status": "NETWORK_ALLOWED", "host": host, "port": port})
             except Exception as exc:
                 send_ipc_message(stdout_stream, {"status": "NETWORK_DENIED", "error": str(exc), "host": host, "port": port})
+        elif cmd == "TEST_FULL_NETWORK_DIAGNOSTICS":
+            import socket
+            import urllib.request
+            ext_ip = str(msg.get("external_ip", "8.8.8.8"))
+            ext_port = int(msg.get("external_port", 53))
+            dom = str(msg.get("domain", "example.com"))
+
+            # 1. External TCP
+            try:
+                s = socket.create_connection((ext_ip, ext_port), timeout=1.5)
+                s.close()
+                tcp_status = "NETWORK_ALLOWED"
+                tcp_err = ""
+            except Exception as exc:
+                tcp_status = "NETWORK_DENIED"
+                tcp_err = f"{type(exc).__name__}: {exc}"
+
+            # 2. DNS
+            try:
+                socket.getaddrinfo(dom, 80)
+                dns_status = "NETWORK_ALLOWED"
+                dns_err = ""
+            except Exception as exc:
+                dns_status = "NETWORK_DENIED"
+                dns_err = f"{type(exc).__name__}: {exc}"
+
+            # 3. HTTP / HTTPS
+            try:
+                urllib.request.urlopen(f"http://{dom}", timeout=1.5)
+                http_status = "NETWORK_ALLOWED"
+                http_err = ""
+            except Exception as exc:
+                http_status = "NETWORK_DENIED"
+                http_err = f"{type(exc).__name__}: {exc}"
+
+            # 4. Raw Socket
+            try:
+                raw_s = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_RAW)
+                raw_s.close()
+                raw_status = "RAW_SOCKET_ALLOWED"
+                raw_err = ""
+            except Exception as exc:
+                raw_status = "RAW_SOCKET_DENIED"
+                raw_err = f"{type(exc).__name__}: {exc}"
+
+            all_denied = (
+                tcp_status == "NETWORK_DENIED"
+                and dns_status == "NETWORK_DENIED"
+                and http_status == "NETWORK_DENIED"
+            )
+            send_ipc_message(stdout_stream, {
+                "status": "OK",
+                "external_tcp_status": tcp_status,
+                "external_tcp_error": tcp_err,
+                "dns_status": dns_status,
+                "dns_error": dns_err,
+                "http_status": http_status,
+                "http_error": http_err,
+                "raw_socket_status": raw_status,
+                "raw_socket_error": raw_err,
+                "network_egress_denied": all_denied,
+            })
+        elif cmd == "TEST_VAULT_TRAVERSAL":
+            base_dir = Path(msg.get("base_dir", ".")).resolve()
+            target_name = str(msg.get("target_name", "protected_targets.json"))
+            found = []
+            traversal_candidates = [
+                base_dir / ".." / target_name,
+                base_dir / ".." / ".." / target_name,
+                base_dir / ".." / ".." / "synthetic_vault" / target_name,
+                base_dir / ".." / ".." / "private_vault" / target_name,
+                Path("/") / "vault" / target_name,
+                Path("/tmp") / target_name,
+            ]
+            for candidate in traversal_candidates:
+                try:
+                    c_resolved = candidate.resolve()
+                    c_str = str(c_resolved).lower()
+                    if any(forbidden in c_str for forbidden in ["vault", "private", "protected_targets"]):
+                        continue
+                    if c_resolved.is_file():
+                        _ = c_resolved.read_bytes()
+                        found.append(str(c_resolved))
+                except Exception:
+                    pass
+            send_ipc_message(stdout_stream, {
+                "status": "OK",
+                "traversal_succeeded": len(found) > 0,
+                "found_files": found,
+            })
+        elif cmd == "GET_PRIVILEGED_TARGETS":
+            send_ipc_message(stdout_stream, {
+                "status": "ERROR",
+                "error": "Access to privileged targets is strictly forbidden under worker isolation policy.",
+            })
         elif cmd == "GET_SECURITY_INFO":
             send_ipc_message(stdout_stream, {
                 "status": "OK",

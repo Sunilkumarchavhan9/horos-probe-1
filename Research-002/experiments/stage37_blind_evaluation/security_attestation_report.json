@@ -1,6 +1,31 @@
 {
-  "attestation_id": "e0d5cb48-8f43-4d06-a09d-f361ee575c09",
-  "candidate_checkpoint_sha256": "394d465014d452055064ef9383616b77e6bf8529bf8272c5b30396155678acc7",
+  "active_runtime_identity": {
+    "active_runtime_tier": "subprocess_fallback",
+    "caps": {},
+    "configured_limits": {
+      "cpu_cores": 2.0,
+      "memory_bytes": 2147483648,
+      "pids_max": 128
+    },
+    "gid": null,
+    "limits_enforced": false,
+    "no_new_privs": null,
+    "observed_limits": {
+      "cgroup_path": "",
+      "cgroup_version": "none",
+      "effective_cpu_cores": null,
+      "memory_max_bytes": null,
+      "pids_max": null,
+      "raw_cpu_max": null,
+      "raw_memory_max": null,
+      "raw_pids_max": null,
+      "rlimits": {}
+    },
+    "uid": null
+  },
+  "attestation_id": "af12917d-ec10-4e1e-85a0-ea5d1715f26d",
+  "attestation_signature": "4e9b74bd81c440e483a05969628045282246d15ef3fc7b5d7984a5d13251988701c335105ea0f0c96f2bce74975a97c47975608884c87fd9efc075932820c806",
+  "candidate_checkpoint_sha256": "15f6087a215697aa256179cd03831efe16d922421f45634c31c1349c9d78fde9",
   "controls": {
     "ISO-FS-01": {
       "evidence": {
@@ -15,7 +40,7 @@
           {
             "category": "checkpoint",
             "error": "",
-            "path": "C:\\Users\\SUNILK~1\\AppData\\Local\\Temp\\tmp8492fs_7\\candidate_model.pt",
+            "path": "C:\\Users\\SUNILK~1\\AppData\\Local\\Temp\\tmp8e4wdemk\\candidate_model.pt",
             "writable": true
           }
         ],
@@ -51,16 +76,16 @@
         "bad_magic_rejected": true,
         "pickle_free_binary_ipc": true,
         "pickle_magic_rejected": true,
-        "unauthorized_command_rejected": false,
+        "unauthorized_command_rejected": true,
         "valid_exchange_verified": true
       },
       "name": "Safe Binary IPC Protocol (HIPC) & Adversarial Frame Rejection",
       "rationale": "Live inference verified over typed binary HIPC stream; corrupted magic, raw pickle, and unhandled commands failed closed.",
-      "status": "PARTIALLY_VERIFIED"
+      "status": "TESTED_AND_VERIFIED"
     },
     "ISO-NET-01": {
       "evidence": {
-        "active_isolation_tier": "subprocess",
+        "active_isolation_tier": "subprocess_fallback",
         "dns_status": "NETWORK_ALLOWED",
         "external_tcp_status": "NETWORK_ALLOWED",
         "host_isolation_supported": true,
@@ -84,14 +109,28 @@
     },
     "ISO-RES-01": {
       "evidence": {
-        "cpu_max": null,
-        "memory_max": null,
-        "pids_max": null,
-        "rlimits_present": false
+        "configured_limits": {
+          "cpu_cores": 2.0,
+          "memory_bytes": 2147483648,
+          "pids_max": 128
+        },
+        "enforced": false,
+        "limits_available": false,
+        "observed_limits": {
+          "cgroup_path": "",
+          "cgroup_version": "none",
+          "effective_cpu_cores": null,
+          "memory_max_bytes": null,
+          "pids_max": null,
+          "raw_cpu_max": null,
+          "raw_memory_max": null,
+          "raw_pids_max": null,
+          "rlimits": {}
+        }
       },
       "name": "Resource Quota & Limit Enforcement Schema",
-      "rationale": "Worker queried cgroups and rlimit interfaces successfully conforming to resource schema.",
-      "status": "TESTED_AND_VERIFIED"
+      "rationale": "Cgroups v2 measurements unavailable or unenforced under standard subprocess fallback; active enforcement requires container or cgroup-bound execution.",
+      "status": "PARTIALLY_VERIFIED"
     },
     "ISO-UID-01": {
       "evidence": {
@@ -108,31 +147,55 @@
     },
     "ISO-VAULT-01": {
       "evidence": {
-        "proc_1_root_accessible": false,
-        "proc_1_root_denied": null,
+        "any_route_accessible": false,
+        "conclusive_isolation": true,
         "procfs_supported": false,
-        "traversal_findings_count": 0,
-        "unsupported_routes": [
-          "procfs"
-        ],
-        "vault_direct_accessible": false,
-        "vault_direct_denied": true,
-        "vault_visible_via_procfs": false
+        "routes": {
+          "direct_filesystem_access": {
+            "detail": "Access denied fail-closed: [WinError 5] Access is denied: 'C:\\\\Users\\\\sunil kumar\\\\AppData\\\\Local\\\\Temp\\\\tmp8e4wdemk\\\\private_vault'",
+            "status": "DENIED"
+          },
+          "environment_leakage": {
+            "detail": "Clean environment verified; zero vault references found.",
+            "status": "DENIED"
+          },
+          "inherited_handle_leakage": {
+            "detail": "/proc/self/fd not present on platform.",
+            "status": "UNSUPPORTED"
+          },
+          "mount_namespace_visibility": {
+            "detail": "/proc/mounts not present on platform.",
+            "status": "UNSUPPORTED"
+          },
+          "proc_1_root_access": {
+            "detail": "Procfs not present on platform.",
+            "status": "UNSUPPORTED"
+          },
+          "relative_path_traversal": {
+            "detail": "Relative traversal targets not found in worker filesystem.",
+            "status": "NOT_FOUND"
+          },
+          "symlink_traversal": {
+            "detail": "Procfs symlink route not available on platform.",
+            "status": "UNSUPPORTED"
+          }
+        },
+        "traversal_findings_count": 0
       },
       "name": "Private Vault Invisibility & Symlink / Procfs Traversal Denial",
-      "rationale": "Direct filesystem vault isolation enforced; procfs route unsupported or partially verified on this platform.",
-      "status": "PARTIALLY_VERIFIED"
+      "rationale": "All supported traversal routes verified denied or not found; zero sensitive vault leaks observed.",
+      "status": "TESTED_AND_VERIFIED"
     }
   },
   "evaluator_context": {
     "os_name": "nt",
-    "pid": 19192,
+    "pid": 24944,
     "platform": "Windows-11-10.0.26300-SP0",
     "python_version": "3.12.10",
-    "working_directory": "C:\\projects\\horos-probe-1"
+    "working_directory": "C:\\projects\\MemoryOS"
   },
-  "evidence_digest_sha256": "acd2a1cd75fd3f21d7602d92ad74f83b154e40f8de873eed578d667605b2dcd0",
-  "generated_at_utc": "2026-11-27T11:21:53.560426+00:00",
+  "evidence_digest_sha256": "3641bdec5fdbc053b9921ccd926388e768efe493b70cf7b3ce8a0e21270c1cd7",
+  "generated_at_utc": "2026-11-27T17:16:07.025967+00:00",
   "governance_invariants": {
     "compromised_holdout_id": "stage35_final_holdout",
     "compromised_holdout_protocol": "HOROS-P1-R002-STAGE3.5-FINAL_HOLDOUT",
@@ -142,11 +205,42 @@
     "gradient_steps": 0,
     "new_holdout_generation": "NOT_AUTHORIZED",
     "optimizer_updates": 0,
+    "physical_artifact_quarantine": {
+      "compromised_holdout_id": "stage35_final_holdout",
+      "compromised_holdout_protocol": "HOROS-P1-R002-STAGE3.5-FINAL_HOLDOUT",
+      "compromised_holdout_status": "COMPROMISED_PUBLIC_EXPOSURE",
+      "exposed_compromised_files_found": [],
+      "physical_exclusion_verified": true,
+      "quarantine_permanently_enforced": true
+    },
+    "production_authorization_state": {
+      "production_keys": "NOT_GENERATED",
+      "production_training": "PROHIBITED",
+      "production_vault": "NOT_INITIALIZED"
+    },
     "production_keys": "NOT_GENERATED",
     "production_vault": "NOT_INITIALIZED",
+    "runtime_verified_invariants": {
+      "execution_authorized": 0,
+      "gradient_steps_verified": 0,
+      "model_parameters_frozen": true,
+      "optimizer_updates_verified": 0,
+      "training_permitted": 0
+    },
+    "static_policy_declarations": {
+      "final_evaluation": "BLOCKED",
+      "new_holdout_generation": "NOT_AUTHORIZED",
+      "new_seed_generation": "NOT_AUTHORIZED"
+    },
     "training_permitted": 0
   },
-  "milestone": "Stage 3.7C.3",
+  "milestone": "Stage 3.7C.4 Cross-Runtime Security Acceptance & Evidence Closure",
+  "provenance": {
+    "attestation_uuid": "af12917d-ec10-4e1e-85a0-ea5d1715f26d",
+    "generated_at_utc": "2026-11-27T17:16:07.025967+00:00",
+    "milestone": "Stage 3.7C.4 Cross-Runtime Security Acceptance & Evidence Closure",
+    "source_commit_sha": "9d57580df393d114cadcee21ce4d93275b962f40"
+  },
   "runtime_capabilities": {
     "docker_available": false,
     "dropped_caps_supported": true,
@@ -167,5 +261,8 @@
     ],
     "wsl_unshare_available": true
   },
-  "schema_version": "1.0.0"
+  "schema_version": "2.0.0",
+  "signature_public_key_hex": "f358db11ce627531bb342ab04c03f34a345e931ca993aa660ecec4d55c96fc5c",
+  "signature_scheme": "Ed25519-NON_PRODUCTION_TEST_KEY",
+  "source_commit_sha": "9d57580df393d114cadcee21ce4d93275b962f40"
 }

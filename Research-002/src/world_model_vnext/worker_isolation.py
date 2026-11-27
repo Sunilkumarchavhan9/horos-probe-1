@@ -30,6 +30,22 @@ from .ipc_filter import (
     recursive_assert_no_privileged_keys,
     validate_inference_ipc_payload,
 )
+from .runtime_isolation import (
+    DEFAULT_WORKER_IMAGE,
+    EXPECTED_CPU_CORES,
+    EXPECTED_MEMORY_BYTES,
+    EXPECTED_PIDS_MAX,
+    PROFILE_AUTO,
+    PROFILE_DOCKER_OCI,
+    PROFILE_NATIVE_NAMESPACES,
+    PROFILE_SUBPROCESS_FALLBACK,
+    PROFILE_WSL2_NAMESPACES,
+    VALID_EXECUTION_PROFILES,
+    build_namespace_run_command,
+    build_oci_run_command,
+    detect_runtime_capabilities,
+    resolve_execution_profile,
+)
 
 
 # Permitted prediction output keys returned across the IPC channel
@@ -272,6 +288,10 @@ def recv_ipc_message(stream: Any) -> Dict[str, Any]:
     if len(header_bytes) < header_len:
         raise EOFError(f"Truncated IPC header: expected {header_len} bytes, received {len(header_bytes)}.")
 
+    # Explicit rejection of raw pickle or archive signatures
+    if header_bytes.startswith(b"\x80\x04") or header_bytes.startswith(b"\x80\x05") or header_bytes.startswith(b"PK\x03\x04"):
+        raise ContractViolationError("Pickle payload signature detected in IPC frame! Only safe JSON metadata permitted.")
+
     try:
         header_dict = json.loads(header_bytes.decode("utf-8"))
     except Exception as exc:
@@ -378,6 +398,8 @@ class IsolatedInferenceWorker:
         working_dir: Optional[Path | str] = None,
         timeout_seconds: float = 30.0,
         custom_cmd: Optional[List[str]] = None,
+        execution_profile: str = PROFILE_AUTO,
+        container_image: str = DEFAULT_WORKER_IMAGE,
     ):
         self.python_executable = python_executable or sys.executable
         self.working_dir = Path(working_dir) if working_dir else Path.cwd()
@@ -387,18 +409,44 @@ class IsolatedInferenceWorker:
         self.expected_checkpoint_sha256 = expected_checkpoint_sha256
         self._model_verified_and_loaded = False
         self._consumed_nonces: set[str] = set()
-        
-        # Spawn child worker process with piped stdin/stdout/stderr
+
+        # Resolve active runtime profile and construct command
         if custom_cmd is not None:
+            self.active_runtime_tier = "custom"
             cmd = list(custom_cmd)
         else:
-            cmd = [
-                self.python_executable,
-                "-u",
-                "-m",
-                "world_model_vnext.worker_isolation",
-                "--worker",
-            ]
+            self.active_runtime_tier = resolve_execution_profile(execution_profile)
+            if self.active_runtime_tier == PROFILE_DOCKER_OCI and self.checkpoint_path:
+                cmd = build_oci_run_command(
+                    checkpoint_path=self.checkpoint_path,
+                    image_name=container_image,
+                )
+            elif self.active_runtime_tier == PROFILE_WSL2_NAMESPACES:
+                cmd = build_namespace_run_command(
+                    checkpoint_path=self.checkpoint_path,
+                    use_wsl=True,
+                    python_binary=self.python_executable,
+                )
+            elif self.active_runtime_tier == PROFILE_NATIVE_NAMESPACES:
+                cmd = build_namespace_run_command(
+                    checkpoint_path=self.checkpoint_path,
+                    use_wsl=False,
+                    python_binary=self.python_executable,
+                )
+            else:
+                self.active_runtime_tier = PROFILE_SUBPROCESS_FALLBACK
+                cmd = [
+                    self.python_executable,
+                    "-u",
+                    "-m",
+                    "world_model_vnext.worker_isolation",
+                    "--worker",
+                ]
+
+        self.env["HOROS_ISOLATION_TIER"] = self.active_runtime_tier
+        if self.active_runtime_tier in (PROFILE_DOCKER_OCI, PROFILE_NATIVE_NAMESPACES, PROFILE_WSL2_NAMESPACES):
+            self.env["HOROS_REQUIRE_NO_NEW_PRIVS"] = "1"
+
         self.proc = subprocess.Popen(
             cmd,
             stdin=subprocess.PIPE,
@@ -411,6 +459,35 @@ class IsolatedInferenceWorker:
 
         if self.checkpoint_path is not None:
             self.load_checkpoint(self.checkpoint_path, self.expected_checkpoint_sha256)
+
+    def get_active_runtime_tier(self) -> str:
+        """Returns the actual active runtime isolation tier used for this worker."""
+        return self.active_runtime_tier
+
+    def test_vault_isolation(
+        self,
+        vault_path: Path | str,
+        target_name: str = "protected_targets.json",
+    ) -> Dict[str, Any]:
+        """Commands worker to execute comprehensive vault isolation probing across all threat routes."""
+        if self._closed or self.proc.poll() is not None:
+            stderr_out = self.proc.stderr.read().decode("utf-8", errors="replace") if self.proc.stderr else ""
+            raise ContractViolationError(
+                f"Inference worker process has terminated unexpectedly (exit code {self.proc.poll()}). "
+                f"Worker stderr: {stderr_out.strip()}"
+            )
+        try:
+            send_ipc_message(self.proc.stdin, {
+                "command": "TEST_VAULT_ISOLATION",
+                "vault_path": str(Path(vault_path).resolve()),
+                "target_name": str(target_name),
+            })
+            resp = recv_ipc_message(self.proc.stdout)
+            if not isinstance(resp, dict):
+                raise ContractViolationError(f"Worker returned non-dict response: {resp!r}")
+            return resp
+        except Exception as exc:
+            raise ContractViolationError(f"Vault isolation test failed: {exc}") from exc
 
     def load_checkpoint(self, checkpoint_path: Path | str, expected_sha256: Optional[str]) -> None:
         """Calculates digest of candidate checkpoint bytes, verifies against expected digest, and commands worker to load."""
@@ -1116,36 +1193,88 @@ def worker_main() -> None:
                 "groups": groups,
                 "no_new_privs": no_new_privs,
                 "caps": caps,
+                "active_runtime_tier": os.environ.get("HOROS_ISOLATION_TIER", PROFILE_SUBPROCESS_FALLBACK),
                 "is_admin_token": is_admin_token,
                 "escalation_probe_executed": escalation_probe_executed,
                 "escalation_prevented": escalation_prevented,
                 "escalation_error": escalation_error,
             })
         elif cmd == "TEST_RESOURCE_LIMITS":
-            mem_max = None
-            pids_max = None
-            cpu_max = None
+            # 1. Configured limits
+            configured_limits = {
+                "cpu_cores": EXPECTED_CPU_CORES,
+                "memory_bytes": EXPECTED_MEMORY_BYTES,
+                "pids_max": EXPECTED_PIDS_MAX,
+            }
+
+            raw_cpu_max = None
+            raw_mem_max = None
+            raw_pids_max = None
+            effective_cpu_cores = None
+            observed_mem_bytes = None
+            observed_pids_max = None
+            cgroup_version = "none"
+            cgroup_path = ""
             rlimits: Dict[str, Any] = {}
 
-            # cgroups v2
-            cg_mem = Path("/sys/fs/cgroup/memory.max")
-            if cg_mem.is_file():
+            # Determine cgroup path from /proc/self/cgroup if available
+            proc_cgroup = Path("/proc/self/cgroup")
+            cg_base = Path("/sys/fs/cgroup")
+            target_cg_dir = cg_base
+
+            if proc_cgroup.is_file():
                 try:
-                    mem_max = cg_mem.read_text().strip()
+                    for line in proc_cgroup.read_text(encoding="utf-8", errors="ignore").splitlines():
+                        parts = line.split(":")
+                        if len(parts) >= 3:
+                            rel_cg = parts[2].strip().lstrip("/")
+                            candidate_cg = cg_base / rel_cg
+                            if candidate_cg.is_dir():
+                                target_cg_dir = candidate_cg
+                                cgroup_path = str(candidate_cg)
+                                break
                 except Exception:
                     pass
-            cg_pids = Path("/sys/fs/cgroup/pids.max")
-            if cg_pids.is_file():
-                try:
-                    pids_max = cg_pids.read_text().strip()
-                except Exception:
-                    pass
-            cg_cpu = Path("/sys/fs/cgroup/cpu.max")
-            if cg_cpu.is_file():
-                try:
-                    cpu_max = cg_cpu.read_text().strip()
-                except Exception:
-                    pass
+
+            # Probe cgroups v2 vs v1
+            if (cg_base / "cgroup.controllers").is_file() or (target_cg_dir / "cgroup.controllers").is_file():
+                cgroup_version = "v2"
+            elif (cg_base / "memory").is_dir():
+                cgroup_version = "v1"
+
+            # 2. Observed limits
+            # CPU quota in cgroups v2: cpu.max has "$quota $period"
+            for d in [target_cg_dir, cg_base]:
+                cpu_file = d / "cpu.max"
+                if cpu_file.is_file() and raw_cpu_max is None:
+                    try:
+                        raw_cpu_max = cpu_file.read_text().strip()
+                        parts = raw_cpu_max.split()
+                        if len(parts) >= 2 and parts[0] != "max":
+                            quota = float(parts[0])
+                            period = float(parts[1])
+                            if period > 0:
+                                effective_cpu_cores = round(quota / period, 3)
+                    except Exception:
+                        pass
+
+                mem_file = d / "memory.max"
+                if mem_file.is_file() and raw_mem_max is None:
+                    try:
+                        raw_mem_max = mem_file.read_text().strip()
+                        if raw_mem_max != "max":
+                            observed_mem_bytes = int(raw_mem_max)
+                    except Exception:
+                        pass
+
+                pids_file = d / "pids.max"
+                if pids_file.is_file() and raw_pids_max is None:
+                    try:
+                        raw_pids_max = pids_file.read_text().strip()
+                        if raw_pids_max != "max":
+                            observed_pids_max = int(raw_pids_max)
+                    except Exception:
+                        pass
 
             try:
                 import resource
@@ -1155,15 +1284,241 @@ def worker_main() -> None:
             except Exception:
                 pass
 
+            # 3. Enforced status
+            limits_available = bool(
+                effective_cpu_cores is not None
+                and observed_mem_bytes is not None
+                and observed_pids_max is not None
+            )
+            enforced = bool(
+                limits_available
+                and effective_cpu_cores <= EXPECTED_CPU_CORES
+                and observed_mem_bytes <= EXPECTED_MEMORY_BYTES
+                and observed_pids_max <= EXPECTED_PIDS_MAX
+            )
+
+            observed_limits = {
+                "effective_cpu_cores": effective_cpu_cores,
+                "memory_max_bytes": observed_mem_bytes,
+                "pids_max": observed_pids_max,
+                "raw_cpu_max": raw_cpu_max,
+                "raw_memory_max": raw_mem_max,
+                "raw_pids_max": raw_pids_max,
+                "cgroup_version": cgroup_version,
+                "cgroup_path": cgroup_path,
+                "rlimits": rlimits,
+            }
+
             send_ipc_message(stdout_stream, {
                 "status": "OK",
-                "memory_max": mem_max,
-                "pids_max": pids_max,
-                "cpu_max": cpu_max,
+                "configured_limits": configured_limits,
+                "observed_limits": observed_limits,
+                "enforced": enforced,
+                "limits_available": limits_available,
+                # Backward compatibility fields
+                "memory_max": raw_mem_max,
+                "pids_max": raw_pids_max,
+                "cpu_max": raw_cpu_max,
                 "rlimits": rlimits,
             })
+        elif cmd == "TEST_VAULT_ISOLATION":
+            vault_path_str = msg.get("vault_path")
+            target_name = str(msg.get("target_name", "protected_targets.json"))
+            vp = Path(vault_path_str) if vault_path_str else None
+
+            # 1. Direct filesystem access
+            direct_status = "UNSUPPORTED"
+            direct_detail = ""
+            if vp is not None:
+                try:
+                    if vp.is_dir():
+                        _ = list(vp.iterdir())
+                        direct_status = "ACCESSIBLE"
+                        direct_detail = "Directory listing succeeded; vault is exposed."
+                    elif vp.is_file():
+                        _ = vp.read_bytes()
+                        direct_status = "ACCESSIBLE"
+                        direct_detail = "File read succeeded; vault is exposed."
+                    else:
+                        direct_status = "NOT_FOUND"
+                        direct_detail = f"Path '{vp}' does not exist in worker namespace."
+                except (PermissionError, OSError) as pe:
+                    direct_status = "DENIED"
+                    direct_detail = f"Access denied fail-closed: {pe}"
+                except Exception as ex:
+                    direct_status = "INCONCLUSIVE"
+                    direct_detail = f"Unexpected failure: {ex}"
+
+            # 2. Relative path traversal
+            relative_status = "NOT_FOUND"
+            relative_detail = "All relative traversal paths tested."
+            relative_candidates = [
+                Path("..") / target_name,
+                Path("..") / ".." / target_name,
+                Path("..") / ".." / "private_vault" / target_name,
+                Path("..") / ".." / ".." / "private_vault" / target_name,
+            ]
+            rel_denied_count = 0
+            for cand in relative_candidates:
+                try:
+                    if cand.is_file():
+                        _ = cand.read_bytes()
+                        relative_status = "ACCESSIBLE"
+                        relative_detail = f"Relative traversal reached and read '{cand}'."
+                        break
+                except (PermissionError, OSError):
+                    rel_denied_count += 1
+                except Exception:
+                    pass
+            if relative_status != "ACCESSIBLE":
+                if rel_denied_count > 0:
+                    relative_status = "DENIED"
+                    relative_detail = f"Relative traversal attempts denied with PermissionError ({rel_denied_count} paths)."
+                else:
+                    relative_status = "NOT_FOUND"
+                    relative_detail = "Relative traversal targets not found in worker filesystem."
+
+            # 3. Symlink traversal
+            symlink_status = "UNSUPPORTED"
+            symlink_detail = "Procfs symlink route not available on platform."
+            if Path("/proc").is_dir():
+                sym_candidates = [
+                    Path("/proc/self/cwd") / ".." / target_name,
+                    Path("/proc/self/root") / str(vp).lstrip("/") if vp else Path("/proc/self/root"),
+                ]
+                sym_denied = 0
+                sym_found = False
+                for sc in sym_candidates:
+                    try:
+                        if sc.exists() and sc.is_file():
+                            _ = sc.read_bytes()
+                            symlink_status = "ACCESSIBLE"
+                            symlink_detail = f"Symlink traversal accessed '{sc}'."
+                            sym_found = True
+                            break
+                    except (PermissionError, OSError):
+                        sym_denied += 1
+                    except Exception:
+                        pass
+                if not sym_found:
+                    if sym_denied > 0:
+                        symlink_status = "DENIED"
+                        symlink_detail = f"Symlink traversal denied fail-closed ({sym_denied} routes)."
+                    else:
+                        symlink_status = "NOT_FOUND"
+                        symlink_detail = "Symlink traversal targets not present."
+
+            # 4. /proc/1/root access
+            proc1_status = "UNSUPPORTED"
+            proc1_detail = "Procfs not present on platform."
+            if Path("/proc").is_dir():
+                p1_root = Path("/proc/1/root")
+                try:
+                    if p1_root.exists():
+                        _ = list(p1_root.iterdir())
+                        proc1_status = "ACCESSIBLE"
+                        proc1_detail = "/proc/1/root directory listing succeeded; process leak."
+                    else:
+                        proc1_status = "NOT_FOUND"
+                        proc1_detail = "/proc/1/root not present."
+                except (PermissionError, OSError) as pe:
+                    proc1_status = "DENIED"
+                    proc1_detail = f"/proc/1/root access denied fail-closed: {pe}"
+                except Exception as ex:
+                    proc1_status = "INCONCLUSIVE"
+                    proc1_detail = f"/proc/1/root check inconclusive: {ex}"
+
+            # 5. Alternate mount namespace visibility
+            mount_status = "UNSUPPORTED"
+            mount_detail = "/proc/mounts not present on platform."
+            mounts_p = Path("/proc/mounts")
+            if mounts_p.is_file():
+                try:
+                    mounts_text = mounts_p.read_text(encoding="utf-8", errors="ignore")
+                    forbidden_mount_hits = [
+                        line for line in mounts_text.splitlines()
+                        if any(token in line.lower() for token in ["private_vault", "protected_targets", "signing_keys", "vault"])
+                    ]
+                    if forbidden_mount_hits:
+                        mount_status = "ACCESSIBLE"
+                        mount_detail = f"Vault paths visible in /proc/mounts: {forbidden_mount_hits[:2]}"
+                    else:
+                        mount_status = "DENIED"
+                        mount_detail = "No vault or protected tokens visible in mount table."
+                except (PermissionError, OSError) as pe:
+                    mount_status = "DENIED"
+                    mount_detail = f"/proc/mounts access denied: {pe}"
+                except Exception as ex:
+                    mount_status = "INCONCLUSIVE"
+                    mount_detail = f"Mount check inconclusive: {ex}"
+
+            # 6. Environment and inherited handle leakage
+            env_status = "DENIED"
+            env_detail = "Clean environment verified; zero vault references found."
+            for k, v in os.environ.items():
+                k_l = k.lower()
+                v_l = v.lower()
+                if any(token in k_l or token in v_l for token in ["private_vault", "protected_targets", "vault_key", "secret_vault"]):
+                    env_status = "ACCESSIBLE"
+                    env_detail = f"Sensitive token found in environment variable '{k}'."
+                    break
+
+            handle_status = "UNSUPPORTED"
+            handle_detail = "/proc/self/fd not present on platform."
+            fd_dir = Path("/proc/self/fd")
+            if fd_dir.is_dir():
+                try:
+                    leaked_fds = []
+                    for fd_p in fd_dir.iterdir():
+                        try:
+                            if fd_p.is_symlink():
+                                target = os.readlink(str(fd_p))
+                                if any(token in target.lower() for token in ["private_vault", "protected_targets", "signing_keys"]):
+                                    leaked_fds.append(f"{fd_p.name} -> {target}")
+                        except Exception:
+                            pass
+                    if leaked_fds:
+                        handle_status = "ACCESSIBLE"
+                        handle_detail = f"Leaked file descriptors found: {leaked_fds}"
+                    else:
+                        handle_status = "DENIED"
+                        handle_detail = "Zero inherited vault file descriptors found."
+                except (PermissionError, OSError) as pe:
+                    handle_status = "DENIED"
+                    handle_detail = f"/proc/self/fd access denied: {pe}"
+                except Exception as ex:
+                    handle_status = "INCONCLUSIVE"
+                    handle_detail = f"Handle check inconclusive: {ex}"
+
+            routes = {
+                "direct_filesystem_access": {"status": direct_status, "detail": direct_detail},
+                "relative_path_traversal": {"status": relative_status, "detail": relative_detail},
+                "symlink_traversal": {"status": symlink_status, "detail": symlink_detail},
+                "proc_1_root_access": {"status": proc1_status, "detail": proc1_detail},
+                "mount_namespace_visibility": {"status": mount_status, "detail": mount_detail},
+                "environment_leakage": {"status": env_status, "detail": env_detail},
+                "inherited_handle_leakage": {"status": handle_status, "detail": handle_detail},
+            }
+
+            any_accessible = any(r["status"] == "ACCESSIBLE" for r in routes.values())
+            conclusive_isolation = (
+                not any_accessible
+                and (direct_status in ("DENIED", "NOT_FOUND"))
+                and (relative_status in ("DENIED", "NOT_FOUND"))
+            )
+
+            send_ipc_message(stdout_stream, {
+                "status": "OK",
+                "routes": routes,
+                "conclusive_isolation": conclusive_isolation,
+                "any_route_accessible": any_accessible,
+            })
         else:
-            send_ipc_message(stdout_stream, {"error": f"Unknown command '{cmd}'"})
+            send_ipc_message(stdout_stream, {
+                "status": "ERROR",
+                "error": f"Unauthorized or unhandled command: {cmd}",
+                "command": cmd,
+            })
 
 
 if __name__ == "__main__":

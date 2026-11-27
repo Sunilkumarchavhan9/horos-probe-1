@@ -30,6 +30,26 @@ RUNTIME_OCI_CONTAINER = "OCI_CONTAINER"
 RUNTIME_LINUX_NAMESPACES = "LINUX_NAMESPACES"
 RUNTIME_SUBPROCESS_FALLBACK = "SUBPROCESS_FALLBACK"
 
+# Execution profile identifiers (Stage 3.7C.4)
+PROFILE_DOCKER_OCI = "docker_oci"
+PROFILE_WSL2_NAMESPACES = "wsl2_namespaces"
+PROFILE_NATIVE_NAMESPACES = "native_namespaces"
+PROFILE_SUBPROCESS_FALLBACK = "subprocess_fallback"
+PROFILE_AUTO = "auto"
+
+VALID_EXECUTION_PROFILES = frozenset({
+    PROFILE_DOCKER_OCI,
+    PROFILE_WSL2_NAMESPACES,
+    PROFILE_NATIVE_NAMESPACES,
+    PROFILE_SUBPROCESS_FALLBACK,
+    PROFILE_AUTO,
+})
+
+# Expected resource limits (Stage 3.7C.4)
+EXPECTED_CPU_CORES = 2.0
+EXPECTED_MEMORY_BYTES = 2 * 1024 * 1024 * 1024  # 2 GB
+EXPECTED_PIDS_MAX = 128
+
 # Default container image and unprivileged user specifications
 DEFAULT_WORKER_IMAGE = "horos-probe1-worker:stage37c2"
 WORKER_UID = 10001
@@ -149,6 +169,27 @@ def detect_runtime_capabilities() -> Dict[str, Any]:
             "Outbound network egress denied under container or network namespace",
         ],
     }
+
+
+def resolve_execution_profile(requested_profile: str = PROFILE_AUTO) -> str:
+    """Resolves requested execution profile against available system capabilities.
+
+    Never claims container or namespace isolation when running under subprocess fallback.
+    """
+    if requested_profile not in VALID_EXECUTION_PROFILES:
+        raise ValueError(
+            f"Unknown execution profile '{requested_profile}'. Must be one of {sorted(VALID_EXECUTION_PROFILES)}."
+        )
+
+    if requested_profile != PROFILE_AUTO:
+        return requested_profile
+
+    # PROFILE_AUTO: select native namespaces when running on native POSIX Linux with unshare;
+    # on Windows host, default to subprocess fallback unless container/WSL profile is explicitly chosen
+    caps = detect_runtime_capabilities()
+    if os.name != "nt" and caps.get("native_unshare_available"):
+        return PROFILE_NATIVE_NAMESPACES
+    return PROFILE_SUBPROCESS_FALLBACK
 
 
 def build_oci_run_command(

@@ -1,0 +1,92 @@
+{
+  "$schema": "https://horos-pi.org/schemas/probe1-worker-runtime-v1.json",
+  "version": "1.0.0",
+  "stage": "3.7C.2",
+  "description": "Deterministic OCI runtime configuration for restricted HOROS PROBE-1 inference worker",
+  "security_boundary": {
+    "evaluator_boundary": {
+      "privilege_level": "PRIVILEGED",
+      "data_access": "READ_WRITE_PRIVATE_VAULT",
+      "key_access": "ED25519_VERIFICATION_AND_LEDGER_AUTH",
+      "ipc_role": "HOST_CONTROLLER"
+    },
+    "worker_boundary": {
+      "privilege_level": "RESTRICTED_SANDBOX",
+      "user_identity": {
+        "uid": 10001,
+        "gid": 10001,
+        "user_name": "horos-worker",
+        "shell": "/sbin/nologin"
+      },
+      "network_isolation": {
+        "mode": "none",
+        "flags": ["--network", "none"],
+        "allow_localhost_egress": false,
+        "allow_external_egress": false,
+        "allow_raw_sockets": false
+      },
+      "filesystem_isolation": {
+        "read_only_root": true,
+        "flags": ["--read-only"],
+        "disallowed_mounts": [
+          "private_vault",
+          "evaluation_vault",
+          "signing_keys",
+          "evaluation_ledger",
+          "compromised_holdout"
+        ],
+        "allowed_read_only_mounts": [
+          {
+            "host_source": "AUTHORIZED_CANDIDATE_CHECKPOINT",
+            "container_target": "/model/checkpoint.pt",
+            "mode": "ro"
+          }
+        ],
+        "writable_tmpfs": {
+          "target": "/tmp",
+          "options": "rw,noexec,nosuid,size=64m"
+        }
+      },
+      "capabilities": {
+        "drop": ["ALL"],
+        "add": [],
+        "no_new_privileges": true
+      },
+      "resource_limits": {
+        "memory_limit": "2g",
+        "cpus": 2.0,
+        "pids_limit": 128
+      },
+      "ipc": {
+        "protocol": "HIPC_V1",
+        "serialization": "TYPED_BINARY_WITH_JSON_HEADER",
+        "pickle_allowed": false,
+        "max_payload_size_bytes": 67108864,
+        "permitted_input_keys": [
+          "states",
+          "actions",
+          "wrenches",
+          "task"
+        ],
+        "permitted_output_keys": [
+          "pred_next_states",
+          "pred_next_wrenches",
+          "pred_mode_probs",
+          "pred_friction_mu",
+          "pred_mass_kg",
+          "pred_uncertainty_total"
+        ]
+      }
+    }
+  },
+  "governance_invariants": {
+    "training_permitted": 0,
+    "execution_authorized": 0,
+    "gradient_steps": 0,
+    "optimizer_updates": 0,
+    "new_holdout_generation": "NOT_AUTHORIZED",
+    "production_keys": "NOT_GENERATED",
+    "production_vault": "NOT_INITIALIZED",
+    "final_evaluation": "BLOCKED"
+  }
+}

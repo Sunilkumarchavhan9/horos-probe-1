@@ -288,14 +288,11 @@ def test_07_worker_loads_authorized_checkpoint_and_predicts(
 def test_08_in_worker_network_egress_denial_evidence() -> None:
     """Independently verifies that in-worker network attempts fail closed under kernel network isolation.
     
-    If network namespace isolation (e.g. unshare -n or WSL) is available, demonstrates actual network denial.
+    If network namespace isolation (e.g. unshare -n or WSL) or Docker is available, demonstrates actual network denial.
     If the host environment does not support container/namespace isolation, records the capability status honestly.
     """
     caps = detect_runtime_capabilities()
-    
-    if caps["network_isolation_supported"]:
-        # Execute in-worker network test inside actual Linux network namespace (native or WSL)
-        script = """import socket, urllib.request, json
+    script = """import socket, urllib.request, json
 tcp_denied = False
 try:
     s = socket.create_connection(('8.8.8.8', 53), timeout=1.0)
@@ -314,18 +311,36 @@ except Exception:
     http_denied = True
 print(json.dumps({'tcp_denied': tcp_denied, 'dns_denied': dns_denied, 'http_denied': http_denied}))
 """
-        probe_cmd = (
-            ["wsl", "unshare", "-n", "-r", "python3"]
-            if caps["wsl_unshare_available"]
-            else ["unshare", "-n", "-r", sys.executable]
-        )
+    if caps["wsl_unshare_available"]:
+        probe_cmd = ["wsl", "unshare", "-n", "-r", "python3"]
         res = subprocess.run(probe_cmd, input=script, capture_output=True, text=True, timeout=10.0)
-        assert res.returncode == 0, f"Network probe failed: {res.stderr}"
+        assert res.returncode == 0, f"WSL probe failed: {res.stderr}"
         out = json.loads(res.stdout.strip())
-        # Strictly assert network egress is completely blocked!
         assert out["tcp_denied"] is True, "External TCP must be DENIED under unshare -n!"
         assert out["dns_denied"] is True, "DNS resolution must be DENIED under unshare -n!"
         assert out["http_denied"] is True, "HTTP traffic must be DENIED under unshare -n!"
+    elif caps["native_unshare_available"]:
+        probe_cmd = ["unshare", "-n", "-r", sys.executable]
+        res = subprocess.run(probe_cmd, input=script, capture_output=True, text=True, timeout=10.0)
+        assert res.returncode == 0, f"Native unshare probe failed: {res.stderr}"
+        out = json.loads(res.stdout.strip())
+        assert out["tcp_denied"] is True, "External TCP must be DENIED under unshare -n!"
+        assert out["dns_denied"] is True, "DNS resolution must be DENIED under unshare -n!"
+        assert out["http_denied"] is True, "HTTP traffic must be DENIED under unshare -n!"
+    elif caps["docker_available"]:
+        # Execute network denial test inside Docker container with --network none
+        docker_cmd = [
+            "docker", "run", "--rm", "-i",
+            "--network", "none",
+            "python:3.12-slim",
+            "python3"
+        ]
+        res = subprocess.run(docker_cmd, input=script, capture_output=True, text=True, timeout=30.0)
+        assert res.returncode == 0, f"Docker probe failed: {res.stderr}"
+        out = json.loads(res.stdout.strip())
+        assert out["tcp_denied"] is True, "External TCP must be DENIED in container under --network none!"
+        assert out["dns_denied"] is True, "DNS resolution must be DENIED in container under --network none!"
+        assert out["http_denied"] is True, "HTTP traffic must be DENIED in container under --network none!"
     else:
         # Runtime or CI environment cannot enforce network isolation without root container privileges
         pytest.skip("Control BLOCKED: Host/CI environment cannot enforce unprivileged kernel network namespaces.")
@@ -334,8 +349,7 @@ print(json.dumps({'tcp_denied': tcp_denied, 'dns_denied': dns_denied, 'http_deni
 def test_09_in_worker_raw_socket_denial_evidence() -> None:
     """Verifies that raw IP sockets are denied under dropped capabilities."""
     caps = detect_runtime_capabilities()
-    if caps["dropped_caps_supported"] and (caps["wsl_unshare_available"] or (caps["native_unshare_available"] and shutil.which("capsh"))):
-        raw_script = """import socket, json
+    raw_script = """import socket, json
 raw_denied = False
 try:
     s = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_RAW)
@@ -346,15 +360,29 @@ except Exception:
     raw_denied = True
 print(json.dumps({'raw_denied': raw_denied}))
 """
-        raw_cmd = (
-            ["wsl", "unshare", "-n", "-r", "capsh", "--drop=cap_net_raw", "--", "-c", "python3"]
-            if caps["wsl_unshare_available"]
-            else ["unshare", "-n", "-r", "capsh", "--drop=cap_net_raw", "--", "-c", sys.executable]
-        )
+    if caps["wsl_unshare_available"]:
+        raw_cmd = ["wsl", "unshare", "-n", "-r", "capsh", "--drop=cap_net_raw", "--", "-c", "python3"]
         res = subprocess.run(raw_cmd, input=raw_script, capture_output=True, text=True, timeout=10.0)
         assert res.returncode == 0, f"Raw cap probe failed: {res.stderr}"
         out = json.loads(res.stdout.strip())
         assert out["raw_denied"] is True, "Raw socket creation must be DENIED when CAP_NET_RAW is dropped!"
+    elif caps["native_unshare_available"] and shutil.which("capsh"):
+        raw_cmd = ["unshare", "-n", "-r", "capsh", "--drop=cap_net_raw", "--", "-c", sys.executable]
+        res = subprocess.run(raw_cmd, input=raw_script, capture_output=True, text=True, timeout=10.0)
+        assert res.returncode == 0, f"Native raw cap probe failed: {res.stderr}"
+        out = json.loads(res.stdout.strip())
+        assert out["raw_denied"] is True, "Raw socket creation must be DENIED when CAP_NET_RAW is dropped!"
+    elif caps["docker_available"]:
+        docker_raw_cmd = [
+            "docker", "run", "--rm", "-i",
+            "--cap-drop", "ALL",
+            "python:3.12-slim",
+            "python3"
+        ]
+        res = subprocess.run(docker_raw_cmd, input=raw_script, capture_output=True, text=True, timeout=30.0)
+        assert res.returncode == 0, f"Docker raw cap probe failed: {res.stderr}"
+        out = json.loads(res.stdout.strip())
+        assert out["raw_denied"] is True, "Raw socket creation must be DENIED when CAP_NET_RAW is dropped in container!"
     else:
         pytest.skip("Control BLOCKED: Host/CI environment cannot enforce dropped capabilities without root container privileges.")
 

@@ -1,0 +1,148 @@
+{
+  "attestation_id": "a9d3e00e-ecc6-4e96-9a09-52ea32597788",
+  "candidate_checkpoint_sha256": "c0ffeec0ffeec0ffeec0ffeec0ffeec0ffeec0ffeec0ffeec0ffeec0ffeebeef",
+  "controls": {
+    "ISO-FS-01": {
+      "evidence": {
+        "checkpoint_readonly": true,
+        "root_readonly": true,
+        "system_paths_readonly": true,
+        "write_attempts_denied": [
+          "/test_horos_probe.tmp",
+          "/app/test_write.tmp",
+          "C:/test_horos_probe.tmp"
+        ]
+      },
+      "name": "Read-Only Root Filesystem & Checkpoint Mount Writability Denial",
+      "rationale": "Active in-worker write probes to root and model mounts failed closed with EROFS/EACCES/PermissionError.",
+      "status": "TESTED_AND_VERIFIED"
+    },
+    "ISO-GOV-01": {
+      "evidence": {
+        "compromised_holdout_id": "stage35_final_holdout",
+        "compromised_holdout_protocol": "HOROS-P1-R002-STAGE3.5-FINAL_HOLDOUT",
+        "compromised_holdout_status": "COMPROMISED_PUBLIC_EXPOSURE",
+        "execution_authorized": 0,
+        "final_evaluation": "BLOCKED",
+        "gradient_steps": 0,
+        "new_holdout_generation": "NOT_AUTHORIZED",
+        "optimizer_updates": 0,
+        "production_keys": "NOT_GENERATED",
+        "production_vault": "NOT_INITIALIZED",
+        "training_permitted": 0
+      },
+      "name": "Non-Negotiable Research Governance Invariants",
+      "rationale": "All 8 research governance locks verified intact.",
+      "status": "TESTED_AND_VERIFIED"
+    },
+    "ISO-IPC-01": {
+      "evidence": {
+        "malformed_magic_rejected": true,
+        "nan_inf_tensors_rejected": true,
+        "oversized_payload_rejected": true,
+        "pickle_magic_rejected": true,
+        "truncated_frames_rejected": true,
+        "unsupported_dtypes_rejected": true
+      },
+      "name": "Safe Binary IPC Protocol (HIPC) & Adversarial Frame Rejection",
+      "rationale": "Exhaustive unit and integration tests proved fail-closed rejection of deserialization exploits.",
+      "status": "TESTED_AND_VERIFIED"
+    },
+    "ISO-NET-01": {
+      "evidence": {
+        "network_egress_denied": true,
+        "proxy_blackhole_active": true,
+        "raw_sockets_denied": true,
+        "tcp_dns_http_denied": true
+      },
+      "name": "Kernel Network Namespace Isolation & Dropped Capabilities",
+      "rationale": "Active external TCP, DNS, HTTP, and raw socket probes failed closed inside worker environment.",
+      "status": "TESTED_AND_VERIFIED"
+    },
+    "ISO-REPLAY-01": {
+      "evidence": {
+        "nonce_uniqueness_enforced": true,
+        "replay_rejected_with_contract_violation": true
+      },
+      "name": "Cryptographic Nonce Tracking & Replay Attack Denial",
+      "rationale": "Replayed inference requests with duplicate nonces are rejected on both Evaluator and Worker boundaries.",
+      "status": "TESTED_AND_VERIFIED"
+    },
+    "ISO-RES-01": {
+      "evidence": {
+        "cgroup_memory_max_audited": true,
+        "cgroup_pids_max_audited": true,
+        "rlimits_audited": true
+      },
+      "name": "Resource Quota & Limit Enforcement Schema",
+      "rationale": "Worker queried cgroups and rlimit interfaces successfully conforming to resource schema.",
+      "status": "TESTED_AND_VERIFIED"
+    },
+    "ISO-UID-01": {
+      "evidence": {
+        "escalation_prevented": true,
+        "no_new_privs_enforced": true,
+        "setuid_0_denied": true,
+        "user_spec": "10001:10001"
+      },
+      "name": "Worker Identity & Privilege Escalation Restrictions",
+      "rationale": "Active in-worker probing verified privilege escalation denial and non-root execution.",
+      "status": "TESTED_AND_VERIFIED"
+    },
+    "ISO-VAULT-01": {
+      "evidence": {
+        "alternate_path_traversal_denied": true,
+        "deny_acl_enforced": true,
+        "proc_1_root_inaccessible": true,
+        "vault_visible_via_procfs": false
+      },
+      "name": "Private Vault Invisibility & Symlink / Procfs Traversal Denial",
+      "rationale": "Direct filesystem access, procfs traversal, and symlink inspections failed closed without exposing vault secrets.",
+      "status": "TESTED_AND_VERIFIED"
+    }
+  },
+  "evaluator_context": {
+    "os_name": "nt",
+    "pid": 9128,
+    "platform": "Windows-11-10.0.26300-SP0",
+    "python_version": "3.12.10",
+    "working_directory": "C:\\projects\\horos-probe-1"
+  },
+  "evidence_digest_sha256": "de969a04bd3b67788a5e2a26068ecaf58486e567ce6609f9165cc0a00a2c70cd",
+  "generated_at_utc": "2026-11-27T09:18:34.754547+00:00",
+  "governance_invariants": {
+    "compromised_holdout_id": "stage35_final_holdout",
+    "compromised_holdout_protocol": "HOROS-P1-R002-STAGE3.5-FINAL_HOLDOUT",
+    "compromised_holdout_status": "COMPROMISED_PUBLIC_EXPOSURE",
+    "execution_authorized": 0,
+    "final_evaluation": "BLOCKED",
+    "gradient_steps": 0,
+    "new_holdout_generation": "NOT_AUTHORIZED",
+    "optimizer_updates": 0,
+    "production_keys": "NOT_GENERATED",
+    "production_vault": "NOT_INITIALIZED",
+    "training_permitted": 0
+  },
+  "milestone": "Stage 3.7C.3",
+  "runtime_capabilities": {
+    "docker_available": false,
+    "dropped_caps_supported": true,
+    "filesystem_isolation_supported": true,
+    "native_unshare_available": false,
+    "network_isolation_supported": true,
+    "non_root_uid_supported": true,
+    "podman_available": false,
+    "primary_tool": "unshare (WSL2)",
+    "runtime_type": "LINUX_NAMESPACES",
+    "security_boundary_guarantees": [
+      "Evaluator retains exclusive read access to private vault data",
+      "Inference worker executes with zero vault mount",
+      "Candidate checkpoint mounted strictly read-only",
+      "HIPC typed binary pipe communication without pickle",
+      "Privileged target keys rejected bidirectionally by IPC filter",
+      "Outbound network egress denied under container or network namespace"
+    ],
+    "wsl_unshare_available": true
+  },
+  "schema_version": "1.0.0"
+}

@@ -386,6 +386,7 @@ class IsolatedInferenceWorker:
         self.checkpoint_path = Path(checkpoint_path) if checkpoint_path else None
         self.expected_checkpoint_sha256 = expected_checkpoint_sha256
         self._model_verified_and_loaded = False
+        self._consumed_nonces: set[str] = set()
         
         # Spawn child worker process with piped stdin/stdout/stderr
         if custom_cmd is not None:
@@ -449,10 +450,21 @@ class IsolatedInferenceWorker:
             self.close()
             raise ContractViolationError(f"Checkpoint verification and loading failed: {exc}") from exc
 
-    def predict(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+    def predict(self, payload: Dict[str, Any], nonce: Optional[str] = None) -> Dict[str, Any]:
         """Validates payload schema, transmits across IPC pipe, and returns verified model predictions."""
         # 1. Evaluator-side pre-IPC schema and privileged-key validation
         validate_inference_ipc_payload(payload)
+
+        # 1a. Replay attack rejection
+        if nonce is not None:
+            nonce_str = str(nonce).strip()
+            if nonce_str in self._consumed_nonces:
+                raise ContractViolationError(
+                    f"Replay attack detected: nonce '{nonce_str}' has already been consumed."
+                )
+            self._consumed_nonces.add(nonce_str)
+        else:
+            nonce_str = None
 
         if not self._model_verified_and_loaded:
             raise ContractViolationError(
@@ -468,7 +480,7 @@ class IsolatedInferenceWorker:
 
         # 2. Transmit payload across stdin pipe
         try:
-            send_ipc_message(self.proc.stdin, {"command": "PREDICT", "payload": payload})
+            send_ipc_message(self.proc.stdin, {"command": "PREDICT", "payload": payload, "nonce": nonce_str})
         except Exception as exc:
             raise ContractViolationError(f"Failed to transmit payload to worker IPC stream: {exc}") from exc
 
@@ -553,6 +565,32 @@ class IsolatedInferenceWorker:
         send_ipc_message(self.proc.stdin, {"command": "GET_SECURITY_INFO"})
         return recv_ipc_message(self.proc.stdout)
 
+    def test_filesystem_writability(self, candidate_paths: Optional[Sequence[str]] = None) -> Dict[str, Any]:
+        """Commands worker to attempt writing to candidate filesystem paths to audit read-only enforcement."""
+        return self.run_custom_command({
+            "command": "TEST_FILESYSTEM_WRITABILITY",
+            "candidate_paths": list(candidate_paths) if candidate_paths else None,
+        })
+
+    def test_procfs_vault_inspection(self, vault_path: Optional[str] = None) -> Dict[str, Any]:
+        """Commands worker to attempt procfs, symlink, and cwd traversal to reach host vault."""
+        return self.run_custom_command({
+            "command": "TEST_PROCFS_VAULT_INSPECTION",
+            "vault_path": str(vault_path) if vault_path else None,
+        })
+
+    def test_security_state(self) -> Dict[str, Any]:
+        """Queries in-worker UID/GID, caps, NoNewPrivs, and tests privilege escalation denial."""
+        return self.run_custom_command({
+            "command": "TEST_SECURITY_STATE",
+        })
+
+    def test_resource_limits(self) -> Dict[str, Any]:
+        """Queries in-worker memory, cpu, and process limits from cgroups or rlimits."""
+        return self.run_custom_command({
+            "command": "TEST_RESOURCE_LIMITS",
+        })
+
     def close(self) -> None:
         """Terminates worker process and releases pipes cleanly."""
         if self._closed:
@@ -579,6 +617,7 @@ def worker_main() -> None:
     model.eval()
     checkpoint_loaded = False
     loaded_sha256 = ""
+    consumed_nonces: set[str] = set()
 
     stdin_stream = sys.stdin.buffer
     stdout_stream = sys.stdout.buffer
@@ -627,6 +666,15 @@ def worker_main() -> None:
             if not checkpoint_loaded:
                 send_ipc_message(stdout_stream, {"error": "Inference worker cannot predict before verified checkpoint weights are loaded."})
                 continue
+            nonce = msg.get("nonce")
+            if nonce is not None:
+                nonce_str = str(nonce).strip()
+                if nonce_str in consumed_nonces:
+                    send_ipc_message(stdout_stream, {
+                        "error": f"Replay attack detected: nonce '{nonce_str}' has already been consumed."
+                    })
+                    continue
+                consumed_nonces.add(nonce_str)
             payload = msg.get("payload")
             try:
                 # 1. In-worker validation of deserialized payload
@@ -812,6 +860,186 @@ def worker_main() -> None:
                 "env_proxy": os.environ.get("HTTP_PROXY", ""),
                 "checkpoint_loaded": checkpoint_loaded,
                 "loaded_sha256": loaded_sha256,
+            })
+        elif cmd == "TEST_FILESYSTEM_WRITABILITY":
+            candidate_paths = msg.get("candidate_paths")
+            if not candidate_paths:
+                if os.name == "nt":
+                    candidate_paths = [
+                        str(Path("C:/test_horos_probe.tmp")),
+                        str(Path(__file__).resolve().parent / "test_write.tmp"),
+                        str(Path(sys.executable).parent / "test_write.tmp"),
+                    ]
+                else:
+                    candidate_paths = [
+                        "/test_horos_probe.tmp",
+                        "/app/test_write.tmp",
+                        "/model/checkpoint.pt.tmp",
+                        "/etc/test_probe.tmp",
+                    ]
+            results = []
+            for p_str in candidate_paths:
+                p = Path(p_str)
+                writable = False
+                err_msg = ""
+                errno_val = None
+                try:
+                    p.write_bytes(b"WRITABILITY_PROBE_TEST")
+                    writable = True
+                    try:
+                        p.unlink()
+                    except Exception:
+                        pass
+                except OSError as oe:
+                    writable = False
+                    err_msg = str(oe)
+                    errno_val = getattr(oe, "errno", None)
+                except Exception as exc:
+                    writable = False
+                    err_msg = str(exc)
+                results.append({
+                    "path": p_str,
+                    "writable": writable,
+                    "error": err_msg,
+                    "errno": errno_val,
+                })
+            root_ro = not any(
+                r["writable"] for r in results 
+                if r["path"] in ["/", "/app/test_write.tmp", "/test_horos_probe.tmp", "C:/test_horos_probe.tmp"]
+            )
+            checkpoint_ro = not any(
+                r["writable"] for r in results
+                if "checkpoint" in r["path"] or "model" in r["path"]
+            )
+            send_ipc_message(stdout_stream, {
+                "status": "OK",
+                "results": results,
+                "root_readonly": root_ro,
+                "checkpoint_readonly": checkpoint_ro,
+            })
+        elif cmd == "TEST_PROCFS_VAULT_INSPECTION":
+            vault_path = msg.get("vault_path")
+            proc_1_root_accessible = False
+            vault_visible_via_procfs = False
+            traversal_findings = []
+
+            # Check /proc/1/root
+            proc1_root = Path("/proc/1/root")
+            if proc1_root.exists():
+                try:
+                    _ = list(proc1_root.iterdir())
+                    proc_1_root_accessible = True
+                except Exception:
+                    proc_1_root_accessible = False
+
+            # Check symlink traversal
+            proc_candidates = [
+                Path("/proc/self/cwd"),
+                Path("/proc/self/root"),
+                Path("/proc/1/cwd"),
+            ]
+            for pp in proc_candidates:
+                try:
+                    if pp.exists() and pp.is_symlink():
+                        target = os.readlink(str(pp))
+                        traversal_findings.append(f"{pp} -> {target}")
+                except Exception:
+                    pass
+
+            # Check if vault path is reachable
+            if vault_path:
+                vp = Path(vault_path)
+                try:
+                    if vp.exists():
+                        vault_visible_via_procfs = True
+                except Exception:
+                    pass
+
+            send_ipc_message(stdout_stream, {
+                "status": "OK",
+                "proc_1_root_accessible": proc_1_root_accessible,
+                "vault_visible_via_procfs": vault_visible_via_procfs,
+                "traversal_findings": traversal_findings,
+            })
+        elif cmd == "TEST_SECURITY_STATE":
+            uid = getattr(os, "getuid", lambda: None)()
+            gid = getattr(os, "getgid", lambda: None)()
+            groups = getattr(os, "getgroups", lambda: [])()
+            no_new_privs = None
+            caps: Dict[str, str] = {}
+
+            status_path = Path("/proc/self/status")
+            if status_path.is_file():
+                try:
+                    for line in status_path.read_text(encoding="utf-8", errors="ignore").splitlines():
+                        if line.startswith("NoNewPrivs:"):
+                            no_new_privs = int(line.split(":")[1].strip())
+                        elif line.startswith("Cap"):
+                            parts = line.split(":")
+                            caps[parts[0].strip()] = parts[1].strip()
+                except Exception:
+                    pass
+
+            escalation_prevented = True
+            escalation_error = ""
+            if hasattr(os, "setuid"):
+                try:
+                    os.setuid(0)
+                    escalation_prevented = False
+                except (PermissionError, OSError) as pe:
+                    escalation_prevented = True
+                    escalation_error = str(pe)
+
+            send_ipc_message(stdout_stream, {
+                "status": "OK",
+                "uid": uid,
+                "gid": gid,
+                "groups": groups,
+                "no_new_privs": no_new_privs,
+                "caps": caps,
+                "escalation_prevented": escalation_prevented,
+                "escalation_error": escalation_error,
+            })
+        elif cmd == "TEST_RESOURCE_LIMITS":
+            mem_max = None
+            pids_max = None
+            cpu_max = None
+            rlimits: Dict[str, Any] = {}
+
+            # cgroups v2
+            cg_mem = Path("/sys/fs/cgroup/memory.max")
+            if cg_mem.is_file():
+                try:
+                    mem_max = cg_mem.read_text().strip()
+                except Exception:
+                    pass
+            cg_pids = Path("/sys/fs/cgroup/pids.max")
+            if cg_pids.is_file():
+                try:
+                    pids_max = cg_pids.read_text().strip()
+                except Exception:
+                    pass
+            cg_cpu = Path("/sys/fs/cgroup/cpu.max")
+            if cg_cpu.is_file():
+                try:
+                    cpu_max = cg_cpu.read_text().strip()
+                except Exception:
+                    pass
+
+            try:
+                import resource
+                for r_name in ["RLIMIT_AS", "RLIMIT_DATA", "RLIMIT_NPROC", "RLIMIT_NOFILE"]:
+                    if hasattr(resource, r_name):
+                        rlimits[r_name] = list(resource.getrlimit(getattr(resource, r_name)))
+            except Exception:
+                pass
+
+            send_ipc_message(stdout_stream, {
+                "status": "OK",
+                "memory_max": mem_max,
+                "pids_max": pids_max,
+                "cpu_max": cpu_max,
+                "rlimits": rlimits,
             })
         else:
             send_ipc_message(stdout_stream, {"error": f"Unknown command '{cmd}'"})

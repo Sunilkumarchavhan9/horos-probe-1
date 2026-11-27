@@ -192,8 +192,27 @@ def resolve_execution_profile(requested_profile: str = PROFILE_AUTO) -> str:
     return PROFILE_SUBPROCESS_FALLBACK
 
 
+def translate_to_wsl_path(path: Path | str) -> str:
+    """Translates a Windows filesystem path to its WSL mount path (/mnt/<drive>/...)."""
+    p_str = str(path).replace("\\", "/")
+    if p_str.startswith("/"):
+        return p_str
+    if len(p_str) >= 2 and p_str[1] == ":":
+        drive_letter = p_str[0].lower()
+        rest = p_str[2:].lstrip("/")
+        return f"/mnt/{drive_letter}/{rest}" if rest else f"/mnt/{drive_letter}"
+    p = Path(path)
+    drive = p.drive
+    if drive and len(drive) >= 2 and drive[1] == ":":
+        drive_letter = drive[0].lower()
+        parts = list(p.parts[1:])
+        rel = "/".join(x.strip("\\/") for x in parts if x.strip("\\/"))
+        return f"/mnt/{drive_letter}/{rel}" if rel else f"/mnt/{drive_letter}"
+    return p.as_posix()
+
+
 def build_oci_run_command(
-    checkpoint_path: Path | str,
+    checkpoint_path: Optional[Path | str] = None,
     image_name: str = DEFAULT_WORKER_IMAGE,
     container_engine: str = "docker",
     memory_limit: str = "2g",
@@ -212,17 +231,19 @@ def build_oci_run_command(
     - --tmpfs /tmp:rw,noexec,nosuid,size=64m
     - Strict volume mount validation: Candidate checkpoint mounted ro, NO private vault mounts.
     """
-    ckpt_p = Path(checkpoint_path).resolve()
-    if not ckpt_p.is_file():
-        raise FileNotFoundError(f"Candidate checkpoint does not exist: {ckpt_p}")
+    ckpt_p = None
+    if checkpoint_path is not None:
+        ckpt_p = Path(checkpoint_path).resolve()
+        if not ckpt_p.is_file():
+            raise FileNotFoundError(f"Candidate checkpoint does not exist: {ckpt_p}")
 
-    # Verify no disallowed vault paths are mounted
-    ckpt_str = str(ckpt_p).lower()
-    for forbidden in FORBIDDEN_VAULT_MOUNT_IDENTIFIERS:
-        if forbidden in ckpt_str and "checkpoint" not in ckpt_p.name.lower():
-            raise WorkerVaultInfiltrationError(
-                f"Attempted to mount forbidden path '{ckpt_p}' matching vault token '{forbidden}'."
-            )
+        # Verify no disallowed vault paths are mounted
+        ckpt_str = str(ckpt_p).lower()
+        for forbidden in FORBIDDEN_VAULT_MOUNT_IDENTIFIERS:
+            if forbidden in ckpt_str and "checkpoint" not in ckpt_p.name.lower():
+                raise WorkerVaultInfiltrationError(
+                    f"Attempted to mount forbidden path '{ckpt_p}' matching vault token '{forbidden}'."
+                )
 
     cmd = [
         container_engine,
@@ -238,8 +259,10 @@ def build_oci_run_command(
         "--memory", str(memory_limit),
         "--cpus", str(cpus),
         "--pids-limit", str(pids_limit),
-        "-v", f"{ckpt_p}:/model/checkpoint.pt:ro",
     ]
+
+    if ckpt_p is not None:
+        cmd.extend(["-v", f"{ckpt_p}:/model/checkpoint.pt:ro"])
 
     if extra_read_only_mounts:
         for host_path, container_target in extra_read_only_mounts:

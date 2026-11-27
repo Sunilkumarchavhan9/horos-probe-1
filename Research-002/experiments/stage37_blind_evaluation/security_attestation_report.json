@@ -23,9 +23,9 @@
     },
     "uid": null
   },
-  "attestation_id": "af12917d-ec10-4e1e-85a0-ea5d1715f26d",
-  "attestation_signature": "4e9b74bd81c440e483a05969628045282246d15ef3fc7b5d7984a5d13251988701c335105ea0f0c96f2bce74975a97c47975608884c87fd9efc075932820c806",
-  "candidate_checkpoint_sha256": "15f6087a215697aa256179cd03831efe16d922421f45634c31c1349c9d78fde9",
+  "attestation_id": "9db47e90-e78c-4a6e-b695-3cfcf1ef214f",
+  "attestation_signature": "01d1dec65187c22cd13cdbe84af1ca06f5ac8d6f281296b8b1e19e7a00c13cf223267215be6d914fbbda61af34da3b05a528c6ba99f6cc43c857c1ccc52c9509",
+  "candidate_checkpoint_sha256": "0590e3fbc0be5bf4a5906058c4c41b8f864aa5da37487a2ba7d14ebfd7f944e2",
   "controls": {
     "ISO-FS-01": {
       "evidence": {
@@ -40,7 +40,7 @@
           {
             "category": "checkpoint",
             "error": "",
-            "path": "C:\\Users\\SUNILK~1\\AppData\\Local\\Temp\\tmp8e4wdemk\\candidate_model.pt",
+            "path": "C:\\Users\\SUNILK~1\\AppData\\Local\\Temp\\tmp52kuatgd\\candidate_model.pt",
             "writable": true
           }
         ],
@@ -152,7 +152,7 @@
         "procfs_supported": false,
         "routes": {
           "direct_filesystem_access": {
-            "detail": "Access denied fail-closed: [WinError 5] Access is denied: 'C:\\\\Users\\\\sunil kumar\\\\AppData\\\\Local\\\\Temp\\\\tmp8e4wdemk\\\\private_vault'",
+            "detail": "Access denied fail-closed: [WinError 5] Access is denied: 'C:\\\\Users\\\\sunil kumar\\\\AppData\\\\Local\\\\Temp\\\\tmp52kuatgd\\\\private_vault'",
             "status": "DENIED"
           },
           "environment_leakage": {
@@ -189,13 +189,13 @@
   },
   "evaluator_context": {
     "os_name": "nt",
-    "pid": 24944,
+    "pid": 5072,
     "platform": "Windows-11-10.0.26300-SP0",
     "python_version": "3.12.10",
     "working_directory": "C:\\projects\\MemoryOS"
   },
-  "evidence_digest_sha256": "3641bdec5fdbc053b9921ccd926388e768efe493b70cf7b3ce8a0e21270c1cd7",
-  "generated_at_utc": "2026-11-27T17:16:07.025967+00:00",
+  "evidence_digest_sha256": "6b80810d384edd28161de02bc874337fb75d57b1a9f5f8026365bb04adbbae7f",
+  "generated_at_utc": "2026-11-27T18:27:13.670503+00:00",
   "governance_invariants": {
     "compromised_holdout_id": "stage35_final_holdout",
     "compromised_holdout_protocol": "HOROS-P1-R002-STAGE3.5-FINAL_HOLDOUT",
@@ -211,7 +211,9 @@
       "compromised_holdout_status": "COMPROMISED_PUBLIC_EXPOSURE",
       "exposed_compromised_files_found": [],
       "physical_exclusion_verified": true,
-      "quarantine_permanently_enforced": true
+      "quarantine_id": "HOROS-P1-R002-STAGE36-QREC-01",
+      "quarantine_permanently_enforced": true,
+      "quarantine_registry_sha256": "f46319f0dcbf37ccb336807287ff7ea7cfae25f96150f0e747c32cd9d61a3f8c"
     },
     "production_authorization_state": {
       "production_keys": "NOT_GENERATED",
@@ -234,12 +236,12 @@
     },
     "training_permitted": 0
   },
-  "milestone": "Stage 3.7C.4 Cross-Runtime Security Acceptance & Evidence Closure",
+  "milestone": "Stage 3.7C.5 Security Attestation Trust Closure & Runtime Backend Acceptance",
   "provenance": {
-    "attestation_uuid": "af12917d-ec10-4e1e-85a0-ea5d1715f26d",
-    "generated_at_utc": "2026-11-27T17:16:07.025967+00:00",
-    "milestone": "Stage 3.7C.4 Cross-Runtime Security Acceptance & Evidence Closure",
-    "source_commit_sha": "9d57580df393d114cadcee21ce4d93275b962f40"
+    "attestation_uuid": "9db47e90-e78c-4a6e-b695-3cfcf1ef214f",
+    "generated_at_utc": "2026-11-27T18:27:13.670503+00:00",
+    "milestone": "Stage 3.7C.5 Security Attestation Trust Closure & Runtime Backend Acceptance",
+    "source_commit_sha": "badbd3698bf69183514266a4a99673469dccf7c6"
   },
   "runtime_capabilities": {
     "docker_available": false,
@@ -261,8 +263,8 @@
     ],
     "wsl_unshare_available": true
   },
-  "schema_version": "2.0.0",
+  "schema_version": "2.1.0",
   "signature_public_key_hex": "f358db11ce627531bb342ab04c03f34a345e931ca993aa660ecec4d55c96fc5c",
   "signature_scheme": "Ed25519-NON_PRODUCTION_TEST_KEY",
-  "source_commit_sha": "9d57580df393d114cadcee21ce4d93275b962f40"
+  "source_commit_sha": "badbd3698bf69183514266a4a99673469dccf7c6"
 }

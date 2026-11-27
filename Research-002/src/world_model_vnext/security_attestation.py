@@ -1,12 +1,11 @@
 """Machine-readable security attestation generation and cryptographic evidence anchoring.
 
-Stage 3.7C.4 Cross-Runtime Security Acceptance & Evidence Closure:
-- Real Linux namespaces, WSL2, Docker OCI, and subprocess execution profiles.
-- Verified cgroups v2 resource quotas (CPU: 2 cores, Memory: 2 GB, PIDs: 128).
-- Multi-route private vault isolation (direct, relative, symlink, procfs, mount, environment, handle).
-- Categorized governance invariants: runtime-verified, static policy, physical quarantine, production authorization.
-- Cryptographic provenance anchoring with Ed25519 signature of evidence digest using dedicated non-production test key.
-- Permanent quarantine of compromised Stage 3.5 holdout.
+Stage 3.7C.5 Security Attestation Trust Closure & Runtime Backend Acceptance:
+- Authentic Ed25519 cryptographic provenance anchoring using dedicated non-production test key.
+- Strict elimination of unsigned legacy digest fallback for schema 2.0.0 and newer.
+- Comprehensive governance invariant validation across runtime, policy, and quarantine registries.
+- Authoritative quarantine registry integration and recursive physical artifact scan.
+- Real Linux namespaces, WSL2, Docker OCI, and fail-closed runtime integration.
 """
 
 from __future__ import annotations
@@ -26,16 +25,19 @@ from typing import Any, Dict, List, Optional, Sequence
 from cryptography.hazmat.primitives.asymmetric import ed25519
 
 from .contracts import (
+    CANONICAL_QUARANTINE_REGISTRY_PATH,
     COMPROMISED_HOLDOUT_ID,
     COMPROMISED_HOLDOUT_PROTOCOL,
     COMPROMISED_HOLDOUT_STATUS,
+    EXPECTED_QUARANTINE_REGISTRY_SHA256,
     ContractViolationError,
+    load_quarantine_record,
 )
 from .runner import EXECUTION_AUTHORIZED, TRAINING_PERMITTED
 
 
-ATTESTATION_SCHEMA_VERSION = "2.0.0"
-ATTESTATION_MILESTONE = "Stage 3.7C.4 Cross-Runtime Security Acceptance & Evidence Closure"
+ATTESTATION_SCHEMA_VERSION = "2.1.0"
+ATTESTATION_MILESTONE = "Stage 3.7C.5 Security Attestation Trust Closure & Runtime Backend Acceptance"
 
 # Permitted control verification statuses
 STATUS_TESTED_AND_VERIFIED = "TESTED_AND_VERIFIED"
@@ -50,7 +52,7 @@ VALID_CONTROL_STATUSES = frozenset({
     STATUS_BLOCKED,
 })
 
-# Dedicated Non-Production Test Key for Attestation Signing (Stage 3.7C.4)
+# Dedicated Non-Production Test Key for Attestation Signing (Stage 3.7C.4 / Stage 3.7C.5)
 # Never generate or use production keys!
 TEST_NONPROD_SIGNING_SEED = hashlib.sha256(b"HOROS_PROBE1_STAGE37C4_NONPROD_ED25519_TEST_SIGNING_KEY_32B").digest()[:32]
 TEST_NONPROD_PRIVATE_KEY = ed25519.Ed25519PrivateKey.from_private_bytes(TEST_NONPROD_SIGNING_SEED)
@@ -69,7 +71,7 @@ def canonicalize_attestation_bytes(obj: Any) -> bytes:
 
 
 def get_source_commit_sha() -> str:
-    """Resolves the current Git commit SHA or returns a reproducible fallback."""
+    """Resolves the current Git commit SHA or returns a reproducible uncommitted indicator."""
     env_sha = os.environ.get("GITHUB_SHA")
     if env_sha and len(env_sha) == 40:
         return env_sha.strip().lower()
@@ -87,91 +89,13 @@ def get_source_commit_sha() -> str:
                 return out_sha
     except Exception:
         pass
-    return "9d57580df393d114cadcee21ce4d93275b962f40"
+    return "UNKNOWN_UNCOMMITTED_REVISION"
 
 
 def sign_attestation_digest(digest_sha256: str) -> str:
     """Signs the canonical evidence digest using the dedicated non-production Ed25519 test key."""
     sig_bytes = TEST_NONPROD_PRIVATE_KEY.sign(digest_sha256.encode("utf-8"))
     return sig_bytes.hex()
-
-
-def verify_attestation_signature(record: Dict[str, Any]) -> bool:
-    """Verifies that the attestation Ed25519 signature is valid for the recomputed evidence digest."""
-    sig_hex = record.get("attestation_signature")
-    if not sig_hex:
-        return False
-
-    # 1. Recompute the actual digest from the record's contents
-    controls = record.get("controls", {})
-    cand_sha = record.get("candidate_checkpoint_sha256", "")
-    runtime_caps = record.get("runtime_capabilities", {})
-    active_identity = record.get("active_runtime_identity")
-    eval_ctx = record.get("evaluator_context")
-    gov = record.get("governance_invariants")
-    prov = record.get("provenance")
-
-    # Recompute evidence digest from actual content
-    recomputed = compute_evidence_digest(
-        controls=controls,
-        candidate_checkpoint_sha256=cand_sha,
-        runtime_capabilities=runtime_caps,
-        active_runtime_identity=active_identity if active_identity else None,
-        evaluator_context=eval_ctx if eval_ctx and "provenance" in record else None,
-        governance_invariants=gov if gov and "provenance" in record else None,
-        provenance=prov if prov else None,
-    )
-
-    stored_digest = record.get("evidence_digest_sha256", "")
-    if stored_digest.lower() != recomputed.lower():
-        # Fallback check for legacy 3-parameter digest
-        legacy_recomputed = compute_evidence_digest(
-            controls=controls,
-            candidate_checkpoint_sha256=cand_sha,
-            runtime_capabilities=runtime_caps,
-        )
-        if stored_digest.lower() != legacy_recomputed.lower():
-            return False
-        recomputed = legacy_recomputed
-
-    try:
-        sig_bytes = bytes.fromhex(sig_hex)
-        TEST_NONPROD_PUBLIC_KEY.verify(sig_bytes, recomputed.encode("utf-8"))
-        return True
-    except Exception:
-        return False
-
-
-def verify_physical_holdout_quarantine() -> Dict[str, Any]:
-    """Empirically verifies physical quarantine of compromised Stage 3.5 holdout."""
-    compromised_filenames = [
-        "stage35_final_holdout.pt",
-        "stage35_final_holdout.json",
-        "holdout_compromised.pt",
-    ]
-    eval_dirs = [
-        Path("Research-002/data"),
-        Path("data"),
-        Path("Research-002/experiments"),
-        Path("experiments"),
-    ]
-    exposed_files = []
-    for ed in eval_dirs:
-        if ed.is_dir():
-            for fn in compromised_filenames:
-                if (ed / fn).is_file():
-                    exposed_files.append(str(ed / fn))
-
-    physical_exclusion_verified = len(exposed_files) == 0
-
-    return {
-        "compromised_holdout_id": COMPROMISED_HOLDOUT_ID,
-        "compromised_holdout_status": COMPROMISED_HOLDOUT_STATUS,
-        "compromised_holdout_protocol": COMPROMISED_HOLDOUT_PROTOCOL,
-        "physical_exclusion_verified": physical_exclusion_verified,
-        "exposed_compromised_files_found": exposed_files,
-        "quarantine_permanently_enforced": True,
-    }
 
 
 def compute_evidence_digest(
@@ -200,6 +124,145 @@ def compute_evidence_digest(
 
     canonical = canonicalize_attestation_bytes(payload)
     return hashlib.sha256(canonical).hexdigest()
+
+
+def verify_physical_holdout_quarantine() -> Dict[str, Any]:
+    """Empirically and recursively verifies physical quarantine of compromised Stage 3.5 holdout."""
+    quarantine_record = load_quarantine_record()
+    registry_sha = EXPECTED_QUARANTINE_REGISTRY_SHA256
+    quarantine_id = quarantine_record.get("quarantine_id", "HOROS-P1-R002-STAGE36-QREC-01")
+
+    # Extract known compromised episode hashes and sample IDs from authoritative registry
+    affected = quarantine_record.get("affected_episodes", {})
+    known_compromised_hashes = set()
+    for digest in affected.get("npz_digests", []):
+        known_compromised_hashes.add(str(digest).lower())
+    for sample_id in affected.get("sample_ids", []):
+        known_compromised_hashes.add(str(sample_id).lower())
+
+    compromised_patterns = (
+        "stage35_final_holdout",
+        "holdout_compromised",
+        "stage35_holdout",
+        "compromised_holdout",
+    )
+
+    eval_dirs = [
+        Path("Research-002/data"),
+        Path("data"),
+        Path("Research-002/experiments"),
+        Path("experiments"),
+    ]
+
+    exposed_files: List[str] = []
+
+    for ed in eval_dirs:
+        p = ed.resolve()
+        if not p.is_dir():
+            continue
+        for root, dirs, files in os.walk(p):
+            # Exclude the quarantine registry definition directory itself from false positives
+            if "stage36_holdout_quarantine" in root.replace("\\", "/"):
+                continue
+            for fn in files:
+                file_path = Path(root) / fn
+                fn_lower = fn.lower()
+                # 1. Check filename patterns
+                if any(pat in fn_lower for pat in compromised_patterns):
+                    exposed_files.append(str(file_path))
+                    continue
+                # 2. Check file content digest for candidate archives / fixtures
+                if fn_lower.endswith((".npz", ".pt", ".json")) and file_path.stat().st_size < 100 * 1024 * 1024:
+                    try:
+                        file_sha = hashlib.sha256(file_path.read_bytes()).hexdigest().lower()
+                        if file_sha in known_compromised_hashes:
+                            exposed_files.append(str(file_path))
+                    except Exception:
+                        pass
+
+    physical_exclusion_verified = (len(exposed_files) == 0)
+    # quarantine_permanently_enforced is derived dynamically from empirical exclusion
+    quarantine_permanently_enforced = physical_exclusion_verified and (len(exposed_files) == 0)
+
+    return {
+        "quarantine_id": quarantine_id,
+        "quarantine_registry_sha256": registry_sha,
+        "compromised_holdout_id": COMPROMISED_HOLDOUT_ID,
+        "compromised_holdout_status": COMPROMISED_HOLDOUT_STATUS,
+        "compromised_holdout_protocol": COMPROMISED_HOLDOUT_PROTOCOL,
+        "physical_exclusion_verified": physical_exclusion_verified,
+        "exposed_compromised_files_found": exposed_files,
+        "quarantine_permanently_enforced": quarantine_permanently_enforced,
+    }
+
+
+def verify_attestation_signature(record: Dict[str, Any]) -> bool:
+    """Verifies that the attestation Ed25519 signature is valid for the recomputed evidence digest."""
+    sig_hex = record.get("attestation_signature")
+    if not sig_hex or not isinstance(sig_hex, str):
+        return False
+
+    scheme = record.get("signature_scheme")
+    if scheme != "Ed25519-NON_PRODUCTION_TEST_KEY":
+        return False
+
+    pub_hex = record.get("signature_public_key_hex")
+    if pub_hex != TEST_NONPROD_PUBLIC_KEY_HEX:
+        return False
+
+    # Check top-level vs provenance consistency
+    prov = record.get("provenance")
+    if prov is not None and isinstance(prov, dict):
+        if record.get("source_commit_sha") != prov.get("source_commit_sha"):
+            return False
+        if record.get("attestation_id") != prov.get("attestation_uuid"):
+            return False
+        if record.get("generated_at_utc") != prov.get("generated_at_utc"):
+            return False
+        if record.get("milestone") != prov.get("milestone"):
+            return False
+
+    # Recompute the actual digest from the record's contents
+    controls = record.get("controls", {})
+    cand_sha = record.get("candidate_checkpoint_sha256", "")
+    runtime_caps = record.get("runtime_capabilities", {})
+    active_identity = record.get("active_runtime_identity")
+    eval_ctx = record.get("evaluator_context")
+    gov = record.get("governance_invariants")
+
+    recomputed = compute_evidence_digest(
+        controls=controls,
+        candidate_checkpoint_sha256=cand_sha,
+        runtime_capabilities=runtime_caps,
+        active_runtime_identity=active_identity if active_identity else None,
+        evaluator_context=eval_ctx if eval_ctx and "provenance" in record else None,
+        governance_invariants=gov if gov and "provenance" in record else None,
+        provenance=prov if prov else None,
+    )
+
+    stored_digest = record.get("evidence_digest_sha256", "")
+    schema_version = record.get("schema_version", "1.0.0")
+
+    if stored_digest.lower() != recomputed.lower():
+        if schema_version == "1.0.0":
+            # Legacy 3-parameter digest ONLY for explicitly legacy schema 1.0.0
+            legacy_recomputed = compute_evidence_digest(
+                controls=controls,
+                candidate_checkpoint_sha256=cand_sha,
+                runtime_capabilities=runtime_caps,
+            )
+            if stored_digest.lower() != legacy_recomputed.lower():
+                return False
+            recomputed = legacy_recomputed
+        else:
+            return False
+
+    try:
+        sig_bytes = bytes.fromhex(sig_hex)
+        TEST_NONPROD_PUBLIC_KEY.verify(sig_bytes, recomputed.encode("utf-8"))
+        return True
+    except Exception:
+        return False
 
 
 class SecurityAttestationBuilder:
@@ -283,7 +346,7 @@ class SecurityAttestationBuilder:
                 "production_vault": "NOT_INITIALIZED",
                 "production_training": "PROHIBITED",
             },
-            # Flat top-level keys for backward-compatibility with older tests
+            # Flat top-level keys for backward-compatibility with older consumers
             "training_permitted": TRAINING_PERMITTED,
             "execution_authorized": EXECUTION_AUTHORIZED,
             "gradient_steps": 0,
@@ -336,7 +399,7 @@ class SecurityAttestationBuilder:
 
 
 def validate_security_attestation_schema(record: Dict[str, Any]) -> None:
-    """Validates structure, types, governance invariants, and cryptographic digest of an attestation."""
+    """Validates structure, types, governance invariants, cryptographic signatures, and digest of an attestation."""
     if not isinstance(record, dict):
         raise ContractViolationError("Attestation record must be a dictionary.")
 
@@ -356,8 +419,9 @@ def validate_security_attestation_schema(record: Dict[str, Any]) -> None:
     if missing:
         raise ContractViolationError(f"Attestation missing required fields: {sorted(missing)}.")
 
-    if record["schema_version"] not in ("1.0.0", "2.0.0", "3.7C.4"):
-        raise ContractViolationError(f"Unsupported schema version '{record['schema_version']}'.")
+    schema_version = str(record["schema_version"])
+    if schema_version not in ("1.0.0", "2.0.0", "2.1.0", "3.7C.4", "3.7C.5"):
+        raise ContractViolationError(f"Unsupported schema version '{schema_version}'.")
 
     # Validate nested field types
     if not isinstance(record["runtime_capabilities"], dict):
@@ -381,7 +445,7 @@ def validate_security_attestation_schema(record: Dict[str, Any]) -> None:
         if not isinstance(ctrl["evidence"], dict):
             raise ContractViolationError(f"Control '{cid}' evidence must be a dictionary.")
 
-    # Strict validation of specific controls (Workstream 1 & Workstream 7)
+    # Strict validation of specific controls
     res_ctrl = record["controls"].get("ISO-RES-01")
     if res_ctrl and res_ctrl["status"] == STATUS_TESTED_AND_VERIFIED:
         ev = res_ctrl.get("evidence", {})
@@ -399,33 +463,91 @@ def validate_security_attestation_schema(record: Dict[str, Any]) -> None:
                 f"Incorrect resource quotas cannot receive STATUS_TESTED_AND_VERIFIED for ISO-RES-01. "
                 f"Observed: CPU={eff_cpu}, Memory={mem_bytes}, PIDs={pids}."
             )
+        if not ev.get("limits_available"):
+            raise ContractViolationError("ISO-RES-01 cannot receive STATUS_TESTED_AND_VERIFIED when limits_available is False.")
+        if not ev.get("enforced"):
+            raise ContractViolationError("ISO-RES-01 cannot receive STATUS_TESTED_AND_VERIFIED when limits are not actively enforced.")
 
     net_ctrl = record["controls"].get("ISO-NET-01")
     if net_ctrl and net_ctrl["status"] == STATUS_TESTED_AND_VERIFIED:
         ev = net_ctrl.get("evidence", {})
-        tier = ev.get("active_isolation_tier", record.get("active_runtime_identity", {}).get("active_runtime_tier"))
-        if tier == "subprocess_fallback" or tier == "subprocess":
+        tier = ev.get("active_isolation_tier") or record.get("active_runtime_identity", {}).get("active_runtime_tier")
+        valid_isolated_tiers = {"docker_oci", "native_namespaces", "wsl2_namespaces"}
+        if not tier or tier not in valid_isolated_tiers:
             raise ContractViolationError(
-                "Network capability availability cannot substitute for actual worker isolation in ISO-NET-01."
+                f"Network capability availability cannot substitute for actual worker isolation in ISO-NET-01 (tier={tier})."
             )
 
     uid_ctrl = record["controls"].get("ISO-UID-01")
     if uid_ctrl and uid_ctrl["status"] == STATUS_TESTED_AND_VERIFIED:
         ev = uid_ctrl.get("evidence", {})
-        if ev.get("uid") is None or not ev.get("escalation_prevented"):
+        if ev.get("uid") is None or not (ev.get("escalation_prevented") or ev.get("no_new_privs")):
             raise ContractViolationError(
                 "Unavailable worker identity or unverified escalation denial cannot receive STATUS_TESTED_AND_VERIFIED for ISO-UID-01."
             )
 
-    # Verify governance invariants
+    vault_ctrl = record["controls"].get("ISO-VAULT-01")
+    if vault_ctrl and vault_ctrl["status"] == STATUS_TESTED_AND_VERIFIED:
+        ev = vault_ctrl.get("evidence", {})
+        if not ev.get("conclusive_isolation") or ev.get("any_route_accessible"):
+            raise ContractViolationError(
+                "Private vault isolation cannot receive STATUS_TESTED_AND_VERIFIED when any route is accessible or inconclusive."
+            )
+
+    # Comprehensive governance invariant validation
     gov = record["governance_invariants"]
-    # Check top-level or runtime_verified_invariants
     rt_gov = gov.get("runtime_verified_invariants", gov)
-    if rt_gov.get("training_permitted") != 0 or rt_gov.get("execution_authorized") != 0:
-        raise ContractViolationError(
-            f"Governance invariants breached: training_permitted={rt_gov.get('training_permitted')}, "
-            f"execution_authorized={rt_gov.get('execution_authorized')}."
-        )
+    if rt_gov.get("training_permitted") != 0 or gov.get("training_permitted") != 0:
+        raise ContractViolationError("Governance invariant breached: training_permitted != 0.")
+    if rt_gov.get("execution_authorized") != 0 or gov.get("execution_authorized") != 0:
+        raise ContractViolationError("Governance invariant breached: execution_authorized != 0.")
+    if rt_gov.get("gradient_steps_verified", 0) != 0 or gov.get("gradient_steps", 0) != 0:
+        raise ContractViolationError("Governance invariant breached: gradient_steps != 0.")
+    if rt_gov.get("optimizer_updates_verified", 0) != 0 or gov.get("optimizer_updates", 0) != 0:
+        raise ContractViolationError("Governance invariant breached: optimizer_updates != 0.")
+
+    policy = gov.get("static_policy_declarations", gov)
+    if policy.get("new_holdout_generation") != "NOT_AUTHORIZED" or gov.get("new_holdout_generation") != "NOT_AUTHORIZED":
+        raise ContractViolationError("Governance policy breached: new_holdout_generation != NOT_AUTHORIZED.")
+    if policy.get("final_evaluation") != "BLOCKED" or gov.get("final_evaluation") != "BLOCKED":
+        raise ContractViolationError("Governance policy breached: final_evaluation != BLOCKED.")
+
+    prod_state = gov.get("production_authorization_state", gov)
+    if prod_state.get("production_keys") != "NOT_GENERATED" or gov.get("production_keys") != "NOT_GENERATED":
+        raise ContractViolationError("Governance state breached: production_keys != NOT_GENERATED.")
+    if prod_state.get("production_vault") != "NOT_INITIALIZED" or gov.get("production_vault") != "NOT_INITIALIZED":
+        raise ContractViolationError("Governance state breached: production_vault != NOT_INITIALIZED.")
+
+    # Quarantine evidence verification
+    quar = gov.get("physical_artifact_quarantine", {})
+    if quar:
+        if not quar.get("physical_exclusion_verified"):
+            raise ContractViolationError("Physical holdout quarantine exclusion failed: exposed compromised files exist.")
+        if quar.get("exposed_compromised_files_found"):
+            raise ContractViolationError(f"Compromised holdout files detected in search paths: {quar.get('exposed_compromised_files_found')}.")
+
+    # Modern schemas (schema_version != "1.0.0") require signature, trusted key, and provenance consistency
+    is_legacy = (schema_version == "1.0.0")
+    if not is_legacy:
+        if "attestation_signature" not in record or not record["attestation_signature"]:
+            raise ContractViolationError(f"Attestation schema '{schema_version}' requires a mandatory Ed25519 signature.")
+        if record.get("signature_scheme") != "Ed25519-NON_PRODUCTION_TEST_KEY":
+            raise ContractViolationError(f"Unauthorized signature scheme: {record.get('signature_scheme')}.")
+        if record.get("signature_public_key_hex") != TEST_NONPROD_PUBLIC_KEY_HEX:
+            raise ContractViolationError(f"Untrusted public key: {record.get('signature_public_key_hex')}.")
+
+        # Provenance cross-validation
+        prov = record.get("provenance")
+        if not isinstance(prov, dict):
+            raise ContractViolationError("Attestation missing mandatory 'provenance' dictionary.")
+        if record.get("source_commit_sha") != prov.get("source_commit_sha"):
+            raise ContractViolationError("Top-level source_commit_sha does not match provenance.source_commit_sha.")
+        if record.get("attestation_id") != prov.get("attestation_uuid"):
+            raise ContractViolationError("Top-level attestation_id does not match provenance.attestation_uuid.")
+        if record.get("generated_at_utc") != prov.get("generated_at_utc"):
+            raise ContractViolationError("Top-level generated_at_utc does not match provenance.generated_at_utc.")
+        if record.get("milestone") != prov.get("milestone"):
+            raise ContractViolationError("Top-level milestone does not match provenance.milestone.")
 
     # Verify evidence digest integrity
     controls = record.get("controls", {})
@@ -437,7 +559,6 @@ def validate_security_attestation_schema(record: Dict[str, Any]) -> None:
     provenance = record.get("provenance")
     expected_digest = record.get("evidence_digest_sha256", "")
 
-    # Try both modern and legacy digest forms
     actual_digest = compute_evidence_digest(
         controls=controls,
         candidate_checkpoint_sha256=cand_sha,
@@ -449,25 +570,29 @@ def validate_security_attestation_schema(record: Dict[str, Any]) -> None:
     )
 
     if expected_digest.lower() != actual_digest.lower():
-        # Fallback check against legacy 3-parameter digest
-        legacy_digest = compute_evidence_digest(
-            controls=controls,
-            candidate_checkpoint_sha256=cand_sha,
-            runtime_capabilities=runtime_caps,
-        )
-        if expected_digest.lower() != legacy_digest.lower():
+        if is_legacy:
+            legacy_digest = compute_evidence_digest(
+                controls=controls,
+                candidate_checkpoint_sha256=cand_sha,
+                runtime_capabilities=runtime_caps,
+            )
+            if expected_digest.lower() != legacy_digest.lower():
+                raise ContractViolationError(
+                    f"Legacy attestation evidence digest mismatch! Expected {expected_digest}, recomputed {legacy_digest}."
+                )
+        else:
             raise ContractViolationError(
                 f"Attestation evidence digest mismatch! Expected {expected_digest}, recomputed {actual_digest}."
             )
 
-    # Verify Ed25519 signature if present
-    if "attestation_signature" in record:
+    if not is_legacy:
+        # Signature verification is strictly mandatory for modern schemas
         if not verify_attestation_signature(record):
             raise ContractViolationError("Attestation Ed25519 signature verification failed.")
 
 
 def verify_attestation_digest(record: Dict[str, Any]) -> bool:
-    """Verifies that the evidence digest and schema validation match."""
+    """Verifies that the evidence digest, schema validation, and digital signature match."""
     try:
         validate_security_attestation_schema(record)
         return True

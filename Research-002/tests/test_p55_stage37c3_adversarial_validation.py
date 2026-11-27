@@ -95,9 +95,14 @@ def test_01_worker_identity_and_privilege_escalation_denial():
     try:
         sec_info = worker.test_security_state()
         assert sec_info.get("status") == "OK"
-        # Privilege escalation probe must have executed and been prevented
-        assert sec_info.get("escalation_probe_executed") is True
-        assert sec_info.get("escalation_prevented") is True
+        if hasattr(os, "setuid"):
+            # On Linux/POSIX, privilege escalation probe must have executed and been prevented
+            assert sec_info.get("escalation_probe_executed") is True
+            assert sec_info.get("escalation_prevented") is True
+        elif os.name == "nt":
+            # On Windows, verify token membership: standard unprivileged user token
+            assert sec_info.get("is_admin_token") is False
+            assert sec_info.get("escalation_prevented") is False
         if sec_info.get("no_new_privs") is not None:
             assert sec_info.get("no_new_privs") == 1
     finally:
@@ -248,6 +253,15 @@ def test_08_hipc_replay_attack_rejection(synthetic_checkpoint: Path, valid_infer
         with pytest.raises(ContractViolationError, match="Replay attack detected"):
             worker.predict(valid_inference_payload, nonce=nonce)
 
+        # Worker-side direct IPC rejection of replayed nonce
+        replay_resp = worker.run_custom_command({
+            "command": "PREDICT",
+            "payload": valid_inference_payload,
+            "nonce": nonce,
+        })
+        assert "error" in replay_resp
+        assert "replay attack detected" in replay_resp["error"].lower()
+
         # Worker-side direct IPC rejection of missing/empty nonce
         raw_resp = worker.run_custom_command({
             "command": "PREDICT",
@@ -332,6 +346,10 @@ print(json.dumps({'tcp_denied': tcp_denied, 'dns_denied': dns_denied, 'raw_denie
         assert out["tcp_denied"] is True
         assert out["dns_denied"] is True
     elif caps.get("docker_available"):
+        # Check if the required test image is locally cached before attempting probe
+        inspect_res = subprocess.run(["docker", "image", "inspect", "python:3.12-slim"], capture_output=True, text=True)
+        if inspect_res.returncode != 0:
+            pytest.skip("Docker is available but 'python:3.12-slim' image is not cached locally. Skipping live Docker isolation probe to avoid network pull failure.")
         cmd = ["docker", "run", "--rm", "-i", "--network", "none", "python:3.12-slim", "python3"]
         res = subprocess.run(cmd, input=probe_script, capture_output=True, text=True, timeout=30.0)
         assert res.returncode == 0, f"Docker probe error: {res.stderr}"

@@ -616,14 +616,25 @@ def worker_main() -> None:
     torch.set_grad_enabled(False)
 
     # On Linux, enforce no-new-privileges immediately upon worker process startup
+    prctl_error: Optional[str] = None
     if sys.platform.startswith("linux"):
         try:
             import ctypes
             libc = ctypes.CDLL("libc.so.6", use_errno=True)
             PR_SET_NO_NEW_PRIVS = 38
-            libc.prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0)
-        except Exception:
-            pass
+            ret = libc.prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0)
+            if ret != 0:
+                errno_val = ctypes.get_errno()
+                prctl_error = f"prctl(PR_SET_NO_NEW_PRIVS) failed with errno {errno_val}"
+        except Exception as exc:
+            prctl_error = f"prctl(PR_SET_NO_NEW_PRIVS) exception: {exc}"
+
+        if prctl_error:
+            if os.environ.get("HOROS_REQUIRE_NO_NEW_PRIVS", "0") == "1" or os.environ.get("HOROS_ISOLATION_TIER") in ("container", "namespace", "docker", "unshare"):
+                sys.stderr.write(f"FATAL: {prctl_error}\n")
+                sys.exit(102)
+            else:
+                sys.stderr.write(f"WARNING: {prctl_error}\n")
 
     model = HCTTWorldModel(LOCKED_HCTT_CONFIG)
     model.eval()
@@ -880,31 +891,59 @@ def worker_main() -> None:
             })
         elif cmd == "TEST_FILESYSTEM_WRITABILITY":
             candidate_paths = msg.get("candidate_paths")
-            if not candidate_paths:
+            if candidate_paths is not None and not isinstance(candidate_paths, list):
+                send_ipc_message(stdout_stream, {
+                    "status": "ERROR",
+                    "error": f"Invalid candidate_paths type: expected list, got {type(candidate_paths).__name__}",
+                    "root_readonly": False,
+                    "checkpoint_readonly": False,
+                    "results": [],
+                })
+                continue
+
+            results = []
+            sanitized_candidates = []
+            if candidate_paths is None:
                 if os.name == "nt":
-                    candidate_paths = [
+                    sanitized_candidates = [
                         {"path": "C:/test_horos_probe.tmp", "category": "root"},
                         {"path": str(Path(__file__).resolve().parent / "test_write.tmp"), "category": "app"},
                         {"path": str(Path(sys.executable).parent / "test_write.tmp"), "category": "system"},
                     ]
                 else:
-                    candidate_paths = [
+                    sanitized_candidates = [
                         {"path": "/test_horos_probe.tmp", "category": "root"},
                         {"path": "/app/test_write.tmp", "category": "app"},
                         {"path": "/model/checkpoint.pt.probe_tmp", "category": "checkpoint"},
                         {"path": "/etc/test_probe.tmp", "category": "system"},
                     ]
             else:
-                candidate_paths = [
-                    {"path": p if isinstance(p, str) else p.get("path"), "category": p.get("category", "custom") if isinstance(p, dict) else "custom"}
-                    for p in candidate_paths
-                ]
+                for entry in candidate_paths:
+                    if isinstance(entry, str):
+                        p_str = entry.strip()
+                        if p_str:
+                            sanitized_candidates.append({"path": p_str, "category": "custom"})
+                        else:
+                            results.append({"path": "", "category": "invalid", "writable": False, "error": "Empty path string", "errno": None})
+                    elif isinstance(entry, dict):
+                        p_val = entry.get("path")
+                        cat_val = str(entry.get("category", "custom"))
+                        if isinstance(p_val, str) and p_val.strip():
+                            sanitized_candidates.append({"path": p_val.strip(), "category": cat_val})
+                        else:
+                            results.append({"path": str(p_val), "category": cat_val, "writable": False, "error": f"Invalid path in dict: {p_val!r}", "errno": None})
+                    else:
+                        results.append({"path": str(entry), "category": "invalid", "writable": False, "error": f"Invalid entry type: {type(entry).__name__}", "errno": None})
 
-            results = []
-            for item in candidate_paths:
+            for item in sanitized_candidates:
                 p_str = item["path"]
                 category = item.get("category", "custom")
-                p = Path(p_str)
+                try:
+                    p = Path(p_str)
+                except Exception as pe:
+                    results.append({"path": p_str, "category": category, "writable": False, "error": f"Invalid path syntax: {pe}", "errno": None})
+                    continue
+
                 writable = False
                 err_msg = ""
                 errno_val = None
@@ -951,51 +990,78 @@ def worker_main() -> None:
             })
         elif cmd == "TEST_PROCFS_VAULT_INSPECTION":
             vault_path = msg.get("vault_path")
+            procfs_supported = Path("/proc").is_dir()
             proc_1_root_accessible = False
+            proc_1_root_denied: Optional[bool] = None
             vault_visible_via_procfs = False
+            direct_vault_accessible = False
+            direct_vault_denied = False
+            unsupported_routes = []
             traversal_findings = []
 
-            # Check /proc/1/root safely
-            try:
-                proc1_root = Path("/proc/1/root")
-                if proc1_root.exists():
-                    _ = list(proc1_root.iterdir())
-                    proc_1_root_accessible = True
-            except Exception:
-                proc_1_root_accessible = False
-
-            # Check symlink traversal safely without following unreadable targets
-            proc_candidates = [
-                Path("/proc/self/cwd"),
-                Path("/proc/self/root"),
-                Path("/proc/1/cwd"),
-            ]
-            for pp in proc_candidates:
+            if not procfs_supported:
+                unsupported_routes.append("procfs")
+                proc_1_root_denied = None
+            else:
+                # Check /proc/1/root safely
                 try:
-                    if pp.is_symlink():
-                        target = os.readlink(str(pp))
-                        traversal_findings.append(f"{pp} -> {target}")
+                    proc1_root = Path("/proc/1/root")
+                    if proc1_root.exists():
+                        _ = list(proc1_root.iterdir())
+                        proc_1_root_accessible = True
+                        proc_1_root_denied = False
+                    else:
+                        proc_1_root_denied = True
+                except (PermissionError, OSError):
+                    proc_1_root_accessible = False
+                    proc_1_root_denied = True
                 except Exception:
-                    pass
+                    proc_1_root_accessible = False
+                    proc_1_root_denied = True
 
-            # Check if vault path is reachable through filesystem or procfs
+                # Check symlink traversal safely without following unreadable targets
+                proc_candidates = [
+                    Path("/proc/self/cwd"),
+                    Path("/proc/self/root"),
+                    Path("/proc/1/cwd"),
+                ]
+                for pp in proc_candidates:
+                    try:
+                        if pp.is_symlink():
+                            target = os.readlink(str(pp))
+                            traversal_findings.append(f"{pp} -> {target}")
+                    except Exception:
+                        pass
+
+            # Check if vault path is reachable through filesystem
             if vault_path:
                 try:
                     vp = Path(vault_path)
                     if vp.exists():
                         if vp.is_dir():
                             _ = list(vp.iterdir())
-                            vault_visible_via_procfs = True
+                            direct_vault_accessible = True
+                            vault_visible_via_procfs = procfs_supported
                         elif vp.is_file():
                             _ = vp.read_bytes()
-                            vault_visible_via_procfs = True
+                            direct_vault_accessible = True
+                            vault_visible_via_procfs = procfs_supported
+                except (PermissionError, OSError):
+                    direct_vault_denied = True
+                    direct_vault_accessible = False
                 except Exception:
-                    vault_visible_via_procfs = False
+                    direct_vault_denied = True
+                    direct_vault_accessible = False
 
             send_ipc_message(stdout_stream, {
                 "status": "OK",
+                "procfs_supported": procfs_supported,
                 "proc_1_root_accessible": proc_1_root_accessible,
+                "proc_1_root_denied": proc_1_root_denied,
                 "vault_visible_via_procfs": vault_visible_via_procfs,
+                "vault_direct_accessible": direct_vault_accessible,
+                "vault_direct_denied": direct_vault_denied,
+                "unsupported_routes": unsupported_routes,
                 "traversal_findings": traversal_findings,
             })
         elif cmd == "TEST_SECURITY_STATE":
@@ -1020,6 +1086,7 @@ def worker_main() -> None:
             escalation_probe_executed = False
             escalation_prevented = False
             escalation_error = ""
+            is_admin_token = None
 
             if hasattr(os, "setuid"):
                 escalation_probe_executed = True
@@ -1030,13 +1097,15 @@ def worker_main() -> None:
                     escalation_prevented = True
                     escalation_error = str(pe)
             elif os.name == "nt":
-                escalation_probe_executed = True
+                escalation_probe_executed = False
+                escalation_prevented = False
                 try:
                     import ctypes
-                    is_admin = bool(ctypes.windll.shell32.IsUserAnAdmin())
-                    escalation_prevented = not is_admin
-                    if is_admin:
+                    is_admin_token = bool(ctypes.windll.shell32.IsUserAnAdmin())
+                    if is_admin_token:
                         escalation_error = "Process token holds elevated administrator privileges."
+                    else:
+                        escalation_error = "Standard user token verified (IsUserAnAdmin=False); escalation denial probe unverified on Windows."
                 except Exception as exc:
                     escalation_error = str(exc)
 
@@ -1047,6 +1116,7 @@ def worker_main() -> None:
                 "groups": groups,
                 "no_new_privs": no_new_privs,
                 "caps": caps,
+                "is_admin_token": is_admin_token,
                 "escalation_probe_executed": escalation_probe_executed,
                 "escalation_prevented": escalation_prevented,
                 "escalation_error": escalation_error,

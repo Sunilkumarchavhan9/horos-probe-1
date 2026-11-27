@@ -12,6 +12,7 @@ Implements Stage 3.7C.3:
 
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 import os
@@ -58,9 +59,18 @@ def canonicalize_attestation_bytes(obj: Any) -> bytes:
     ).encode("utf-8")
 
 
-def compute_evidence_digest(controls: Dict[str, Any]) -> str:
-    """Computes SHA-256 digest across canonicalized controls evidence dictionary."""
-    canonical = canonicalize_attestation_bytes(controls)
+def compute_evidence_digest(
+    controls: Dict[str, Any],
+    candidate_checkpoint_sha256: str = "",
+    runtime_capabilities: Optional[Dict[str, Any]] = None,
+) -> str:
+    """Computes SHA-256 digest across canonicalized evidence payload binding candidate and runtime context."""
+    payload: Dict[str, Any] = {"controls": controls}
+    if candidate_checkpoint_sha256:
+        payload["candidate_checkpoint_sha256"] = str(candidate_checkpoint_sha256).strip().lower()
+    if runtime_capabilities is not None:
+        payload["runtime_capabilities"] = runtime_capabilities
+    canonical = canonicalize_attestation_bytes(payload)
     return hashlib.sha256(canonical).hexdigest()
 
 
@@ -90,12 +100,14 @@ class SecurityAttestationBuilder:
         """Records an independently tested or audited security control with empirical evidence."""
         if status not in VALID_CONTROL_STATUSES:
             raise ContractViolationError(f"Invalid control status '{status}'. Must be one of {VALID_CONTROL_STATUSES}.")
+        if not isinstance(evidence, dict):
+            raise ContractViolationError(f"Control evidence must be a dictionary, got {type(evidence)}.")
 
         self.controls[control_id] = {
-            "name": name,
+            "name": str(name),
             "status": status,
-            "evidence": evidence,
-            "rationale": rationale,
+            "evidence": copy.deepcopy(evidence),
+            "rationale": str(rationale),
         }
 
     def build(self) -> Dict[str, Any]:
@@ -111,7 +123,11 @@ class SecurityAttestationBuilder:
             "working_directory": str(Path.cwd()),
         }
 
-        evidence_digest = compute_evidence_digest(self.controls)
+        evidence_digest = compute_evidence_digest(
+            self.controls,
+            self.candidate_checkpoint_sha256,
+            self.runtime_caps,
+        )
 
         governance_invariants = {
             "training_permitted": TRAINING_PERMITTED,
@@ -138,10 +154,10 @@ class SecurityAttestationBuilder:
             "generated_at_utc": now_utc,
             "candidate_checkpoint_sha256": self.candidate_checkpoint_sha256,
             "evidence_digest_sha256": evidence_digest,
-            "runtime_capabilities": self.runtime_caps,
+            "runtime_capabilities": copy.deepcopy(self.runtime_caps),
             "evaluator_context": evaluator_info,
             "governance_invariants": governance_invariants,
-            "controls": self.controls,
+            "controls": copy.deepcopy(self.controls),
         }
 
         return record
@@ -171,17 +187,55 @@ def validate_security_attestation_schema(record: Dict[str, Any]) -> None:
     if record["schema_version"] != ATTESTATION_SCHEMA_VERSION:
         raise ContractViolationError(f"Unsupported schema version '{record['schema_version']}'.")
 
-    # Verify governance invariants
+    # Validate nested field types
+    if not isinstance(record["runtime_capabilities"], dict):
+        raise ContractViolationError("Attestation 'runtime_capabilities' must be a dictionary.")
+    if not isinstance(record["evaluator_context"], dict):
+        raise ContractViolationError("Attestation 'evaluator_context' must be a dictionary.")
+    if not isinstance(record["governance_invariants"], dict):
+        raise ContractViolationError("Attestation 'governance_invariants' must be a dictionary.")
+    if not isinstance(record["controls"], dict):
+        raise ContractViolationError("Attestation 'controls' must be a dictionary.")
+
+    # Validate control entries
+    for cid, ctrl in record["controls"].items():
+        if not isinstance(ctrl, dict):
+            raise ContractViolationError(f"Control '{cid}' must be a dictionary.")
+        for field in ["name", "status", "evidence", "rationale"]:
+            if field not in ctrl:
+                raise ContractViolationError(f"Control '{cid}' missing required field '{field}'.")
+        if ctrl["status"] not in VALID_CONTROL_STATUSES:
+            raise ContractViolationError(f"Control '{cid}' has invalid status '{ctrl['status']}'.")
+        if not isinstance(ctrl["evidence"], dict):
+            raise ContractViolationError(f"Control '{cid}' evidence must be a dictionary.")
+
+    # Verify all required governance invariants
     gov = record["governance_invariants"]
-    if gov.get("training_permitted") != 0 or gov.get("execution_authorized") != 0:
-        raise ContractViolationError("Attestation governance invariants are breached!")
-    if gov.get("final_evaluation") != "BLOCKED":
-        raise ContractViolationError("final_evaluation must remain BLOCKED in attestation!")
+    expected_gov = {
+        "training_permitted": 0,
+        "execution_authorized": 0,
+        "gradient_steps": 0,
+        "optimizer_updates": 0,
+        "new_holdout_generation": "NOT_AUTHORIZED",
+        "production_keys": "NOT_GENERATED",
+        "production_vault": "NOT_INITIALIZED",
+        "final_evaluation": "BLOCKED",
+        "compromised_holdout_id": COMPROMISED_HOLDOUT_ID,
+        "compromised_holdout_status": COMPROMISED_HOLDOUT_STATUS,
+        "compromised_holdout_protocol": COMPROMISED_HOLDOUT_PROTOCOL,
+    }
+    for k, expected_v in expected_gov.items():
+        if gov.get(k) != expected_v:
+            raise ContractViolationError(
+                f"Governance invariant '{k}' mismatch: expected {expected_v!r}, got {gov.get(k)!r}."
+            )
 
     # Verify evidence digest integrity
     controls = record.get("controls", {})
+    cand_sha = record.get("candidate_checkpoint_sha256", "")
+    runtime_caps = record.get("runtime_capabilities", {})
     expected_digest = record.get("evidence_digest_sha256", "")
-    actual_digest = compute_evidence_digest(controls)
+    actual_digest = compute_evidence_digest(controls, cand_sha, runtime_caps)
     if expected_digest.lower() != actual_digest.lower():
         raise ContractViolationError(
             f"Attestation evidence digest mismatch! Expected {expected_digest}, recomputed {actual_digest}."

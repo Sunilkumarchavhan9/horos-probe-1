@@ -11,7 +11,7 @@
 | **ISO-REPLAY-01**| Cryptographic Nonce Tracking & Replay Attack Denial | HIPC Channel | `TESTED_AND_VERIFIED` | Evaluator and worker enforce strict nonce consumption tracking; duplicate request nonces raise `ContractViolationError`. |
 | **ISO-PROTO-01** | Tensor Finiteness & Schema Allowlisting | HIPC Serialization | `TESTED_AND_VERIFIED` | Floating-point tensors containing NaN or Inf, unsupported dtypes, and out-of-bounds offsets rejected fail-closed with `ContractViolationError`. |
 | **ISO-GOV-01** | Research Governance Invariants | Codebase Global | `TESTED_AND_VERIFIED` | All 8 governance restrictions verified: `training_permitted=0`, `execution_authorized=0`, `gradient_steps=0`, `optimizer_updates=0`, `new_holdout_generation=NOT_AUTHORIZED`, `production_keys=NOT_GENERATED`, `production_vault=NOT_INITIALIZED`, `final_evaluation=BLOCKED`. |
-| **ISO-ATTEST-01**| Cryptographic Security Attestation Integrity | Evaluator Provenance Engine | `TESTED_AND_VERIFIED` | Security attestation report generated with canonical SHA-256 evidence digest (`de969a04bd3b67788a5e2a26068ecaf58486e567ce6609f9165cc0a00a2c70cd`); tamper detection verified. |
+| **ISO-ATTEST-01**| Cryptographic Security Attestation Integrity | Evaluator Provenance Engine | `TESTED_AND_VERIFIED` | Security attestation report generated with canonical SHA-256 evidence digest (`cf740ea6fcefe1ddbf4f4bbd0b5fc45d58126f9b084708c5aab371f2e793d547`); tamper detection verified. |
 
 ### Verification Status Legend:
 - `TESTED_AND_VERIFIED`: Active empirical runtime test succeeded with reproducible evidence.

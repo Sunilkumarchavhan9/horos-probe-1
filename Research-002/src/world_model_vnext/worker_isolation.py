@@ -455,16 +455,18 @@ class IsolatedInferenceWorker:
         # 1. Evaluator-side pre-IPC schema and privileged-key validation
         validate_inference_ipc_payload(payload)
 
-        # 1a. Replay attack rejection
+        # 1a. Replay attack rejection & cryptographic nonce generation
         if nonce is not None:
             nonce_str = str(nonce).strip()
-            if nonce_str in self._consumed_nonces:
+            if not nonce_str or nonce_str in self._consumed_nonces:
                 raise ContractViolationError(
-                    f"Replay attack detected: nonce '{nonce_str}' has already been consumed."
+                    f"Replay attack detected: nonce '{nonce_str}' has already been consumed or is empty."
                 )
             self._consumed_nonces.add(nonce_str)
         else:
-            nonce_str = None
+            import uuid
+            nonce_str = f"nonce_{uuid.uuid4().hex}"
+            self._consumed_nonces.add(nonce_str)
 
         if not self._model_verified_and_loaded:
             raise ContractViolationError(
@@ -612,7 +614,17 @@ class IsolatedInferenceWorker:
 def worker_main() -> None:
     """Entrypoint executing inside the OS-isolated worker child process."""
     torch.set_grad_enabled(False)
-    
+
+    # On Linux, enforce no-new-privileges immediately upon worker process startup
+    if sys.platform.startswith("linux"):
+        try:
+            import ctypes
+            libc = ctypes.CDLL("libc.so.6", use_errno=True)
+            PR_SET_NO_NEW_PRIVS = 38
+            libc.prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0)
+        except Exception:
+            pass
+
     model = HCTTWorldModel(LOCKED_HCTT_CONFIG)
     model.eval()
     checkpoint_loaded = False
@@ -667,14 +679,18 @@ def worker_main() -> None:
                 send_ipc_message(stdout_stream, {"error": "Inference worker cannot predict before verified checkpoint weights are loaded."})
                 continue
             nonce = msg.get("nonce")
-            if nonce is not None:
-                nonce_str = str(nonce).strip()
-                if nonce_str in consumed_nonces:
-                    send_ipc_message(stdout_stream, {
-                        "error": f"Replay attack detected: nonce '{nonce_str}' has already been consumed."
-                    })
-                    continue
-                consumed_nonces.add(nonce_str)
+            if not nonce or not isinstance(nonce, str):
+                send_ipc_message(stdout_stream, {
+                    "error": "Prediction request rejected: non-empty cryptographic nonce is required."
+                })
+                continue
+            nonce_str = nonce.strip()
+            if not nonce_str or nonce_str in consumed_nonces:
+                send_ipc_message(stdout_stream, {
+                    "error": f"Replay attack detected: nonce '{nonce_str}' has already been consumed or is invalid."
+                })
+                continue
+            consumed_nonces.add(nonce_str)
             payload = msg.get("payload")
             try:
                 # 1. In-worker validation of deserialized payload
@@ -732,8 +748,9 @@ def worker_main() -> None:
             except Exception as exc:
                 send_ipc_message(stdout_stream, {"error": str(exc)})
         elif cmd == "TEST_VAULT_ACCESS":
-            target_path = Path(msg.get("vault_path", "")).resolve()
+            vault_arg = msg.get("vault_path", "")
             try:
+                target_path = Path(vault_arg).resolve()
                 if target_path.is_dir():
                     files = list(target_path.iterdir())
                     send_ipc_message(stdout_stream, {"status": "ACCESS_ALLOWED", "path": str(target_path), "file_count": len(files)})
@@ -743,9 +760,9 @@ def worker_main() -> None:
                 else:
                     send_ipc_message(stdout_stream, {"status": "NOT_FOUND", "path": str(target_path)})
             except PermissionError as pe:
-                send_ipc_message(stdout_stream, {"status": "ACCESS_DENIED", "error": str(pe), "path": str(target_path)})
+                send_ipc_message(stdout_stream, {"status": "ACCESS_DENIED", "error": str(pe), "path": str(vault_arg)})
             except Exception as exc:
-                send_ipc_message(stdout_stream, {"status": "ERROR", "error": str(exc), "path": str(target_path)})
+                send_ipc_message(stdout_stream, {"status": "ERROR", "error": str(exc), "path": str(vault_arg)})
         elif cmd == "TEST_OUTBOUND_NETWORK":
             import socket
             host = str(msg.get("host", "127.0.0.1"))
@@ -866,28 +883,42 @@ def worker_main() -> None:
             if not candidate_paths:
                 if os.name == "nt":
                     candidate_paths = [
-                        str(Path("C:/test_horos_probe.tmp")),
-                        str(Path(__file__).resolve().parent / "test_write.tmp"),
-                        str(Path(sys.executable).parent / "test_write.tmp"),
+                        {"path": "C:/test_horos_probe.tmp", "category": "root"},
+                        {"path": str(Path(__file__).resolve().parent / "test_write.tmp"), "category": "app"},
+                        {"path": str(Path(sys.executable).parent / "test_write.tmp"), "category": "system"},
                     ]
                 else:
                     candidate_paths = [
-                        "/test_horos_probe.tmp",
-                        "/app/test_write.tmp",
-                        "/model/checkpoint.pt.tmp",
-                        "/etc/test_probe.tmp",
+                        {"path": "/test_horos_probe.tmp", "category": "root"},
+                        {"path": "/app/test_write.tmp", "category": "app"},
+                        {"path": "/model/checkpoint.pt.probe_tmp", "category": "checkpoint"},
+                        {"path": "/etc/test_probe.tmp", "category": "system"},
                     ]
+            else:
+                candidate_paths = [
+                    {"path": p if isinstance(p, str) else p.get("path"), "category": p.get("category", "custom") if isinstance(p, dict) else "custom"}
+                    for p in candidate_paths
+                ]
+
             results = []
-            for p_str in candidate_paths:
+            for item in candidate_paths:
+                p_str = item["path"]
+                category = item.get("category", "custom")
                 p = Path(p_str)
                 writable = False
                 err_msg = ""
                 errno_val = None
+
+                # Non-destructive probe: if candidate path already exists and is file, use probe suffix
+                probe_target = p
+                if p.exists() and p.is_file():
+                    probe_target = p.with_name(f"{p.name}.probe_{os.getpid()}.tmp")
+
                 try:
-                    p.write_bytes(b"WRITABILITY_PROBE_TEST")
+                    probe_target.write_bytes(b"WRITABILITY_PROBE_TEST")
                     writable = True
                     try:
-                        p.unlink()
+                        probe_target.unlink()
                     except Exception:
                         pass
                 except OSError as oe:
@@ -897,20 +928,21 @@ def worker_main() -> None:
                 except Exception as exc:
                     writable = False
                     err_msg = str(exc)
+
                 results.append({
                     "path": p_str,
+                    "category": category,
                     "writable": writable,
                     "error": err_msg,
                     "errno": errno_val,
                 })
-            root_ro = not any(
-                r["writable"] for r in results 
-                if r["path"] in ["/", "/app/test_write.tmp", "/test_horos_probe.tmp", "C:/test_horos_probe.tmp"]
-            )
-            checkpoint_ro = not any(
-                r["writable"] for r in results
-                if "checkpoint" in r["path"] or "model" in r["path"]
-            )
+
+            root_probes = [r for r in results if r["category"] == "root" or r["path"] in ("/", "/test_horos_probe.tmp", "C:/test_horos_probe.tmp")]
+            root_ro = len(root_probes) > 0 and not any(r["writable"] for r in root_probes)
+
+            ckpt_probes = [r for r in results if r["category"] == "checkpoint" or "checkpoint" in r["path"] or "model" in r["path"]]
+            checkpoint_ro = len(ckpt_probes) > 0 and not any(r["writable"] for r in ckpt_probes)
+
             send_ipc_message(stdout_stream, {
                 "status": "OK",
                 "results": results,
@@ -923,16 +955,16 @@ def worker_main() -> None:
             vault_visible_via_procfs = False
             traversal_findings = []
 
-            # Check /proc/1/root
-            proc1_root = Path("/proc/1/root")
-            if proc1_root.exists():
-                try:
+            # Check /proc/1/root safely
+            try:
+                proc1_root = Path("/proc/1/root")
+                if proc1_root.exists():
                     _ = list(proc1_root.iterdir())
                     proc_1_root_accessible = True
-                except Exception:
-                    proc_1_root_accessible = False
+            except Exception:
+                proc_1_root_accessible = False
 
-            # Check symlink traversal
+            # Check symlink traversal safely without following unreadable targets
             proc_candidates = [
                 Path("/proc/self/cwd"),
                 Path("/proc/self/root"),
@@ -940,20 +972,25 @@ def worker_main() -> None:
             ]
             for pp in proc_candidates:
                 try:
-                    if pp.exists() and pp.is_symlink():
+                    if pp.is_symlink():
                         target = os.readlink(str(pp))
                         traversal_findings.append(f"{pp} -> {target}")
                 except Exception:
                     pass
 
-            # Check if vault path is reachable
+            # Check if vault path is reachable through filesystem or procfs
             if vault_path:
-                vp = Path(vault_path)
                 try:
+                    vp = Path(vault_path)
                     if vp.exists():
-                        vault_visible_via_procfs = True
+                        if vp.is_dir():
+                            _ = list(vp.iterdir())
+                            vault_visible_via_procfs = True
+                        elif vp.is_file():
+                            _ = vp.read_bytes()
+                            vault_visible_via_procfs = True
                 except Exception:
-                    pass
+                    vault_visible_via_procfs = False
 
             send_ipc_message(stdout_stream, {
                 "status": "OK",
@@ -980,15 +1017,28 @@ def worker_main() -> None:
                 except Exception:
                     pass
 
-            escalation_prevented = True
+            escalation_probe_executed = False
+            escalation_prevented = False
             escalation_error = ""
+
             if hasattr(os, "setuid"):
+                escalation_probe_executed = True
                 try:
                     os.setuid(0)
                     escalation_prevented = False
                 except (PermissionError, OSError) as pe:
                     escalation_prevented = True
                     escalation_error = str(pe)
+            elif os.name == "nt":
+                escalation_probe_executed = True
+                try:
+                    import ctypes
+                    is_admin = bool(ctypes.windll.shell32.IsUserAnAdmin())
+                    escalation_prevented = not is_admin
+                    if is_admin:
+                        escalation_error = "Process token holds elevated administrator privileges."
+                except Exception as exc:
+                    escalation_error = str(exc)
 
             send_ipc_message(stdout_stream, {
                 "status": "OK",
@@ -997,6 +1047,7 @@ def worker_main() -> None:
                 "groups": groups,
                 "no_new_privs": no_new_privs,
                 "caps": caps,
+                "escalation_probe_executed": escalation_probe_executed,
                 "escalation_prevented": escalation_prevented,
                 "escalation_error": escalation_error,
             })

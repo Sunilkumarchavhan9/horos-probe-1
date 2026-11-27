@@ -95,7 +95,8 @@ def test_01_worker_identity_and_privilege_escalation_denial():
     try:
         sec_info = worker.test_security_state()
         assert sec_info.get("status") == "OK"
-        # Privilege escalation must be prevented
+        # Privilege escalation probe must have executed and been prevented
+        assert sec_info.get("escalation_probe_executed") is True
         assert sec_info.get("escalation_prevented") is True
         if sec_info.get("no_new_privs") is not None:
             assert sec_info.get("no_new_privs") == 1
@@ -133,6 +134,7 @@ def test_03_vault_invisibility_via_symlink_and_procfs(tmp_path: Path):
         res = worker.test_procfs_vault_inspection(vault_path=str(secret_vault))
         assert res.get("status") == "OK"
         assert res.get("proc_1_root_accessible") is False
+        assert res.get("vault_visible_via_procfs") is False
         # Direct vault access attempt should fail closed
         access_res = worker.test_vault_access(secret_file)
         assert access_res.get("status") in ("ACCESS_DENIED", "NOT_FOUND", "ERROR")
@@ -245,6 +247,15 @@ def test_08_hipc_replay_attack_rejection(synthetic_checkpoint: Path, valid_infer
         # Replay with same nonce must be rejected
         with pytest.raises(ContractViolationError, match="Replay attack detected"):
             worker.predict(valid_inference_payload, nonce=nonce)
+
+        # Worker-side direct IPC rejection of missing/empty nonce
+        raw_resp = worker.run_custom_command({
+            "command": "PREDICT",
+            "payload": valid_inference_payload,
+            "nonce": "",
+        })
+        assert "error" in raw_resp
+        assert "nonce" in raw_resp["error"].lower()
     finally:
         worker.close()
 
@@ -265,19 +276,68 @@ def test_09_interrupted_ipc_communication_and_timeout():
 
 def test_10_network_isolation_and_dropped_caps_independent_verification():
     """Verifies independent runtime detection and network egress diagnostic evidence."""
+    import subprocess
+    import sys
     caps = detect_runtime_capabilities()
     assert isinstance(caps, dict)
     assert "runtime_type" in caps
     assert "docker_available" in caps
 
+    # 1. Standard worker environment configures proxy blackholing
     worker = IsolatedInferenceWorker()
     try:
+        sec_info = worker.get_security_info()
+        assert "0.0.0.0" in sec_info.get("env_proxy", "")
         net_diag = worker.run_custom_command({"command": "TEST_FULL_NETWORK_DIAGNOSTICS"})
         assert net_diag.get("status") == "OK"
-        # Network egress or raw sockets must be denied under isolated environment
-        assert "network_egress_denied" in net_diag or "external_tcp_status" in net_diag
     finally:
         worker.close()
+
+    # 2. In isolated tier (WSL unshare / native unshare / Docker), verify real network denial
+    probe_script = """import socket, urllib.request, json
+tcp_denied = False
+try:
+    s = socket.create_connection(('8.8.8.8', 53), timeout=1.0)
+    s.close()
+except Exception:
+    tcp_denied = True
+
+dns_denied = False
+try:
+    socket.getaddrinfo('example.com', 80)
+except Exception:
+    dns_denied = True
+
+raw_denied = False
+try:
+    raw_s = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_RAW)
+    raw_s.close()
+except Exception:
+    raw_denied = True
+
+print(json.dumps({'tcp_denied': tcp_denied, 'dns_denied': dns_denied, 'raw_denied': raw_denied}))
+"""
+    if caps.get("wsl_unshare_available"):
+        cmd = ["wsl", "unshare", "-n", "-r", "python3"]
+        res = subprocess.run(cmd, input=probe_script, capture_output=True, text=True, timeout=10.0)
+        assert res.returncode == 0, f"WSL probe error: {res.stderr}"
+        out = json.loads(res.stdout.strip())
+        assert out["tcp_denied"] is True, "External TCP must be DENIED under unshare -n!"
+        assert out["dns_denied"] is True, "DNS resolution must be DENIED under unshare -n!"
+    elif caps.get("native_unshare_available"):
+        cmd = ["unshare", "-n", "-r", sys.executable]
+        res = subprocess.run(cmd, input=probe_script, capture_output=True, text=True, timeout=10.0)
+        assert res.returncode == 0, f"Native unshare probe error: {res.stderr}"
+        out = json.loads(res.stdout.strip())
+        assert out["tcp_denied"] is True
+        assert out["dns_denied"] is True
+    elif caps.get("docker_available"):
+        cmd = ["docker", "run", "--rm", "-i", "--network", "none", "python:3.12-slim", "python3"]
+        res = subprocess.run(cmd, input=probe_script, capture_output=True, text=True, timeout=30.0)
+        assert res.returncode == 0, f"Docker probe error: {res.stderr}"
+        out = json.loads(res.stdout.strip())
+        assert out["tcp_denied"] is True
+        assert out["dns_denied"] is True
 
 
 def test_11_machine_readable_security_attestation_generation(tmp_path: Path):

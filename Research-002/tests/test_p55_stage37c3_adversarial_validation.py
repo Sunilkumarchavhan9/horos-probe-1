@@ -366,6 +366,7 @@ def test_11_machine_readable_security_attestation_generation(tmp_path: Path):
     builder = SecurityAttestationBuilder(
         candidate_checkpoint_sha256=dummy_sha,
         runtime_capabilities=caps,
+        active_runtime_identity={"active_runtime_tier": "native_namespaces"},
     )
     builder.record_control(
         control_id="ISO-UID-01",
@@ -385,7 +386,7 @@ def test_11_machine_readable_security_attestation_generation(tmp_path: Path):
         control_id="ISO-NET-01",
         name="Kernel Network Namespace Isolation",
         status=STATUS_TESTED_AND_VERIFIED,
-        evidence={"network_egress_denied": True},
+        evidence={"network_egress_denied": True, "active_isolation_tier": "native_namespaces"},
         rationale="Active TCP and raw socket probes failed closed.",
     )
     builder.record_control(

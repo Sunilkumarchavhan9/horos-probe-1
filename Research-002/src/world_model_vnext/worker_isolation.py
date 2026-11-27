@@ -45,6 +45,7 @@ from .runtime_isolation import (
     build_oci_run_command,
     detect_runtime_capabilities,
     resolve_execution_profile,
+    translate_to_wsl_path,
 )
 
 
@@ -416,25 +417,38 @@ class IsolatedInferenceWorker:
             cmd = list(custom_cmd)
         else:
             self.active_runtime_tier = resolve_execution_profile(execution_profile)
-            if self.active_runtime_tier == PROFILE_DOCKER_OCI and self.checkpoint_path:
+            caps = detect_runtime_capabilities()
+
+            if self.active_runtime_tier == PROFILE_DOCKER_OCI:
+                if not (caps.get("docker_available") or caps.get("podman_available")):
+                    raise ContractViolationError(
+                        f"Requested execution profile '{PROFILE_DOCKER_OCI}' cannot be started: Docker/Podman engine not available."
+                    )
                 cmd = build_oci_run_command(
                     checkpoint_path=self.checkpoint_path,
                     image_name=container_image,
                 )
             elif self.active_runtime_tier == PROFILE_WSL2_NAMESPACES:
+                if not caps.get("wsl_unshare_available"):
+                    raise ContractViolationError(
+                        f"Requested execution profile '{PROFILE_WSL2_NAMESPACES}' cannot be started: WSL2 unshare not available."
+                    )
                 cmd = build_namespace_run_command(
                     checkpoint_path=self.checkpoint_path,
                     use_wsl=True,
-                    python_binary=self.python_executable,
+                    python_binary="python3",
                 )
             elif self.active_runtime_tier == PROFILE_NATIVE_NAMESPACES:
+                if not caps.get("native_unshare_available"):
+                    raise ContractViolationError(
+                        f"Requested execution profile '{PROFILE_NATIVE_NAMESPACES}' cannot be started: Native Linux namespaces not available."
+                    )
                 cmd = build_namespace_run_command(
                     checkpoint_path=self.checkpoint_path,
                     use_wsl=False,
                     python_binary=self.python_executable,
                 )
-            else:
-                self.active_runtime_tier = PROFILE_SUBPROCESS_FALLBACK
+            elif self.active_runtime_tier == PROFILE_SUBPROCESS_FALLBACK:
                 cmd = [
                     self.python_executable,
                     "-u",
@@ -442,6 +456,10 @@ class IsolatedInferenceWorker:
                     "world_model_vnext.worker_isolation",
                     "--worker",
                 ]
+            else:
+                raise ContractViolationError(
+                    f"Unsupported execution profile '{self.active_runtime_tier}'."
+                )
 
         self.env["HOROS_ISOLATION_TIER"] = self.active_runtime_tier
         if self.active_runtime_tier in (PROFILE_DOCKER_OCI, PROFILE_NATIVE_NAMESPACES, PROFILE_WSL2_NAMESPACES):
@@ -511,10 +529,18 @@ class IsolatedInferenceWorker:
                 f"Worker stderr: {stderr_out.strip()}"
             )
 
+        # Separate host checkpoint paths from worker/container checkpoint paths
+        if self.active_runtime_tier == PROFILE_DOCKER_OCI:
+            worker_checkpoint_path = "/model/checkpoint.pt"
+        elif self.active_runtime_tier == PROFILE_WSL2_NAMESPACES:
+            worker_checkpoint_path = translate_to_wsl_path(p)
+        else:
+            worker_checkpoint_path = str(p)
+
         try:
             send_ipc_message(self.proc.stdin, {
                 "command": "LOAD_CHECKPOINT",
-                "checkpoint_path": str(p),
+                "checkpoint_path": worker_checkpoint_path,
                 "expected_sha256": actual_sha256,
             })
             resp = recv_ipc_message(self.proc.stdout)
@@ -1408,19 +1434,31 @@ def worker_main() -> None:
                         symlink_status = "NOT_FOUND"
                         symlink_detail = "Symlink traversal targets not present."
 
-            # 4. /proc/1/root access
+            # 4. /proc/1/root access targeting protected vault target
             proc1_status = "UNSUPPORTED"
             proc1_detail = "Procfs not present on platform."
             if Path("/proc").is_dir():
                 p1_root = Path("/proc/1/root")
                 try:
-                    if p1_root.exists():
-                        _ = list(p1_root.iterdir())
-                        proc1_status = "ACCESSIBLE"
-                        proc1_detail = "/proc/1/root directory listing succeeded; process leak."
-                    else:
+                    if not p1_root.exists():
                         proc1_status = "NOT_FOUND"
                         proc1_detail = "/proc/1/root not present."
+                    else:
+                        # Probe the protected target through /proc/1/root
+                        target_accessed = False
+                        if vp is not None:
+                            # Strip root / drive slash for POSIX procfs join
+                            vault_rel_str = str(vp).replace(":", "").lstrip("/\\")
+                            proc1_target = p1_root / vault_rel_str / target_name
+                            if proc1_target.is_file():
+                                _ = proc1_target.read_bytes()
+                                target_accessed = True
+                                proc1_status = "ACCESSIBLE"
+                                proc1_detail = f"Protected vault target '{target_name}' exposed via /proc/1/root."
+
+                        if not target_accessed:
+                            proc1_status = "NOT_FOUND"
+                            proc1_detail = f"/proc/1/root exists but protected target '{target_name}' is not exposed."
                 except (PermissionError, OSError) as pe:
                     proc1_status = "DENIED"
                     proc1_detail = f"/proc/1/root access denied fail-closed: {pe}"

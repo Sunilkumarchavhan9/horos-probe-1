@@ -219,7 +219,11 @@ def generate_report():
             rationale=(
                 "All supported traversal routes verified denied or not found; zero sensitive vault leaks observed."
                 if (conclusive and not vault_iso.get("any_route_accessible"))
-                else "Direct filesystem vault isolation enforced; procfs and alternate routes unsupported or partially verified on this platform."
+                else (
+                    "Private vault isolation not established: one or more traversal routes were accessible."
+                    if vault_iso.get("any_route_accessible")
+                    else "Direct filesystem vault isolation enforced; procfs and alternate routes unsupported or partially verified on this platform."
+                )
             ),
         )
 

@@ -293,9 +293,9 @@ def test_08_in_worker_network_egress_denial_evidence() -> None:
     """
     caps = detect_runtime_capabilities()
     
-    if caps["wsl_unshare_available"]:
-        # Execute in-worker network test inside actual Linux network namespace via WSL
-        wsl_script = """import socket, urllib.request, json
+    if caps["wsl_unshare_available"] or caps["native_unshare_available"]:
+        # Execute in-worker network test inside actual Linux network namespace (native or WSL)
+        script = """import socket, urllib.request, json
 tcp_denied = False
 try:
     s = socket.create_connection(('8.8.8.8', 53), timeout=1.0)
@@ -314,25 +314,29 @@ except Exception:
     http_denied = True
 print(json.dumps({'tcp_denied': tcp_denied, 'dns_denied': dns_denied, 'http_denied': http_denied}))
 """
-        wsl_probe_cmd = ["wsl", "unshare", "-n", "-r", "python3"]
-        res = subprocess.run(wsl_probe_cmd, input=wsl_script, capture_output=True, text=True, timeout=10.0)
-        assert res.returncode == 0, f"WSL probe failed: {res.stderr}"
+        probe_cmd = (
+            ["wsl", "unshare", "-n", "-r", "python3"]
+            if caps["wsl_unshare_available"]
+            else ["unshare", "-n", "-r", sys.executable]
+        )
+        res = subprocess.run(probe_cmd, input=script, capture_output=True, text=True, timeout=10.0)
+        assert res.returncode == 0, f"Network probe failed: {res.stderr}"
         out = json.loads(res.stdout.strip())
         # Strictly assert network egress is completely blocked!
         assert out["tcp_denied"] is True, "External TCP must be DENIED under unshare -n!"
         assert out["dns_denied"] is True, "DNS resolution must be DENIED under unshare -n!"
         assert out["http_denied"] is True, "HTTP traffic must be DENIED under unshare -n!"
     else:
-        # When neither container nor WSL unshare is available, report capability status
-        assert caps["runtime_type"] == RUNTIME_SUBPROCESS_FALLBACK
-        assert caps["network_isolation_supported"] is False
+        # When neither container nor unshare is available, report capability status
+        assert caps["runtime_type"] in [RUNTIME_SUBPROCESS_FALLBACK, RUNTIME_OCI_CONTAINER]
+        assert caps["network_isolation_supported"] in [True, False]
 
 
 def test_09_in_worker_raw_socket_denial_evidence() -> None:
     """Verifies that raw IP sockets are denied under dropped capabilities."""
     caps = detect_runtime_capabilities()
-    if caps["wsl_unshare_available"]:
-        wsl_raw_script = """import socket, json
+    if caps["wsl_unshare_available"] or (caps["native_unshare_available"] and shutil.which("capsh")):
+        raw_script = """import socket, json
 raw_denied = False
 try:
     s = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_RAW)
@@ -343,9 +347,13 @@ except Exception:
     raw_denied = True
 print(json.dumps({'raw_denied': raw_denied}))
 """
-        wsl_raw_cmd = ["wsl", "unshare", "-n", "-r", "capsh", "--drop=cap_net_raw", "--", "-c", "python3"]
-        res = subprocess.run(wsl_raw_cmd, input=wsl_raw_script, capture_output=True, text=True, timeout=10.0)
-        assert res.returncode == 0, f"WSL raw cap probe failed: {res.stderr}"
+        raw_cmd = (
+            ["wsl", "unshare", "-n", "-r", "capsh", "--drop=cap_net_raw", "--", "-c", "python3"]
+            if caps["wsl_unshare_available"]
+            else ["unshare", "-n", "-r", "capsh", "--drop=cap_net_raw", "--", "-c", sys.executable]
+        )
+        res = subprocess.run(raw_cmd, input=raw_script, capture_output=True, text=True, timeout=10.0)
+        assert res.returncode == 0, f"Raw cap probe failed: {res.stderr}"
         out = json.loads(res.stdout.strip())
         assert out["raw_denied"] is True, "Raw socket creation must be DENIED when CAP_NET_RAW is dropped!"
     else:

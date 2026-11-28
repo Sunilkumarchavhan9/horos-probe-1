@@ -10,7 +10,7 @@
 
 ### Uncertainty-Aware Safe Adaptation for Multifingered Grasping Under Jointly Changing Contact Conditions
 
-**HOROS Physical Intelligence Research Group (H.R.)** • **Sunil Kumar Chavhan** (`contact@horoslab.org`)
+**HOROS Physical Intelligence Research Group (H.R.)** • **Sunil Kumar Chavhan** (`sunil@horoslab.org`)
 
 [![arXiv](https://img.shields.io/badge/arXiv-cs.RO%20%7C%20eess.SY-B31B1B.svg)](https://arxiv.org/abs/XXXX.XXXXX)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)

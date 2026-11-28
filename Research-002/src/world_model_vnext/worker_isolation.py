@@ -410,6 +410,7 @@ class IsolatedInferenceWorker:
         self.expected_checkpoint_sha256 = expected_checkpoint_sha256
         self._model_verified_and_loaded = False
         self._consumed_nonces: set[str] = set()
+        self.selected_oci_engine: Optional[str] = None
 
         # Resolve active runtime profile and construct command
         if custom_cmd is not None:
@@ -424,9 +425,11 @@ class IsolatedInferenceWorker:
                     raise ContractViolationError(
                         f"Requested execution profile '{PROFILE_DOCKER_OCI}' cannot be started: Docker/Podman engine not available."
                     )
+                self.selected_oci_engine = "docker" if caps.get("docker_available") else "podman"
                 cmd = build_oci_run_command(
                     checkpoint_path=self.checkpoint_path,
                     image_name=container_image,
+                    container_engine=self.selected_oci_engine,
                 )
             elif self.active_runtime_tier == PROFILE_WSL2_NAMESPACES:
                 if not caps.get("wsl_unshare_available"):
@@ -465,6 +468,10 @@ class IsolatedInferenceWorker:
         if self.active_runtime_tier in (PROFILE_DOCKER_OCI, PROFILE_NATIVE_NAMESPACES, PROFILE_WSL2_NAMESPACES):
             self.env["HOROS_REQUIRE_NO_NEW_PRIVS"] = "1"
 
+        self.worker_cmd = cmd
+        if self.active_runtime_tier == PROFILE_DOCKER_OCI:
+            self.oci_run_cmd = cmd
+
         self.proc = subprocess.Popen(
             cmd,
             stdin=subprocess.PIPE,
@@ -481,6 +488,16 @@ class IsolatedInferenceWorker:
     def get_active_runtime_tier(self) -> str:
         """Returns the actual active runtime isolation tier used for this worker."""
         return self.active_runtime_tier
+
+    def get_runtime_identity(self) -> Dict[str, Any]:
+        """Returns the independently established runtime identity of the worker process."""
+        identity: Dict[str, Any] = {
+            "active_runtime_tier": self.active_runtime_tier,
+            "pid": self.proc.pid if self.proc else None,
+        }
+        if self.selected_oci_engine:
+            identity["selected_oci_engine"] = self.selected_oci_engine
+        return identity
 
     def test_vault_isolation(
         self,

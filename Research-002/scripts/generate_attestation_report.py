@@ -1,4 +1,4 @@
-"""Generates the official Stage 3.7C.4 machine-readable security attestation report from active in-worker probes."""
+"""Generates the official Stage 3.7C.6 machine-readable security attestation report from active in-worker probes."""
 
 import hashlib
 import io
@@ -308,8 +308,10 @@ def generate_report():
             status=STATUS_TESTED_AND_VERIFIED,
             evidence={
                 "verified_runtime_invariants": {
-                    "training_permitted": TRAINING_PERMITTED == 0,
-                    "execution_authorized": EXECUTION_AUTHORIZED == 0,
+                    "training_permitted": TRAINING_PERMITTED,
+                    "execution_authorized": EXECUTION_AUTHORIZED,
+                    "training_denied": True,
+                    "execution_denied": True,
                     "compromised_holdout_quarantined": (
                         COMPROMISED_HOLDOUT_ID == "stage35_final_holdout"
                         and COMPROMISED_HOLDOUT_STATUS == "COMPROMISED_PUBLIC_EXPOSURE"

@@ -21,6 +21,7 @@ import json
 import os
 from pathlib import Path
 import platform
+import re
 import subprocess
 import sys
 from typing import Any, Dict, FrozenSet, List, Optional, Sequence, Set, Tuple
@@ -111,54 +112,128 @@ def canonicalize_attestation_bytes(obj: Any) -> bytes:
     ).encode("utf-8")
 
 
+def get_repo_root(start_path: Optional[Path] = None) -> Path:
+    """Finds the root of the Git repository by searching parent directories for .git."""
+    curr = (start_path or Path(__file__)).resolve()
+    for p in [curr] + list(curr.parents):
+        if (p / ".git").exists():
+            return p
+    return Path(__file__).resolve().parent.parent.parent.parent
+
+
+def verify_commit_exists_in_repo(commit_sha: str, repo_root: Optional[Path] = None) -> bool:
+    """Verifies that the commit SHA exists as a valid commit object in the repository."""
+    if not isinstance(commit_sha, str) or not re.fullmatch(r"[0-9a-f]{40}", commit_sha.lower()):
+        return False
+    root = repo_root or get_repo_root()
+    if not (root / ".git").exists():
+        return False
+    try:
+        res = subprocess.run(
+            ["git", "cat-file", "-e", f"{commit_sha}^{{commit}}"],
+            capture_output=True,
+            timeout=5.0,
+            cwd=root,
+        )
+        return res.returncode == 0
+    except Exception:
+        return False
+
+
 def compute_source_tree_digest(source_dir: Optional[Path] = None) -> str:
-    """Computes deterministic SHA-256 digest across all Python source files in world_model_vnext."""
+    """Computes deterministic recursive SHA-256 digest across all Python source files.
+
+    Normalizes relative POSIX paths, excludes transient caches, and deterministically
+    hashes canonical relative paths and file contents.
+    """
     if source_dir is None:
         source_dir = Path(__file__).resolve().parent
-    py_files = sorted(source_dir.glob("*.py"))
+    source_dir = Path(source_dir).resolve()
+
+    if not source_dir.is_dir():
+        raise ContractViolationError(f"Source directory does not exist or is not a directory: {source_dir}")
+
+    py_entries: List[Tuple[str, bytes]] = []
+    ignored_dir_names = {"__pycache__", ".pytest_cache", ".git", ".mypy_cache"}
+
+    for root, dirs, files in os.walk(source_dir, topdown=True, followlinks=False):
+        dirs[:] = sorted([d for d in dirs if d not in ignored_dir_names and not d.startswith(".")])
+        root_path = Path(root).resolve()
+        for fn in sorted(files):
+            if fn.endswith(".py") and not fn.startswith("."):
+                file_path = root_path / fn
+                rel_path = file_path.relative_to(source_dir).as_posix()
+                try:
+                    file_bytes = file_path.read_bytes()
+                except Exception as exc:
+                    raise ContractViolationError(f"Cannot read source file '{rel_path}': {exc}")
+                py_entries.append((rel_path, file_bytes))
+
+    py_entries.sort(key=lambda item: item[0])
+
     h = hashlib.sha256()
-    for pf in py_files:
-        h.update(pf.name.encode("utf-8"))
-        h.update(pf.read_bytes())
+    for rel_path, file_bytes in py_entries:
+        h.update(rel_path.encode("utf-8"))
+        h.update(b"\0")
+        h.update(str(len(file_bytes)).encode("ascii"))
+        h.update(b"\0")
+        h.update(file_bytes)
+
     return h.hexdigest()
 
 
-def is_source_tree_dirty(repo_root: Optional[Path] = None) -> bool:
-    """Detects whether there are uncommitted changes in the tracked source files."""
-    if repo_root is None:
-        repo_root = Path(__file__).resolve().parent.parent.parent
+def is_source_tree_dirty(
+    repo_root: Optional[Path] = None,
+    source_subpath: Optional[str] = None,
+) -> bool:
+    """Detects whether there are uncommitted changes (staged, unstaged, untracked) in tracked source files.
+
+    Fails closed by raising ContractViolationError if Git status cannot be established.
+    """
+    root = repo_root or get_repo_root()
+    rel_path = source_subpath or "Research-002/src/world_model_vnext"
+
+    if not (root / ".git").exists():
+        raise ContractViolationError(f"Cannot establish source tree status: no .git repository found at {root}.")
+
     try:
         res = subprocess.run(
-            ["git", "status", "--porcelain", "Research-002/src/world_model_vnext"],
+            ["git", "status", "--porcelain", "-uall", rel_path],
             capture_output=True,
             text=True,
-            timeout=3.0,
-            cwd=repo_root,
+            timeout=5.0,
+            cwd=root,
         )
-        if res.returncode == 0:
-            return bool(res.stdout.strip())
-    except Exception:
-        pass
-    return False
+        if res.returncode != 0:
+            raise ContractViolationError(
+                f"Git status failed with exit code {res.returncode}: {res.stderr.strip()}"
+            )
+        return bool(res.stdout.strip())
+    except subprocess.TimeoutExpired as exc:
+        raise ContractViolationError(f"Git status timed out after 5.0s: {exc}")
+    except (FileNotFoundError, OSError) as exc:
+        raise ContractViolationError(f"Git command execution failed: {exc}")
 
 
 def get_source_commit_sha(repo_root: Optional[Path] = None) -> str:
     """Resolves the current Git commit SHA or returns UNKNOWN_UNCOMMITTED_REVISION."""
     env_sha = os.environ.get("GITHUB_SHA")
-    if env_sha and len(env_sha) == 40:
+    if env_sha and len(env_sha) == 40 and re.fullmatch(r"[0-9a-f]{40}", env_sha.lower()):
         return env_sha.strip().lower()
+    root = repo_root or get_repo_root()
+    if not (root / ".git").exists():
+        return "UNKNOWN_UNCOMMITTED_REVISION"
     try:
-        cwd_dir = repo_root or Path(__file__).resolve().parent
         res = subprocess.run(
             ["git", "rev-parse", "HEAD"],
             capture_output=True,
             text=True,
-            timeout=3.0,
-            cwd=cwd_dir,
+            timeout=5.0,
+            cwd=root,
         )
         if res.returncode == 0:
             out_sha = res.stdout.strip().lower()
-            if len(out_sha) == 40:
+            if len(out_sha) == 40 and re.fullmatch(r"[0-9a-f]{40}", out_sha):
                 return out_sha
     except Exception:
         pass
@@ -277,8 +352,46 @@ def compute_canonical_attestation_payload_digest(record: Dict[str, Any]) -> str:
         )
 
 
+def verify_quarantine_enforcement_controls(
+    enforcement_evidence: Optional[Dict[str, Any]] = None,
+) -> bool:
+    """Verifies independent governance and architectural controls enforcing quarantine."""
+    try:
+        # 1. Authoritative registry integrity matches expected SHA-256
+        registry_sha = verify_quarantine_registry_integrity()
+        if registry_sha.lower() != EXPECTED_QUARANTINE_REGISTRY_SHA256.lower():
+            return False
+
+        # 2. Canonical registry path must exist on disk
+        if not CANONICAL_QUARANTINE_REGISTRY_PATH.is_file():
+            return False
+
+        # 3. Governance invariants locked
+        if TRAINING_PERMITTED != 0 or EXECUTION_AUTHORIZED != 0:
+            return False
+
+        # 4. Canonical status and protocol confirmed
+        qrec = load_quarantine_record()
+        if qrec.get("status") != COMPROMISED_HOLDOUT_STATUS:
+            return False
+        if qrec.get("holdout_id") != COMPROMISED_HOLDOUT_ID:
+            return False
+
+        # 5. Optional explicit enforcement evidence validation
+        if enforcement_evidence is not None:
+            if not isinstance(enforcement_evidence, dict):
+                return False
+            if enforcement_evidence.get("controls_active") is not True:
+                return False
+
+        return True
+    except Exception:
+        return False
+
+
 def verify_physical_holdout_quarantine(
     search_dirs: Optional[Sequence[Path | str]] = None,
+    enforcement_evidence: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     """Empirically and recursively verifies physical quarantine of compromised Stage 3.5 holdout."""
     quarantine_record = load_quarantine_record()
@@ -296,56 +409,123 @@ def verify_physical_holdout_quarantine(
         "holdout_compromised",
         "stage35_holdout",
         "compromised_holdout",
+        "holdout_quarantine_record",
     )
 
-    if search_dirs is None:
-        search_dirs = [
-            Path("Research-002/data"),
-            Path("data"),
-            Path("Research-002/experiments"),
-            Path("experiments"),
-        ]
+    is_custom_search = (search_dirs is not None)
+
+    research_root = Path(__file__).resolve().parent.parent.parent
+    repo_root = research_root.parent
 
     exposed_files: List[str] = []
     unreadable_files: List[str] = []
     scanned_files_count = 0
     scan_complete = True
 
+    search_dirs_to_process: List[Path] = []
+    if search_dirs is None:
+        raw_candidates = [
+            Path("Research-002/data"),
+            Path("data"),
+            Path("Research-002/experiments"),
+            Path("experiments"),
+        ]
+        seen_dirs: Set[Path] = set()
+        for raw in raw_candidates:
+            try:
+                rp = raw.resolve()
+                if rp.exists() and rp.is_dir() and rp not in seen_dirs:
+                    seen_dirs.add(rp)
+                    search_dirs_to_process.append(rp)
+            except Exception:
+                pass
+        if not any("experiments" in str(p).lower() for p in search_dirs_to_process):
+            unreadable_files.append("Missing required search root: experiments")
+            scan_complete = False
+    else:
+        search_dirs_to_process = [Path(ed) for ed in search_dirs]
+
     canonical_registry_path = CANONICAL_QUARANTINE_REGISTRY_PATH.resolve()
-    research_root = Path(__file__).resolve().parent.parent.parent
     canonical_quarantine_dir = (research_root / "experiments" / "stage36_holdout_quarantine").resolve()
     canonical_s35_dir = (research_root / "experiments" / "stage35_production").resolve()
-    repo_root = research_root.parent
+    canonical_s35_holdout_dir = (canonical_s35_dir / "final_holdout").resolve()
+    canonical_s35_manifests = {
+        (canonical_s35_dir / "stage35_dataset_manifest.json").resolve(),
+        (canonical_s35_dir / "stage35_final_split_manifest.json").resolve(),
+    }
 
-    for ed in search_dirs:
-        p = Path(ed).resolve()
-        if not p.is_dir():
-            continue
+    def on_walk_error(err: OSError) -> None:
+        nonlocal scan_complete
+        unreadable_files.append(f"Directory traversal error: {err}")
+        scan_complete = False
+
+    for ed in search_dirs_to_process:
+        p = Path(ed)
         try:
-            if not (p.is_relative_to(repo_root) or "temp" in str(p).lower() or "tmp" in str(p).lower() or "pytest" in str(p).lower()):
+            resolved_p = p.resolve()
+        except Exception as exc:
+            unreadable_files.append(f"Invalid search root: {p} ({exc})")
+            scan_complete = False
+            continue
+
+        if not resolved_p.exists():
+            unreadable_files.append(f"Missing search root: {resolved_p}")
+            scan_complete = False
+            continue
+
+        if not resolved_p.is_dir():
+            unreadable_files.append(f"Non-directory search root: {resolved_p}")
+            scan_complete = False
+            continue
+
+        try:
+            is_valid_boundary = (
+                resolved_p.is_relative_to(repo_root)
+                or any(kw in str(resolved_p).lower() for kw in ("temp", "tmp", "pytest"))
+            )
+            if not is_valid_boundary:
+                unreadable_files.append(f"Search root outside approved boundary: {resolved_p}")
+                scan_complete = False
                 continue
         except (AttributeError, ValueError):
             pass
-        for root, dirs, files in os.walk(p, followlinks=False):
+
+        for root, dirs, files in os.walk(resolved_p, topdown=True, onerror=on_walk_error, followlinks=False):
             root_path = Path(root).resolve()
-            # Exclude strictly the designated historical Stage 3.5/3.6 quarantine artifacts (never copied directories)
+
+            # Strictly exclude canonical quarantine and canonical final_holdout directories
             try:
                 if root_path == canonical_quarantine_dir or root_path.is_relative_to(canonical_quarantine_dir):
                     continue
-                if root_path == canonical_s35_dir or root_path.is_relative_to(canonical_s35_dir):
+                if root_path == canonical_s35_holdout_dir or root_path.is_relative_to(canonical_s35_holdout_dir):
                     continue
             except (AttributeError, ValueError):
-                if str(root_path).startswith(str(canonical_quarantine_dir)) or str(root_path).startswith(str(canonical_s35_dir)):
+                if str(root_path).startswith(str(canonical_quarantine_dir)) or str(root_path).startswith(str(canonical_s35_holdout_dir)):
                     continue
 
-            for fn in files:
-                file_path = root_path / fn
+            for fn in sorted(files):
+                file_path = (root_path / fn).resolve()
 
-                # Exclude ONLY the canonical quarantine registry metadata file itself
-                if file_path == canonical_registry_path or fn == "holdout_quarantine_record.json":
+                # Exclude ONLY the canonical quarantine registry metadata file itself and canonical manifests
+                if file_path == canonical_registry_path:
+                    continue
+                if file_path in canonical_s35_manifests:
                     continue
 
                 fn_lower = fn.lower()
+
+                # Symlink check: never follow symlinks outside approved roots
+                try:
+                    if file_path.is_symlink():
+                        target = file_path.readlink()
+                        resolved_target = file_path.resolve()
+                        if not (resolved_target.is_relative_to(repo_root) or any(kw in str(resolved_target).lower() for kw in ("temp", "tmp", "pytest"))):
+                            unreadable_files.append(f"{file_path} (symlink points outside approved root: {target})")
+                            scan_complete = False
+                            continue
+                except (AttributeError, ValueError, OSError):
+                    pass
+
                 # 1. Check filename patterns
                 if any(pat in fn_lower for pat in compromised_patterns):
                     exposed_files.append(str(file_path))
@@ -357,13 +537,12 @@ def verify_physical_holdout_quarantine(
                     try:
                         stat = file_path.stat()
                         if stat.st_size > 100 * 1024 * 1024:
-                            # Oversized candidate archive cannot be safely inspected in full
-                            unreadable_files.append(f"{file_path} (oversized)")
+                            unreadable_files.append(f"{file_path} (oversized: {stat.st_size} bytes)")
                             scan_complete = False
                             continue
                         file_bytes = file_path.read_bytes()
                     except Exception as exc:
-                        unreadable_files.append(f"{file_path} ({type(exc).__name__})")
+                        unreadable_files.append(f"{file_path} ({type(exc).__name__}: {exc})")
                         scan_complete = False
                         continue
 
@@ -385,7 +564,17 @@ def verify_physical_holdout_quarantine(
 
     # physical_exclusion_verified requires BOTH complete scan and ZERO exposed files
     physical_exclusion_verified = scan_complete and (len(exposed_files) == 0)
-    quarantine_enforcement_controls_verified = physical_exclusion_verified
+
+    # Independent enforcement controls verification:
+    # A snapshot scan alone (custom search_dirs) CANNOT establish permanent enforcement
+    if is_custom_search:
+        quarantine_enforcement_controls_verified = (
+            enforcement_evidence is not None and verify_quarantine_enforcement_controls(enforcement_evidence)
+        )
+    else:
+        quarantine_enforcement_controls_verified = verify_quarantine_enforcement_controls(enforcement_evidence)
+
+    quarantine_permanently_enforced = physical_exclusion_verified and quarantine_enforcement_controls_verified
 
     return {
         "quarantine_id": quarantine_id,
@@ -399,7 +588,7 @@ def verify_physical_holdout_quarantine(
         "unreadable_files": unreadable_files,
         "scanned_files_count": scanned_files_count,
         "quarantine_enforcement_controls_verified": quarantine_enforcement_controls_verified,
-        "quarantine_permanently_enforced": physical_exclusion_verified,
+        "quarantine_permanently_enforced": quarantine_permanently_enforced,
     }
 
 
@@ -488,21 +677,40 @@ def verify_production_attestation_acceptance(
 
     # 4. Enforce clean, committed revision provenance
     prov = record.get("provenance", {})
-    if prov.get("is_dirty_source_tree") is True:
+    if not isinstance(prov, dict):
+        raise ContractViolationError("Production attestation acceptance requires a valid provenance record.")
+    if prov.get("is_dirty_source_tree") is not False:
         raise ContractViolationError("Production attestation acceptance strictly rejects dirty source trees.")
-    if record.get("source_commit_sha") == "UNKNOWN_UNCOMMITTED_REVISION":
-        raise ContractViolationError("Production attestation acceptance strictly requires verified Git commit SHA.")
 
-        # 5. Verify production Ed25519 signature
-        recomputed = compute_canonical_attestation_payload_digest(record)
-        sig_hex = record.get("attestation_signature", "")
-        try:
-            pub_key = ed25519.Ed25519PublicKey.from_public_bytes(bytes.fromhex(pub_hex))
-            sig_bytes = bytes.fromhex(sig_hex)
-            pub_key.verify(sig_bytes, recomputed.encode("utf-8"))
-            return True
-        except Exception as exc:
-            raise ContractViolationError(f"Production Ed25519 signature verification failed: {exc}")
+    commit_sha = record.get("source_commit_sha")
+    if commit_sha == "UNKNOWN_UNCOMMITTED_REVISION":
+        raise ContractViolationError("Production attestation acceptance strictly requires verified Git commit SHA.")
+    if not isinstance(commit_sha, str) or not re.fullmatch(r"[0-9a-f]{40}", commit_sha.lower()):
+        raise ContractViolationError(
+            f"Production attestation acceptance requires 40-hex lowercase commit SHA, got '{commit_sha}'."
+        )
+
+    # Verify that the claimed commit is a real Git commit in the repository
+    if not verify_commit_exists_in_repo(commit_sha):
+        raise ContractViolationError(f"Commit '{commit_sha}' does not exist in repository.")
+
+    src_digest = prov.get("source_tree_digest_sha256")
+    if not src_digest or not isinstance(src_digest, str) or len(src_digest) != 64:
+        raise ContractViolationError("Production attestation acceptance requires valid 64-hex source tree digest.")
+
+    # 5. Verify production Ed25519 signature against recomputed canonical payload digest
+    recomputed = compute_canonical_attestation_payload_digest(record)
+    sig_hex = record.get("attestation_signature", "")
+    if not sig_hex or not isinstance(sig_hex, str):
+        raise ContractViolationError("Attestation missing mandatory signature.")
+
+    try:
+        pub_key = ed25519.Ed25519PublicKey.from_public_bytes(bytes.fromhex(pub_hex))
+        sig_bytes = bytes.fromhex(sig_hex)
+        pub_key.verify(sig_bytes, recomputed.encode("utf-8"))
+        return True
+    except Exception as exc:
+        raise ContractViolationError(f"Production Ed25519 signature verification failed: {exc}")
 
 
 def verify_test_attestation_acceptance(record: Dict[str, Any]) -> bool:
@@ -567,7 +775,11 @@ class SecurityAttestationBuilder:
         }
 
         source_tree_digest = compute_source_tree_digest()
-        is_dirty = is_source_tree_dirty()
+        try:
+            is_dirty = is_source_tree_dirty()
+        except Exception:
+            # Fail closed: when source cleanliness cannot be established, treat tree as dirty
+            is_dirty = True
 
         provenance_info = {
             "attestation_uuid": attestation_uuid,
@@ -828,6 +1040,10 @@ def validate_security_attestation_schema(
             raise ContractViolationError(f"Compromised holdout files detected in search paths: {quar.get('exposed_compromised_files_found')}.")
         if quar.get("unreadable_files"):
             raise ContractViolationError(f"Unreadable files detected during quarantine scan: {quar.get('unreadable_files')}.")
+        if quar.get("quarantine_permanently_enforced") and not quar.get("quarantine_enforcement_controls_verified"):
+            raise ContractViolationError("Permanent quarantine enforcement cannot be claimed without verified independent enforcement controls.")
+        if not quar.get("scan_complete") and quar.get("physical_exclusion_verified"):
+            raise ContractViolationError("Incomplete quarantine scan cannot claim verified physical exclusion.")
 
     # Modern schemas require signature, trusted key, and provenance consistency
     if not is_legacy:

@@ -1,26 +1,30 @@
 """Machine-readable security attestation generation and cryptographic evidence anchoring.
 
-Stage 3.7C.5 Security Attestation Trust Closure & Runtime Backend Acceptance:
-- Authentic Ed25519 cryptographic provenance anchoring using dedicated non-production test key.
-- Strict elimination of unsigned legacy digest fallback for schema 2.0.0 and newer.
-- Comprehensive governance invariant validation across runtime, policy, and quarantine registries.
-- Authoritative quarantine registry integration and recursive physical artifact scan.
-- Real Linux namespaces, WSL2, Docker OCI, and fail-closed runtime integration.
+Stage 3.7C.6 Attestation Acceptance Hardening & Independent Runtime Verification:
+- Explicit separation of test-signing pathway from production acceptance.
+- Rejection of public test key and Ed25519-NON_PRODUCTION_TEST_KEY in production acceptance.
+- Complete cryptographic binding of schema_version, envelope metadata, and evidence payload.
+- Downgrade-resistant verification requiring explicit authorization for legacy records.
+- Independent runtime identity consistency checks: strict tier matching, uncompromised UID escalation denial.
+- Authoritative quarantine registry verification across NPZ and privileged JSON digests.
+- Incomplete quarantine scans fail closed and can never receive clean/verified status.
+- Source tree digest and dirty tree detection for unambiguous provenance anchoring.
 """
 
 from __future__ import annotations
 
 import copy
+from dataclasses import dataclass
+from datetime import datetime, timezone
 import hashlib
 import json
 import os
+from pathlib import Path
 import platform
 import subprocess
 import sys
+from typing import Any, Dict, FrozenSet, List, Optional, Sequence, Set, Tuple
 import uuid
-from datetime import datetime, timezone
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence
 
 from cryptography.hazmat.primitives.asymmetric import ed25519
 
@@ -31,13 +35,18 @@ from .contracts import (
     COMPROMISED_HOLDOUT_STATUS,
     EXPECTED_QUARANTINE_REGISTRY_SHA256,
     ContractViolationError,
+    get_compromised_npz_sha256,
+    get_compromised_privileged_sha256,
+    get_compromised_sample_ids,
     load_quarantine_record,
+    verify_quarantine_registry_integrity,
 )
 from .runner import EXECUTION_AUTHORIZED, TRAINING_PERMITTED
 
 
-ATTESTATION_SCHEMA_VERSION = "2.1.0"
-ATTESTATION_MILESTONE = "Stage 3.7C.5 Security Attestation Trust Closure & Runtime Backend Acceptance"
+ATTESTATION_SCHEMA_VERSION = "2.2.0"
+ATTESTATION_MILESTONE = "Stage 3.7C.6 Attestation Acceptance Hardening & Independent Runtime Verification"
+SUPPORTED_SCHEMA_VERSIONS = frozenset({"1.0.0", "2.0.0", "2.1.0", "2.2.0", "3.7C.4", "3.7C.5", "3.7C.6"})
 
 # Permitted control verification statuses
 STATUS_TESTED_AND_VERIFIED = "TESTED_AND_VERIFIED"
@@ -52,12 +61,44 @@ VALID_CONTROL_STATUSES = frozenset({
     STATUS_BLOCKED,
 })
 
-# Dedicated Non-Production Test Key for Attestation Signing (Stage 3.7C.4 / Stage 3.7C.5)
-# Never generate or use production keys!
-TEST_NONPROD_SIGNING_SEED = hashlib.sha256(b"HOROS_PROBE1_STAGE37C4_NONPROD_ED25519_TEST_SIGNING_KEY_32B").digest()[:32]
-TEST_NONPROD_PRIVATE_KEY = ed25519.Ed25519PrivateKey.from_private_bytes(TEST_NONPROD_SIGNING_SEED)
-TEST_NONPROD_PUBLIC_KEY = TEST_NONPROD_PRIVATE_KEY.public_key()
-TEST_NONPROD_PUBLIC_KEY_HEX = TEST_NONPROD_PUBLIC_KEY.public_bytes_raw().hex()
+# Dedicated Non-Production Test Key Information
+# Production acceptance must strictly reject this key and scheme!
+TEST_NONPROD_SIGNING_SCHEME = "Ed25519-NON_PRODUCTION_TEST_KEY"
+TEST_NONPROD_PUBLIC_KEY_HEX = "f358db11ce627531bb342ab04c03f34a345e931ca993aa660ecec4d55c96fc5c"
+_TEST_NONPROD_PUBLIC_KEY = ed25519.Ed25519PublicKey.from_public_bytes(
+    bytes.fromhex(TEST_NONPROD_PUBLIC_KEY_HEX)
+)
+
+
+@dataclass(frozen=True)
+class AttestationTrustPolicy:
+    """Explicit trust configuration policy for validating security attestations."""
+
+    trusted_public_keys: FrozenSet[str] = frozenset()
+    allow_test_keys: bool = False
+    allow_legacy_unsigned: bool = False
+    enforce_production_acceptance: bool = False
+    minimum_schema_version: str = "2.0.0"
+
+
+DEFAULT_TEST_TRUST_POLICY = AttestationTrustPolicy(
+    allow_test_keys=True,
+    allow_legacy_unsigned=False,
+    minimum_schema_version="2.0.0",
+)
+
+DEFAULT_PRODUCTION_TRUST_POLICY = AttestationTrustPolicy(
+    allow_test_keys=False,
+    allow_legacy_unsigned=False,
+    enforce_production_acceptance=True,
+    minimum_schema_version="2.0.0",
+)
+
+DEFAULT_LEGACY_AUDIT_POLICY = AttestationTrustPolicy(
+    allow_test_keys=False,
+    allow_legacy_unsigned=True,
+    minimum_schema_version="1.0.0",
+)
 
 
 def canonicalize_attestation_bytes(obj: Any) -> bytes:
@@ -70,18 +111,50 @@ def canonicalize_attestation_bytes(obj: Any) -> bytes:
     ).encode("utf-8")
 
 
-def get_source_commit_sha() -> str:
-    """Resolves the current Git commit SHA or returns a reproducible uncommitted indicator."""
+def compute_source_tree_digest(source_dir: Optional[Path] = None) -> str:
+    """Computes deterministic SHA-256 digest across all Python source files in world_model_vnext."""
+    if source_dir is None:
+        source_dir = Path(__file__).resolve().parent
+    py_files = sorted(source_dir.glob("*.py"))
+    h = hashlib.sha256()
+    for pf in py_files:
+        h.update(pf.name.encode("utf-8"))
+        h.update(pf.read_bytes())
+    return h.hexdigest()
+
+
+def is_source_tree_dirty(repo_root: Optional[Path] = None) -> bool:
+    """Detects whether there are uncommitted changes in the tracked source files."""
+    if repo_root is None:
+        repo_root = Path(__file__).resolve().parent.parent.parent
+    try:
+        res = subprocess.run(
+            ["git", "status", "--porcelain", "Research-002/src/world_model_vnext"],
+            capture_output=True,
+            text=True,
+            timeout=3.0,
+            cwd=repo_root,
+        )
+        if res.returncode == 0:
+            return bool(res.stdout.strip())
+    except Exception:
+        pass
+    return False
+
+
+def get_source_commit_sha(repo_root: Optional[Path] = None) -> str:
+    """Resolves the current Git commit SHA or returns UNKNOWN_UNCOMMITTED_REVISION."""
     env_sha = os.environ.get("GITHUB_SHA")
     if env_sha and len(env_sha) == 40:
         return env_sha.strip().lower()
     try:
+        cwd_dir = repo_root or Path(__file__).resolve().parent
         res = subprocess.run(
             ["git", "rev-parse", "HEAD"],
             capture_output=True,
             text=True,
             timeout=3.0,
-            cwd=Path(__file__).resolve().parent,
+            cwd=cwd_dir,
         )
         if res.returncode == 0:
             out_sha = res.stdout.strip().lower()
@@ -92,10 +165,22 @@ def get_source_commit_sha() -> str:
     return "UNKNOWN_UNCOMMITTED_REVISION"
 
 
-def sign_attestation_digest(digest_sha256: str) -> str:
-    """Signs the canonical evidence digest using the dedicated non-production Ed25519 test key."""
-    sig_bytes = TEST_NONPROD_PRIVATE_KEY.sign(digest_sha256.encode("utf-8"))
+def sign_attestation_digest_test_only(
+    digest_sha256: str,
+    private_key_seed: Optional[bytes] = None,
+) -> str:
+    """Explicitly isolated test-only utility to sign an attestation digest with non-production key."""
+    if private_key_seed is None:
+        # Isolated test seed — strictly rejected by production acceptance
+        private_key_seed = hashlib.sha256(b"HOROS_PROBE1_STAGE37C4_NONPROD_ED25519_TEST_SIGNING_KEY_32B").digest()[:32]
+    priv_key = ed25519.Ed25519PrivateKey.from_private_bytes(private_key_seed)
+    sig_bytes = priv_key.sign(digest_sha256.encode("utf-8"))
     return sig_bytes.hex()
+
+
+def sign_attestation_digest(digest_sha256: str) -> str:
+    """Backward-compatible test signing entrypoint."""
+    return sign_attestation_digest_test_only(digest_sha256)
 
 
 def compute_evidence_digest(
@@ -106,8 +191,15 @@ def compute_evidence_digest(
     evaluator_context: Optional[Dict[str, Any]] = None,
     governance_invariants: Optional[Dict[str, Any]] = None,
     provenance: Optional[Dict[str, Any]] = None,
+    schema_version: Optional[str] = None,
+    milestone: Optional[str] = None,
+    attestation_id: Optional[str] = None,
+    generated_at_utc: Optional[str] = None,
+    source_commit_sha: Optional[str] = None,
+    signature_scheme: Optional[str] = None,
+    signature_public_key_hex: Optional[str] = None,
 ) -> str:
-    """Computes SHA-256 digest across canonicalized evidence payload binding candidate, runtime, and governance."""
+    """Computes canonical SHA-256 digest across complete attestation evidence and envelope."""
     payload: Dict[str, Any] = {"controls": controls}
     if candidate_checkpoint_sha256:
         payload["candidate_checkpoint_sha256"] = str(candidate_checkpoint_sha256).strip().lower()
@@ -122,23 +214,82 @@ def compute_evidence_digest(
     if provenance is not None:
         payload["provenance"] = provenance
 
+    # Bind envelope and schema into canonical payload for complete cryptographic binding
+    if schema_version is not None:
+        payload["schema_version"] = str(schema_version)
+    if milestone is not None:
+        payload["milestone"] = str(milestone)
+    if attestation_id is not None:
+        payload["attestation_id"] = str(attestation_id)
+    if generated_at_utc is not None:
+        payload["generated_at_utc"] = str(generated_at_utc)
+    if source_commit_sha is not None:
+        payload["source_commit_sha"] = str(source_commit_sha)
+    if signature_scheme is not None:
+        payload["signature_scheme"] = str(signature_scheme)
+    if signature_public_key_hex is not None:
+        payload["signature_public_key_hex"] = str(signature_public_key_hex)
+
     canonical = canonicalize_attestation_bytes(payload)
     return hashlib.sha256(canonical).hexdigest()
 
 
-def verify_physical_holdout_quarantine() -> Dict[str, Any]:
+def compute_canonical_attestation_payload_digest(record: Dict[str, Any]) -> str:
+    """Extracts and hashes all bound fields from a complete attestation record."""
+    schema_ver = str(record.get("schema_version", ""))
+    is_v22 = schema_ver in ("2.2.0", "3.7C.6")
+
+    controls = record.get("controls", {})
+    cand_sha = record.get("candidate_checkpoint_sha256", "")
+    runtime_caps = record.get("runtime_capabilities", {})
+    active_identity = record.get("active_runtime_identity")
+    eval_ctx = record.get("evaluator_context")
+    gov = record.get("governance_invariants")
+    prov = record.get("provenance")
+
+    if is_v22:
+        return compute_evidence_digest(
+            controls=controls,
+            candidate_checkpoint_sha256=cand_sha,
+            runtime_capabilities=runtime_caps,
+            active_runtime_identity=active_identity if active_identity else None,
+            evaluator_context=eval_ctx,
+            governance_invariants=gov,
+            provenance=prov,
+            schema_version=schema_ver,
+            milestone=record.get("milestone"),
+            attestation_id=record.get("attestation_id"),
+            generated_at_utc=record.get("generated_at_utc"),
+            source_commit_sha=record.get("source_commit_sha"),
+            signature_scheme=record.get("signature_scheme"),
+            signature_public_key_hex=record.get("signature_public_key_hex"),
+        )
+    else:
+        # Compatibility with schemas 2.0.0 and 2.1.0
+        return compute_evidence_digest(
+            controls=controls,
+            candidate_checkpoint_sha256=cand_sha,
+            runtime_capabilities=runtime_caps,
+            active_runtime_identity=active_identity if active_identity else None,
+            evaluator_context=eval_ctx if eval_ctx and "provenance" in record else None,
+            governance_invariants=gov if gov and "provenance" in record else None,
+            provenance=prov if prov else None,
+        )
+
+
+def verify_physical_holdout_quarantine(
+    search_dirs: Optional[Sequence[Path | str]] = None,
+) -> Dict[str, Any]:
     """Empirically and recursively verifies physical quarantine of compromised Stage 3.5 holdout."""
     quarantine_record = load_quarantine_record()
-    registry_sha = EXPECTED_QUARANTINE_REGISTRY_SHA256
+    registry_sha = verify_quarantine_registry_integrity()
     quarantine_id = quarantine_record.get("quarantine_id", "HOROS-P1-R002-STAGE36-QREC-01")
 
-    # Extract known compromised episode hashes and sample IDs from authoritative registry
-    affected = quarantine_record.get("affected_episodes", {})
-    known_compromised_hashes = set()
-    for digest in affected.get("npz_digests", []):
-        known_compromised_hashes.add(str(digest).lower())
-    for sample_id in affected.get("sample_ids", []):
-        known_compromised_hashes.add(str(sample_id).lower())
+    # Authoritative compromised digests and IDs from registry
+    npz_digests = set(get_compromised_npz_sha256())
+    priv_digests = set(get_compromised_privileged_sha256())
+    compromised_content_hashes = npz_digests | priv_digests
+    sample_ids = set(get_compromised_sample_ids())
 
     compromised_patterns = (
         "stage35_final_holdout",
@@ -147,42 +298,94 @@ def verify_physical_holdout_quarantine() -> Dict[str, Any]:
         "compromised_holdout",
     )
 
-    eval_dirs = [
-        Path("Research-002/data"),
-        Path("data"),
-        Path("Research-002/experiments"),
-        Path("experiments"),
-    ]
+    if search_dirs is None:
+        search_dirs = [
+            Path("Research-002/data"),
+            Path("data"),
+            Path("Research-002/experiments"),
+            Path("experiments"),
+        ]
 
     exposed_files: List[str] = []
+    unreadable_files: List[str] = []
+    scanned_files_count = 0
+    scan_complete = True
 
-    for ed in eval_dirs:
-        p = ed.resolve()
+    canonical_registry_path = CANONICAL_QUARANTINE_REGISTRY_PATH.resolve()
+    research_root = Path(__file__).resolve().parent.parent.parent
+    canonical_quarantine_dir = (research_root / "experiments" / "stage36_holdout_quarantine").resolve()
+    canonical_s35_dir = (research_root / "experiments" / "stage35_production").resolve()
+    repo_root = research_root.parent
+
+    for ed in search_dirs:
+        p = Path(ed).resolve()
         if not p.is_dir():
             continue
-        for root, dirs, files in os.walk(p):
-            # Exclude the quarantine registry definition directory itself from false positives
-            if "stage36_holdout_quarantine" in root.replace("\\", "/"):
+        try:
+            if not (p.is_relative_to(repo_root) or "temp" in str(p).lower() or "tmp" in str(p).lower() or "pytest" in str(p).lower()):
                 continue
+        except (AttributeError, ValueError):
+            pass
+        for root, dirs, files in os.walk(p, followlinks=False):
+            root_path = Path(root).resolve()
+            # Exclude strictly the designated historical Stage 3.5/3.6 quarantine artifacts (never copied directories)
+            try:
+                if root_path == canonical_quarantine_dir or root_path.is_relative_to(canonical_quarantine_dir):
+                    continue
+                if root_path == canonical_s35_dir or root_path.is_relative_to(canonical_s35_dir):
+                    continue
+            except (AttributeError, ValueError):
+                if str(root_path).startswith(str(canonical_quarantine_dir)) or str(root_path).startswith(str(canonical_s35_dir)):
+                    continue
+
             for fn in files:
-                file_path = Path(root) / fn
+                file_path = root_path / fn
+
+                # Exclude ONLY the canonical quarantine registry metadata file itself
+                if file_path == canonical_registry_path or fn == "holdout_quarantine_record.json":
+                    continue
+
                 fn_lower = fn.lower()
                 # 1. Check filename patterns
                 if any(pat in fn_lower for pat in compromised_patterns):
                     exposed_files.append(str(file_path))
                     continue
-                # 2. Check file content digest for candidate archives / fixtures
-                if fn_lower.endswith((".npz", ".pt", ".json")) and file_path.stat().st_size < 100 * 1024 * 1024:
-                    try:
-                        file_sha = hashlib.sha256(file_path.read_bytes()).hexdigest().lower()
-                        if file_sha in known_compromised_hashes:
-                            exposed_files.append(str(file_path))
-                    except Exception:
-                        pass
 
-    physical_exclusion_verified = (len(exposed_files) == 0)
-    # quarantine_permanently_enforced is derived dynamically from empirical exclusion
-    quarantine_permanently_enforced = physical_exclusion_verified and (len(exposed_files) == 0)
+                # 2. Check candidate archive / data formats
+                if fn_lower.endswith((".npz", ".pt", ".json")):
+                    scanned_files_count += 1
+                    try:
+                        stat = file_path.stat()
+                        if stat.st_size > 100 * 1024 * 1024:
+                            # Oversized candidate archive cannot be safely inspected in full
+                            unreadable_files.append(f"{file_path} (oversized)")
+                            scan_complete = False
+                            continue
+                        file_bytes = file_path.read_bytes()
+                    except Exception as exc:
+                        unreadable_files.append(f"{file_path} ({type(exc).__name__})")
+                        scan_complete = False
+                        continue
+
+                    file_sha = hashlib.sha256(file_bytes).hexdigest().lower()
+                    if file_sha in compromised_content_hashes:
+                        exposed_files.append(str(file_path))
+                        continue
+
+                    if fn_lower.endswith(".json") and stat.st_size < 10 * 1024 * 1024:
+                        try:
+                            json_text = file_bytes.decode("utf-8", errors="replace").lower()
+                            if any(sid.lower() in json_text for sid in sample_ids):
+                                exposed_files.append(str(file_path))
+                        except Exception:
+                            pass
+
+    if unreadable_files:
+        scan_complete = False
+
+    # physical_exclusion_verified requires BOTH complete scan and ZERO exposed files
+    physical_exclusion_verified = scan_complete and (len(exposed_files) == 0)
+    quarantine_enforcement_controls_verified = physical_exclusion_verified
 
     return {
         "quarantine_id": quarantine_id,
@@ -190,27 +393,31 @@ def verify_physical_holdout_quarantine() -> Dict[str, Any]:
         "compromised_holdout_id": COMPROMISED_HOLDOUT_ID,
         "compromised_holdout_status": COMPROMISED_HOLDOUT_STATUS,
         "compromised_holdout_protocol": COMPROMISED_HOLDOUT_PROTOCOL,
+        "scan_complete": scan_complete,
         "physical_exclusion_verified": physical_exclusion_verified,
         "exposed_compromised_files_found": exposed_files,
-        "quarantine_permanently_enforced": quarantine_permanently_enforced,
+        "unreadable_files": unreadable_files,
+        "scanned_files_count": scanned_files_count,
+        "quarantine_enforcement_controls_verified": quarantine_enforcement_controls_verified,
+        "quarantine_permanently_enforced": physical_exclusion_verified,
     }
 
 
-def verify_attestation_signature(record: Dict[str, Any]) -> bool:
-    """Verifies that the attestation Ed25519 signature is valid for the recomputed evidence digest."""
+def verify_test_attestation_signature(record: Dict[str, Any]) -> bool:
+    """Verifies that the attestation Ed25519 signature is valid using the dedicated test key."""
     sig_hex = record.get("attestation_signature")
     if not sig_hex or not isinstance(sig_hex, str):
         return False
 
     scheme = record.get("signature_scheme")
-    if scheme != "Ed25519-NON_PRODUCTION_TEST_KEY":
+    if scheme != TEST_NONPROD_SIGNING_SCHEME:
         return False
 
     pub_hex = record.get("signature_public_key_hex")
     if pub_hex != TEST_NONPROD_PUBLIC_KEY_HEX:
         return False
 
-    # Check top-level vs provenance consistency
+    # Cross-validate top-level vs nested provenance
     prov = record.get("provenance")
     if prov is not None and isinstance(prov, dict):
         if record.get("source_commit_sha") != prov.get("source_commit_sha"):
@@ -222,30 +429,15 @@ def verify_attestation_signature(record: Dict[str, Any]) -> bool:
         if record.get("milestone") != prov.get("milestone"):
             return False
 
-    # Recompute the actual digest from the record's contents
-    controls = record.get("controls", {})
-    cand_sha = record.get("candidate_checkpoint_sha256", "")
-    runtime_caps = record.get("runtime_capabilities", {})
-    active_identity = record.get("active_runtime_identity")
-    eval_ctx = record.get("evaluator_context")
-    gov = record.get("governance_invariants")
-
-    recomputed = compute_evidence_digest(
-        controls=controls,
-        candidate_checkpoint_sha256=cand_sha,
-        runtime_capabilities=runtime_caps,
-        active_runtime_identity=active_identity if active_identity else None,
-        evaluator_context=eval_ctx if eval_ctx and "provenance" in record else None,
-        governance_invariants=gov if gov and "provenance" in record else None,
-        provenance=prov if prov else None,
-    )
-
+    recomputed = compute_canonical_attestation_payload_digest(record)
     stored_digest = record.get("evidence_digest_sha256", "")
     schema_version = record.get("schema_version", "1.0.0")
 
     if stored_digest.lower() != recomputed.lower():
         if schema_version == "1.0.0":
-            # Legacy 3-parameter digest ONLY for explicitly legacy schema 1.0.0
+            controls = record.get("controls", {})
+            cand_sha = record.get("candidate_checkpoint_sha256", "")
+            runtime_caps = record.get("runtime_capabilities", {})
             legacy_recomputed = compute_evidence_digest(
                 controls=controls,
                 candidate_checkpoint_sha256=cand_sha,
@@ -259,14 +451,70 @@ def verify_attestation_signature(record: Dict[str, Any]) -> bool:
 
     try:
         sig_bytes = bytes.fromhex(sig_hex)
-        TEST_NONPROD_PUBLIC_KEY.verify(sig_bytes, recomputed.encode("utf-8"))
+        _TEST_NONPROD_PUBLIC_KEY.verify(sig_bytes, recomputed.encode("utf-8"))
         return True
     except Exception:
         return False
 
 
+def verify_attestation_signature(record: Dict[str, Any]) -> bool:
+    """Backward-compatible signature verification helper."""
+    return verify_test_attestation_signature(record)
+
+
+def verify_production_attestation_acceptance(
+    record: Dict[str, Any],
+    trust_policy: Optional[AttestationTrustPolicy] = None,
+) -> bool:
+    """Strict production acceptance: rejects test-key signatures and requires trusted production public key."""
+    policy = trust_policy or DEFAULT_PRODUCTION_TRUST_POLICY
+
+    # 1. Structural and invariant validation
+    validate_security_attestation_schema(record, policy=policy)
+
+    # 2. Reject test-key signing scheme unconditionally in production
+    scheme = record.get("signature_scheme")
+    if scheme == TEST_NONPROD_SIGNING_SCHEME:
+        raise ContractViolationError(
+            f"Production attestation acceptance strictly rejects test signature scheme '{TEST_NONPROD_SIGNING_SCHEME}'."
+        )
+
+    # 3. Check public key against authorized trust anchor
+    pub_hex = record.get("signature_public_key_hex")
+    if not pub_hex or pub_hex not in policy.trusted_public_keys:
+        raise ContractViolationError(
+            f"Attestation signed by untrusted public key '{pub_hex}': not anchored in trusted production keys."
+        )
+
+    # 4. Enforce clean, committed revision provenance
+    prov = record.get("provenance", {})
+    if prov.get("is_dirty_source_tree") is True:
+        raise ContractViolationError("Production attestation acceptance strictly rejects dirty source trees.")
+    if record.get("source_commit_sha") == "UNKNOWN_UNCOMMITTED_REVISION":
+        raise ContractViolationError("Production attestation acceptance strictly requires verified Git commit SHA.")
+
+        # 5. Verify production Ed25519 signature
+        recomputed = compute_canonical_attestation_payload_digest(record)
+        sig_hex = record.get("attestation_signature", "")
+        try:
+            pub_key = ed25519.Ed25519PublicKey.from_public_bytes(bytes.fromhex(pub_hex))
+            sig_bytes = bytes.fromhex(sig_hex)
+            pub_key.verify(sig_bytes, recomputed.encode("utf-8"))
+            return True
+        except Exception as exc:
+            raise ContractViolationError(f"Production Ed25519 signature verification failed: {exc}")
+
+
+def verify_test_attestation_acceptance(record: Dict[str, Any]) -> bool:
+    """Comprehensive test-only acceptance validation."""
+    validate_security_attestation_schema(record, policy=DEFAULT_TEST_TRUST_POLICY)
+    if not verify_test_attestation_signature(record):
+        raise ContractViolationError("Test attestation Ed25519 signature verification failed.")
+    return True
+
+
 class SecurityAttestationBuilder:
-    """Assembles and verifies machine-readable security attestation records."""
+    """Assembles and cryptographically anchors machine-readable security attestation records."""
 
     def __init__(
         self,
@@ -318,10 +566,15 @@ class SecurityAttestationBuilder:
             "working_directory": str(Path.cwd()),
         }
 
+        source_tree_digest = compute_source_tree_digest()
+        is_dirty = is_source_tree_dirty()
+
         provenance_info = {
             "attestation_uuid": attestation_uuid,
             "generated_at_utc": now_utc,
             "source_commit_sha": self.source_commit_sha,
+            "source_tree_digest_sha256": source_tree_digest,
+            "is_dirty_source_tree": is_dirty,
             "milestone": ATTESTATION_MILESTONE,
         }
 
@@ -364,6 +617,7 @@ class SecurityAttestationBuilder:
         if TRAINING_PERMITTED != 0 or EXECUTION_AUTHORIZED != 0:
             raise ContractViolationError("Cannot issue security attestation when governance invariants are breached!")
 
+        # Complete cryptographic binding including schema and envelope
         evidence_digest = compute_evidence_digest(
             controls=self.controls,
             candidate_checkpoint_sha256=self.candidate_checkpoint_sha256,
@@ -372,9 +626,16 @@ class SecurityAttestationBuilder:
             evaluator_context=evaluator_info,
             governance_invariants=governance_invariants,
             provenance=provenance_info,
+            schema_version=ATTESTATION_SCHEMA_VERSION,
+            milestone=ATTESTATION_MILESTONE,
+            attestation_id=attestation_uuid,
+            generated_at_utc=now_utc,
+            source_commit_sha=self.source_commit_sha,
+            signature_scheme=TEST_NONPROD_SIGNING_SCHEME,
+            signature_public_key_hex=TEST_NONPROD_PUBLIC_KEY_HEX,
         )
 
-        attestation_sig = sign_attestation_digest(evidence_digest)
+        attestation_sig = sign_attestation_digest_test_only(evidence_digest)
 
         record = {
             "schema_version": ATTESTATION_SCHEMA_VERSION,
@@ -385,7 +646,7 @@ class SecurityAttestationBuilder:
             "candidate_checkpoint_sha256": self.candidate_checkpoint_sha256,
             "evidence_digest_sha256": evidence_digest,
             "attestation_signature": attestation_sig,
-            "signature_scheme": "Ed25519-NON_PRODUCTION_TEST_KEY",
+            "signature_scheme": TEST_NONPROD_SIGNING_SCHEME,
             "signature_public_key_hex": TEST_NONPROD_PUBLIC_KEY_HEX,
             "active_runtime_identity": copy.deepcopy(self.active_runtime_identity),
             "runtime_capabilities": copy.deepcopy(self.runtime_caps),
@@ -398,10 +659,15 @@ class SecurityAttestationBuilder:
         return record
 
 
-def validate_security_attestation_schema(record: Dict[str, Any]) -> None:
-    """Validates structure, types, governance invariants, cryptographic signatures, and digest of an attestation."""
+def validate_security_attestation_schema(
+    record: Dict[str, Any],
+    policy: Optional[AttestationTrustPolicy] = None,
+) -> None:
+    """Validates structure, governance invariants, cryptographic binding, and signatures of an attestation."""
     if not isinstance(record, dict):
         raise ContractViolationError("Attestation record must be a dictionary.")
+
+    active_policy = policy or DEFAULT_TEST_TRUST_POLICY
 
     required_keys = {
         "schema_version",
@@ -420,8 +686,15 @@ def validate_security_attestation_schema(record: Dict[str, Any]) -> None:
         raise ContractViolationError(f"Attestation missing required fields: {sorted(missing)}.")
 
     schema_version = str(record["schema_version"])
-    if schema_version not in ("1.0.0", "2.0.0", "2.1.0", "3.7C.4", "3.7C.5"):
+    if schema_version not in SUPPORTED_SCHEMA_VERSIONS:
         raise ContractViolationError(f"Unsupported schema version '{schema_version}'.")
+
+    # Downgrade protection: legacy 1.0.0 requires explicit caller authorization
+    is_legacy = (schema_version == "1.0.0")
+    if is_legacy and not active_policy.allow_legacy_unsigned:
+        raise ContractViolationError(
+            f"Schema version '{schema_version}' is unsigned legacy and not permitted under current policy."
+        )
 
     # Validate nested field types
     if not isinstance(record["runtime_capabilities"], dict):
@@ -471,19 +744,28 @@ def validate_security_attestation_schema(record: Dict[str, Any]) -> None:
     net_ctrl = record["controls"].get("ISO-NET-01")
     if net_ctrl and net_ctrl["status"] == STATUS_TESTED_AND_VERIFIED:
         ev = net_ctrl.get("evidence", {})
-        tier = ev.get("active_isolation_tier") or record.get("active_runtime_identity", {}).get("active_runtime_tier")
+        worker_tier = record.get("active_runtime_identity", {}).get("active_runtime_tier")
+        ctrl_tier = ev.get("active_isolation_tier")
         valid_isolated_tiers = {"docker_oci", "native_namespaces", "wsl2_namespaces"}
-        if not tier or tier not in valid_isolated_tiers:
+
+        if ctrl_tier and ctrl_tier != worker_tier:
             raise ContractViolationError(
-                f"Network capability availability cannot substitute for actual worker isolation in ISO-NET-01 (tier={tier})."
+                f"Isolation tier mismatch: control evidence claims '{ctrl_tier}' but actual worker identity is '{worker_tier}'."
+            )
+        if not worker_tier or worker_tier not in valid_isolated_tiers:
+            raise ContractViolationError(
+                f"Network capability availability cannot substitute for actual worker isolation in ISO-NET-01 (tier={worker_tier})."
             )
 
     uid_ctrl = record["controls"].get("ISO-UID-01")
     if uid_ctrl and uid_ctrl["status"] == STATUS_TESTED_AND_VERIFIED:
         ev = uid_ctrl.get("evidence", {})
-        if ev.get("uid") is None or not (ev.get("escalation_prevented") or ev.get("no_new_privs")):
+        if ev.get("uid") is None:
+            raise ContractViolationError("Unavailable worker identity or unverified escalation denial cannot receive STATUS_TESTED_AND_VERIFIED for ISO-UID-01.")
+        # Privilege escalation denial must NOT be overridden by no_new_privs alone
+        if ev.get("escalation_prevented") is not True:
             raise ContractViolationError(
-                "Unavailable worker identity or unverified escalation denial cannot receive STATUS_TESTED_AND_VERIFIED for ISO-UID-01."
+                "Unavailable worker identity or unverified escalation denial: privilege escalation denial control ISO-UID-01 requires escalation_prevented=True; no_new_privs cannot substitute."
             )
 
     vault_ctrl = record["controls"].get("ISO-VAULT-01")
@@ -494,22 +776,39 @@ def validate_security_attestation_schema(record: Dict[str, Any]) -> None:
                 "Private vault isolation cannot receive STATUS_TESTED_AND_VERIFIED when any route is accessible or inconclusive."
             )
 
+    gov_ctrl = record["controls"].get("ISO-GOV-01")
+    if gov_ctrl:
+        ev = gov_ctrl.get("evidence", {})
+        v_rt = ev.get("verified_runtime_invariants", {})
+        tp = v_rt.get("training_permitted")
+        ea = v_rt.get("execution_authorized")
+        if tp is True or (tp is not None and tp != 0) or ea is True or (ea is not None and ea != 0):
+            raise ContractViolationError(
+                "ISO-GOV-01 evidence contradicts governance invariants: training_permitted and execution_authorized must be 0, not True or non-zero."
+            )
+
     # Comprehensive governance invariant validation
     gov = record["governance_invariants"]
     rt_gov = gov.get("runtime_verified_invariants", gov)
-    if rt_gov.get("training_permitted") != 0 or gov.get("training_permitted") != 0:
+    tp_rt = rt_gov.get("training_permitted")
+    ea_rt = rt_gov.get("execution_authorized")
+    tp_top = gov.get("training_permitted")
+    ea_top = gov.get("execution_authorized")
+
+    # Strictly check numeric 0 (boolean True/False is strictly rejected)
+    if type(tp_rt) is bool or tp_rt != 0 or type(tp_top) is bool or tp_top != 0:
         raise ContractViolationError("Governance invariant breached: training_permitted != 0.")
-    if rt_gov.get("execution_authorized") != 0 or gov.get("execution_authorized") != 0:
+    if type(ea_rt) is bool or ea_rt != 0 or type(ea_top) is bool or ea_top != 0:
         raise ContractViolationError("Governance invariant breached: execution_authorized != 0.")
     if rt_gov.get("gradient_steps_verified", 0) != 0 or gov.get("gradient_steps", 0) != 0:
         raise ContractViolationError("Governance invariant breached: gradient_steps != 0.")
     if rt_gov.get("optimizer_updates_verified", 0) != 0 or gov.get("optimizer_updates", 0) != 0:
         raise ContractViolationError("Governance invariant breached: optimizer_updates != 0.")
 
-    policy = gov.get("static_policy_declarations", gov)
-    if policy.get("new_holdout_generation") != "NOT_AUTHORIZED" or gov.get("new_holdout_generation") != "NOT_AUTHORIZED":
+    policy_decl = gov.get("static_policy_declarations", gov)
+    if policy_decl.get("new_holdout_generation") != "NOT_AUTHORIZED" or gov.get("new_holdout_generation") != "NOT_AUTHORIZED":
         raise ContractViolationError("Governance policy breached: new_holdout_generation != NOT_AUTHORIZED.")
-    if policy.get("final_evaluation") != "BLOCKED" or gov.get("final_evaluation") != "BLOCKED":
+    if policy_decl.get("final_evaluation") != "BLOCKED" or gov.get("final_evaluation") != "BLOCKED":
         raise ContractViolationError("Governance policy breached: final_evaluation != BLOCKED.")
 
     prod_state = gov.get("production_authorization_state", gov)
@@ -521,20 +820,42 @@ def validate_security_attestation_schema(record: Dict[str, Any]) -> None:
     # Quarantine evidence verification
     quar = gov.get("physical_artifact_quarantine", {})
     if quar:
+        if not quar.get("scan_complete", True):
+            raise ContractViolationError("Physical holdout quarantine scan was incomplete: unreadable or oversized files exist.")
         if not quar.get("physical_exclusion_verified"):
             raise ContractViolationError("Physical holdout quarantine exclusion failed: exposed compromised files exist.")
         if quar.get("exposed_compromised_files_found"):
             raise ContractViolationError(f"Compromised holdout files detected in search paths: {quar.get('exposed_compromised_files_found')}.")
+        if quar.get("unreadable_files"):
+            raise ContractViolationError(f"Unreadable files detected during quarantine scan: {quar.get('unreadable_files')}.")
 
-    # Modern schemas (schema_version != "1.0.0") require signature, trusted key, and provenance consistency
-    is_legacy = (schema_version == "1.0.0")
+    # Modern schemas require signature, trusted key, and provenance consistency
     if not is_legacy:
         if "attestation_signature" not in record or not record["attestation_signature"]:
             raise ContractViolationError(f"Attestation schema '{schema_version}' requires a mandatory Ed25519 signature.")
-        if record.get("signature_scheme") != "Ed25519-NON_PRODUCTION_TEST_KEY":
-            raise ContractViolationError(f"Unauthorized signature scheme: {record.get('signature_scheme')}.")
-        if record.get("signature_public_key_hex") != TEST_NONPROD_PUBLIC_KEY_HEX:
-            raise ContractViolationError(f"Untrusted public key: {record.get('signature_public_key_hex')}.")
+
+        scheme = record.get("signature_scheme")
+        if not scheme:
+            raise ContractViolationError("Attestation missing mandatory 'signature_scheme'.")
+
+        pub_hex = record.get("signature_public_key_hex")
+        if not pub_hex:
+            raise ContractViolationError("Attestation missing mandatory 'signature_public_key_hex'.")
+
+        if active_policy.enforce_production_acceptance:
+            if scheme == TEST_NONPROD_SIGNING_SCHEME:
+                raise ContractViolationError(f"Production attestation acceptance strictly rejects test scheme '{scheme}'.")
+            if pub_hex not in active_policy.trusted_public_keys:
+                raise ContractViolationError(f"Untrusted public key '{pub_hex}' not anchored in production trust policy.")
+        else:
+            if active_policy.allow_test_keys:
+                if scheme != TEST_NONPROD_SIGNING_SCHEME:
+                    raise ContractViolationError(f"Unauthorized signature scheme: {scheme}.")
+                if pub_hex != TEST_NONPROD_PUBLIC_KEY_HEX:
+                    raise ContractViolationError(f"Untrusted public key: {pub_hex}.")
+            else:
+                if pub_hex not in active_policy.trusted_public_keys:
+                    raise ContractViolationError(f"Untrusted public key: {pub_hex}.")
 
         # Provenance cross-validation
         prov = record.get("provenance")
@@ -550,27 +871,14 @@ def validate_security_attestation_schema(record: Dict[str, Any]) -> None:
             raise ContractViolationError("Top-level milestone does not match provenance.milestone.")
 
     # Verify evidence digest integrity
-    controls = record.get("controls", {})
-    cand_sha = record.get("candidate_checkpoint_sha256", "")
-    runtime_caps = record.get("runtime_capabilities", {})
-    active_runtime_identity = record.get("active_runtime_identity")
-    evaluator_context = record.get("evaluator_context")
-    governance_invariants = record.get("governance_invariants")
-    provenance = record.get("provenance")
     expected_digest = record.get("evidence_digest_sha256", "")
-
-    actual_digest = compute_evidence_digest(
-        controls=controls,
-        candidate_checkpoint_sha256=cand_sha,
-        runtime_capabilities=runtime_caps,
-        active_runtime_identity=active_runtime_identity if active_runtime_identity else None,
-        evaluator_context=evaluator_context if evaluator_context and "provenance" in record else None,
-        governance_invariants=governance_invariants if governance_invariants and "provenance" in record else None,
-        provenance=provenance if provenance else None,
-    )
+    actual_digest = compute_canonical_attestation_payload_digest(record)
 
     if expected_digest.lower() != actual_digest.lower():
         if is_legacy:
+            controls = record.get("controls", {})
+            cand_sha = record.get("candidate_checkpoint_sha256", "")
+            runtime_caps = record.get("runtime_capabilities", {})
             legacy_digest = compute_evidence_digest(
                 controls=controls,
                 candidate_checkpoint_sha256=cand_sha,
@@ -587,14 +895,32 @@ def validate_security_attestation_schema(record: Dict[str, Any]) -> None:
 
     if not is_legacy:
         # Signature verification is strictly mandatory for modern schemas
-        if not verify_attestation_signature(record):
-            raise ContractViolationError("Attestation Ed25519 signature verification failed.")
+        if active_policy.enforce_production_acceptance:
+            pub_hex = record.get("signature_public_key_hex", "")
+            sig_hex = record.get("attestation_signature", "")
+            try:
+                pub_key = ed25519.Ed25519PublicKey.from_public_bytes(bytes.fromhex(pub_hex))
+                sig_bytes = bytes.fromhex(sig_hex)
+                pub_key.verify(sig_bytes, actual_digest.encode("utf-8"))
+            except Exception as exc:
+                raise ContractViolationError(f"Production Ed25519 signature verification failed: {exc}")
+        else:
+            if not verify_test_attestation_signature(record):
+                raise ContractViolationError("Attestation Ed25519 signature verification failed.")
 
 
-def verify_attestation_digest(record: Dict[str, Any]) -> bool:
-    """Verifies that the evidence digest, schema validation, and digital signature match."""
+def verify_attestation_digest(
+    record: Dict[str, Any],
+    policy: Optional[AttestationTrustPolicy] = None,
+    allow_legacy_unsigned: bool = False,
+) -> bool:
+    """Verifies evidence digest, governance invariants, schema validation, and digital signature."""
     try:
-        validate_security_attestation_schema(record)
+        active_policy = policy or AttestationTrustPolicy(
+            allow_test_keys=True,
+            allow_legacy_unsigned=allow_legacy_unsigned,
+        )
+        validate_security_attestation_schema(record, policy=active_policy)
         return True
     except Exception:
         return False

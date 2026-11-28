@@ -32,15 +32,20 @@ PYTHONPATH=Research-002:Research-002/src python Research-002/scripts/generate_at
 
 ## 3. Cryptographic Verification Command
 ```bash
-python -c "
+PYTHONPATH=Research-002/src python -c "
 import json
 from pathlib import Path
-from world_model_vnext.security_attestation import verify_attestation_signature, verify_attestation_digest
+from world_model_vnext.security_attestation import (
+    verify_attestation_digest,
+    verify_test_attestation_acceptance,
+)
 
-report_path = Path('Research-002/experiments/stage37_blind_evaluation/security_attestation_report.json')
-record = json.loads(report_path.read_text(encoding='utf-8'))
-assert verify_attestation_signature(record), 'Ed25519 signature invalid!'
-assert verify_attestation_digest(record), 'Digest verification failed!'
-print('Attestation cryptographic verification PASSED.')
+report = json.loads(
+    Path('Research-002/experiments/stage37_blind_evaluation/security_attestation_report.json').read_text(encoding='utf-8')
+)
+
+assert verify_attestation_digest(report), 'Attestation digest verification failed'
+assert verify_test_attestation_acceptance(report), 'Test attestation acceptance failed'
+print('Attestation verification completed')
 "
 ```
